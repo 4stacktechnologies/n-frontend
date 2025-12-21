@@ -6,16 +6,17 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Login from "../pages/auth/Login";
 import Products from "../pages/user/Products";
 import ProductDetails from "../pages/user/ProductDetails";
-import VerifyOtp from "../pages/VerifyOtp";
-import Signup from "../pages/auth/Login";
+import Signup from "../pages/auth/Signup";
 import Home from "../pages/Home";
+import ResetPassword from "../pages/auth/ResetPassword";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<Signup />} />
-              <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+
 
       <Route path="/login" element={<Login />} />
 

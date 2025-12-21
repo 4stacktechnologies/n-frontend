@@ -1,76 +1,46 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
-const Signup = () => {
-  const navigate = useNavigate();
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    mobile: "",
-    password: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
-      setLoading(true);
+      const res = await axios.post(`${import.meta.env.VITE_API_AUTH_URL}/login`, { email, password });
+      toast.success("Login successful");
 
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/api/users/signup`,
-        form
-      );
-
-      alert("OTP sent to your email");
-      navigate("/verify-otp", {
-        state: { email: form.email, purpose: "VERIFY_EMAIL" },
-      });
+      localStorage.setItem("token", res.data.token);
     } catch (err) {
-      alert(err.response?.data?.msg || "Signup failed");
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.msg || "Login failed");
     }
   };
 
   return (
-    <div className="auth-box">
-      <h2>Signup</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white p-6 rounded-lg shadow-md w-96"
+      >
+        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} required />
         <input
-          name="email"
           type="email"
           placeholder="Email"
-          onChange={handleChange}
-          required
+          className="input"
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          name="mobile"
-          placeholder="Mobile (optional)"
-          onChange={handleChange}
-        />
-        <input
-          name="password"
           type="password"
           placeholder="Password"
-          onChange={handleChange}
-          required
+          className="input"
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button disabled={loading}>
-          {loading ? "Sending OTP..." : "Signup"}
-        </button>
+        <button className="btn-primary">Login</button>
       </form>
     </div>
   );
-};
-
-export default Signup;
+}
