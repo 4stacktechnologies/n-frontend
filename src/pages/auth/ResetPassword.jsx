@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
 
 export default function ResetPassword() {
   const [email, setEmail] = useState("");
@@ -12,6 +14,7 @@ export default function ResetPassword() {
 
   const [loadingSend, setLoadingSend] = useState(false);
   const [loadingReset, setLoadingReset] = useState(false);
+  const navigate = useNavigate();
 
   /* =====================
      SEND OTP
@@ -30,7 +33,7 @@ export default function ResetPassword() {
       setOtpSent(true);
     } catch (err) {
       toast.error(err.response?.data?.msg || "Error sending OTP");
-    hookup;
+      hookup;
     } finally {
       setLoadingSend(false);
     }
@@ -40,17 +43,6 @@ export default function ResetPassword() {
      VERIFY OTP & RESET PASSWORD
   ===================== */
   const handleResetPassword = async () => {
-    if (otp.length !== 6)
-      return toast.error("Enter 6-digit OTP");
-
-    if (password.length < 6)
-      return toast.error("Password must be at least 6 characters");
-
-    if (password !== confirmPassword)
-      return toast.error("Passwords do not match");
-
-    setLoadingReset(true);
-
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_AUTH_URL}/verify-otp`,
@@ -63,21 +55,32 @@ export default function ResetPassword() {
       );
 
       toast.success(res.data.msg || "Password updated");
+
+      // ⏳ wait 3 sec → redirect
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+
     } catch (err) {
       toast.error(err.response?.data?.msg || "Reset failed");
-    } finally {
-      setLoadingReset(false);
     }
+
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b1c22] via-[#0f2027] to-[#13232a] p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center flex-col justify-center bg-gradient-to-br from-[#0b1c22] via-[#0f2027] to-[#13232a] p-4 relative overflow-hidden">
       <Toaster position="top-right" />
 
       {/* Glow */}
       <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
 
+      <div className="text-center mb-6">
+        <img src={import.meta.env.VITE_API_LOGO} alt="logo" className="w-14 mx-auto mb-2" />
+        <h2 className="text-2xl font-bold text-white">
+          {import.meta.env.VITE_API_COMPANY_NAME}
+        </h2>
+      </div>
       <div className="relative z-10 w-[400px] bg-[#0f1f26]/90 backdrop-blur-xl p-8 rounded-3xl shadow-[0_0_60px_rgba(0,200,255,0.15)]">
         <h2 className="text-2xl font-bold text-center text-white mb-2">
           Reset Password
@@ -102,11 +105,20 @@ export default function ResetPassword() {
           />
 
           <button
-            disabled={loadingSend}
-            className="w-full bg-cyan-400 hover:bg-cyan-300 text-[#062028] py-3 rounded-xl font-semibold transition"
+            disabled={loadingSend || otpSent}
+            className={`w-full py-3 rounded-xl font-semibold transition
+    ${otpSent
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-cyan-400 hover:bg-cyan-300 text-[#062028]"}
+  `}
           >
-            {loadingSend ? "Sending OTP..." : "Send OTP"}
+            {otpSent
+              ? "OTP Sent"
+              : loadingSend
+                ? "Sending OTP..."
+                : "Send OTP"}
           </button>
+
         </form>
 
         {/* OTP + PASSWORD */}

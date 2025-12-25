@@ -58,7 +58,7 @@ export default function Signup() {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_AUTH_URL}/verify-otp`,
-        { email: form.email, otp }
+        { email: form.email, otp, purpose: "VERIFY_EMAIL" }
       );
       toast.success(res.data.msg || "Account created");
       navigate("/login", { state: { from } });
@@ -106,9 +106,9 @@ export default function Signup() {
       <div className="relative z-10 w-[420px] bg-[#0f1f26]/90 backdrop-blur-xl p-8 rounded-3xl shadow-[0_0_60px_rgba(0,200,255,0.15)]">
         {/* LOGO */}
         <div className="text-center mb-6">
-          <img src="/logo.png" alt="logo" className="w-14 mx-auto mb-2" />
+          <img src={import.meta.env.VITE_API_LOGO} alt="logo" className="w-14 mx-auto mb-2" />
           <h2 className="text-2xl font-bold text-white">
-            YourCompany
+            {import.meta.env.VITE_API_COMPANY_NAME}
           </h2>
           <p className="text-gray-400 text-sm">
             Create your account
