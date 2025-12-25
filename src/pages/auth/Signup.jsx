@@ -7,7 +7,6 @@ export default function Signup() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔁 original page (About, Product, etc.)
   const from = location.state?.from || "/";
 
   const [form, setForm] = useState({
@@ -24,15 +23,10 @@ export default function Signup() {
   const [loadingSignup, setLoadingSignup] = useState(false);
   const [loadingOtp, setLoadingOtp] = useState(false);
 
-  /* =====================
-     HANDLE INPUT CHANGE
-  ===================== */
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setForm((prev) => ({ ...prev, [name]: value }));
 
-    // 🔁 If email changes → reset OTP state
     if (name === "email") {
       setOtpSent(false);
       setOtp("");
@@ -40,9 +34,6 @@ export default function Signup() {
     }
   };
 
-  /* =====================
-     SIGNUP → SEND OTP
-  ===================== */
   const signup = async () => {
     setLoadingSignup(true);
     try {
@@ -50,7 +41,6 @@ export default function Signup() {
         `${import.meta.env.VITE_API_AUTH_URL}/signup`,
         form
       );
-
       toast.success(res.data.msg || "OTP sent to email");
       setOtpSent(true);
       startTimer();
@@ -61,27 +51,16 @@ export default function Signup() {
     }
   };
 
-  /* =====================
-     VERIFY OTP
-  ===================== */
   const verifyOtp = async () => {
-    if (otp.length !== 6) {
-      return toast.error("Enter 6-digit OTP");
-    }
+    if (otp.length !== 6) return toast.error("Enter 6-digit OTP");
 
     setLoadingOtp(true);
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_AUTH_URL}/verify-otp`,
-        {
-          email: form.email,
-          otp,
-        }
+        { email: form.email, otp }
       );
-
       toast.success(res.data.msg || "Account created");
-
-      // ✅ Go to login with SAME from
       navigate("/login", { state: { from } });
     } catch (err) {
       toast.error(err.response?.data?.msg || "OTP verification failed");
@@ -90,16 +69,12 @@ export default function Signup() {
     }
   };
 
-  /* =====================
-     RESEND OTP
-  ===================== */
   const resendOtp = async () => {
     try {
       await axios.post(
         `${import.meta.env.VITE_API_AUTH_URL}/resend-otp`,
         { email: form.email }
       );
-
       toast.success("OTP resent");
       startTimer();
     } catch {
@@ -107,9 +82,6 @@ export default function Signup() {
     }
   };
 
-  /* =====================
-     OTP TIMER
-  ===================== */
   const startTimer = () => {
     setTimer(60);
     const interval = setInterval(() => {
@@ -124,21 +96,21 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-700">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b1c22] via-[#0f2027] to-[#13232a] p-4 relative overflow-hidden">
       <Toaster position="top-right" />
 
-      <div className="bg-white w-[420px] p-8 rounded-2xl shadow-xl">
-        {/* LOGO + COMPANY */}
+      {/* Glow */}
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+
+      <div className="relative z-10 w-[420px] bg-[#0f1f26]/90 backdrop-blur-xl p-8 rounded-3xl shadow-[0_0_60px_rgba(0,200,255,0.15)]">
+        {/* LOGO */}
         <div className="text-center mb-6">
-          <img
-            src="/logo.png"
-            alt="logo"
-            className="w-14 mx-auto mb-2"
-          />
-          <h2 className="text-2xl font-bold text-indigo-600">
+          <img src="/logo.png" alt="logo" className="w-14 mx-auto mb-2" />
+          <h2 className="text-2xl font-bold text-white">
             YourCompany
           </h2>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-400 text-sm">
             Create your account
           </p>
         </div>
@@ -148,56 +120,56 @@ export default function Signup() {
           <input
             name="name"
             placeholder="Full Name"
-            className="input"
             onChange={handleChange}
+            className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
           />
 
           <input
             name="email"
             placeholder="Email"
-            className="input"
             onChange={handleChange}
+            className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
           />
 
           <input
             type="password"
             name="password"
             placeholder="Password"
-            className="input"
             onChange={handleChange}
+            className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
           />
 
           <input
             name="mobile"
             placeholder="Mobile (optional)"
-            className="input"
             onChange={handleChange}
+            className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
           />
 
           <button
             onClick={signup}
             disabled={loadingSignup}
-            className="btn-primary"
+            className="w-full bg-cyan-400 hover:bg-cyan-300 text-[#062028] py-3 rounded-xl font-semibold transition"
           >
             {loadingSignup ? "Sending OTP..." : "Signup"}
           </button>
         </div>
 
-        {/* OTP SECTION (BELOW SIGNUP) */}
+        {/* OTP SECTION */}
         {otpSent && (
-          <div className="mt-6 border-t pt-4 space-y-4">
+          <div className="mt-6 border-t border-[#1f3a44] pt-4 space-y-4">
             <input
               maxLength="6"
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="input text-center tracking-widest"
+              className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-center tracking-widest text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
             />
 
             <button
               onClick={verifyOtp}
               disabled={loadingOtp}
-              className="btn-primary"
+              className="w-full bg-cyan-400 hover:bg-cyan-300 text-[#062028] py-3 rounded-xl font-semibold transition"
             >
               {loadingOtp ? "Verifying..." : "Verify OTP"}
             </button>
@@ -210,7 +182,7 @@ export default function Signup() {
               ) : (
                 <button
                   onClick={resendOtp}
-                  className="text-indigo-600 font-semibold"
+                  className="text-cyan-400 font-semibold"
                 >
                   Resend OTP
                 </button>
@@ -219,14 +191,12 @@ export default function Signup() {
           </div>
         )}
 
-        {/* NAVIGATION TO LOGIN */}
-        <p className="text-center text-sm mt-6">
+        {/* LOGIN LINK */}
+        <p className="text-center text-sm mt-6 text-gray-400">
           Already have an account?{" "}
           <span
-            onClick={() =>
-              navigate("/login", { state: { from } })
-            }
-            className="text-indigo-600 font-semibold cursor-pointer"
+            onClick={() => navigate("/login", { state: { from } })}
+            className="text-cyan-400 font-semibold cursor-pointer hover:underline"
           >
             Login
           </span>
