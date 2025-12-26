@@ -3,12 +3,15 @@ import { Mail, Lock, LogIn } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAuth } from "../../auth/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isFocused, setIsFocused] = useState({ email: false, password: false });
   const [message, setMessage] = useState("");
+  const { login } = useAuth();
+  
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,7 +36,8 @@ export default function Login() {
     );
 
     toast.success(res.data.msg || "Login successful");
-
+      
+    login(res.data.user); // Update auth context
     // Redirect back to where user came from
     navigate(from, { replace: true });
 

@@ -3,8 +3,8 @@ import AppRoutes from "./routes/AppRoutes";
 
 export default function App() {
   return (
-    // <AuthProvider>
+    <AuthProvider>
       <AppRoutes />
-    // </AuthProvider>
+     </AuthProvider>
   );
 }
