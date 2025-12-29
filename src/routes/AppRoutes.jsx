@@ -10,12 +10,16 @@ import Signup from "../pages/auth/Signup";
 import Home from "../pages/Home";
 import ResetPassword from "../pages/auth/ResetPassword";
 import Navbar from "../components/Navbar";
+import Profile from "../pages/Profile";
+import Users from "../pages/user/Users";
+import CreateUser from "../pages/user/CreateUser";
+import CreateProduct from "../pages/user/CreateProduct";
 
 export default function AppRoutes() {
   return (
     <>
       <Navbar />
-      <div className="pt-20">
+      {/* <div className="pt-20"> */}
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -26,30 +30,38 @@ export default function AppRoutes() {
           <Route path="/login" element={<Login />} />
 
           <Route path="/products" element={
-            <ProtectedRoute><Products /></ProtectedRoute>
+            <Products />
           } />
 
           <Route path="/products/:id" element={
-            <ProtectedRoute><ProductDetails /></ProtectedRoute>
+            <ProductDetails />
           } />
 
-          <Route path="/admin/*" element={
-            <ProtectedRoute>
-              <RoleGuard allowedRoles={["ADMIN"]}>
-                <DashboardLayout />
-              </RoleGuard>
-            </ProtectedRoute>
-          } />
+          {/* DASHBOARD */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <RoleGuard allowedRoles={["ADMIN", "OWNER"]}>
+                  <DashboardLayout />
+                </RoleGuard>
+              </ProtectedRoute>
+            }
+          >
+            {/* DEFAULT */}
+            <Route index element={<Profile />} />
 
-          <Route path="/superadmin/*" element={
-            <ProtectedRoute>
-              <RoleGuard allowedRoles={["SUPERADMIN"]}>
-                <DashboardLayout />
-              </RoleGuard>
-            </ProtectedRoute>
-          } />
+            {/* USERS */}
+            <Route path="users" element={<Users />} />
+            <Route path="users/create" element={<CreateUser />} />
+
+            <Route path="products" element={<Products />} />
+            <Route path="products/create" element={<CreateProduct />} />
+             {/*<Route path="products/edit/:id" element={<EditProduct />} /> */}
+          </Route>
+
         </Routes>
-      </div>
+      {/* </div> */}
     </>
   );
 }
