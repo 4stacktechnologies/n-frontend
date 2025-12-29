@@ -14,12 +14,13 @@ import Profile from "../pages/Profile";
 import Users from "../pages/user/Users";
 import CreateUser from "../pages/user/CreateUser";
 import CreateProduct from "../pages/user/CreateProduct";
+import EditProduct from "../pages/user/EditProducts";
 
 export default function AppRoutes() {
   return (
     <>
       <Navbar />
-      {/* <div className="pt-20"> */}
+      <div className="pt-20">
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -57,11 +58,11 @@ export default function AppRoutes() {
 
             <Route path="products" element={<Products />} />
             <Route path="products/create" element={<CreateProduct />} />
-             {/*<Route path="products/edit/:id" element={<EditProduct />} /> */}
+             <Route path="products/edit/:id" element={<EditProduct />} />
           </Route>
 
         </Routes>
-      {/* </div> */}
+      </div>
     </>
   );
 }
