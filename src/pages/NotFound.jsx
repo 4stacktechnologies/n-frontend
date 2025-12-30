@@ -1,13 +1,57 @@
 import { Link } from "react-router-dom";
-import { AlertTriangle, Home } from "lucide-react";
+import { Home } from "lucide-react";
 
 export default function NotFound() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 px-6">
       <div className="text-center max-w-md">
-        {/* ICON */}
+
+        {/* COMPUTER NOT FOUND IMAGE (INLINE SVG) */}
         <div className="flex justify-center mb-6">
-          <AlertTriangle size={64} className="text-red-500" />
+          <svg
+            width="260"
+            height="160"
+            viewBox="0 0 260 160"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="opacity-80"
+          >
+            {/* Screen */}
+            <rect
+              x="30"
+              y="10"
+              width="200"
+              height="110"
+              rx="10"
+              stroke="#9CA3AF"
+              strokeWidth="4"
+            />
+
+            {/* Eyes (X X) */}
+            <line x1="90" y1="45" x2="110" y2="65" stroke="#9CA3AF" strokeWidth="4" />
+            <line x1="110" y1="45" x2="90" y2="65" stroke="#9CA3AF" strokeWidth="4" />
+
+            <line x1="150" y1="45" x2="170" y2="65" stroke="#9CA3AF" strokeWidth="4" />
+            <line x1="170" y1="45" x2="150" y2="65" stroke="#9CA3AF" strokeWidth="4" />
+
+            {/* Sad mouth */}
+            <path
+              d="M110 80 Q130 90 150 80"
+              stroke="#9CA3AF"
+              strokeWidth="4"
+              fill="none"
+            />
+
+            {/* Base */}
+            <rect
+              x="10"
+              y="125"
+              width="240"
+              height="15"
+              rx="6"
+              fill="#9CA3AF"
+            />
+          </svg>
         </div>
 
         {/* TITLE */}
