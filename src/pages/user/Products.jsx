@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -11,13 +12,20 @@ export default function Products() {
      FETCH PRODUCTS
   ====================== */
   const fetchProducts = async () => {
+    const toastId = toast.loading("Loading products...");
     try {
       setLoading(true);
-      const res = await axios.get(import.meta.env.VITE_API_PRODUCT); // change API if needed
-      console.log("Fetched products:", res.data.data);
-      setProducts(res.data.data);
+      const res = await axios.get(import.meta.env.VITE_API_PRODUCT, {
+        withCredentials: true,
+      });
+
+      setProducts(res.data.data || []);
+      toast.success("Products loaded", { id: toastId });
     } catch (err) {
-      console.error("Failed to load products");
+      toast.error(
+        err.response?.data?.msg || "Failed to load products",
+        { id: toastId }
+      );
     } finally {
       setLoading(false);
     }
@@ -29,11 +37,19 @@ export default function Products() {
   const deleteProduct = async (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
+    const toastId = toast.loading("Deleting product...");
     try {
-      await axios.delete(`${import.meta.env.VITE_API_PRODUCT}/${id}`);
-      setProducts(prev => prev.filter(p => p._id !== id));
+      await axios.delete(`${import.meta.env.VITE_API_PRODUCT}/${id}`, {
+        withCredentials: true,
+      });
+
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+      toast.success("Product deleted successfully", { id: toastId });
     } catch (err) {
-      console.error("Delete failed");
+      toast.error(
+        err.response?.data?.msg || "Delete failed",
+        { id: toastId }
+      );
     }
   };
 
@@ -86,13 +102,14 @@ export default function Products() {
               </tr>
             )}
 
-            {products.map(product => (
+            {products.map((product) => (
               <tr key={product._id} className="border-t border-slate-800">
                 <td className="p-3 text-white">{product.title}</td>
                 <td className="p-3 text-slate-300">{product.category}</td>
-                <td className="p-3 text-slate-300">₹{product.sellingPrice}</td>
+                <td className="p-3 text-slate-300">
+                  ₹{product.sellingPrice}
+                </td>
                 <td className="p-3 text-slate-300">{product.condition}</td>
-
 
                 <td className="p-3 text-center flex justify-center gap-3">
                   <Link

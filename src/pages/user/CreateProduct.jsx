@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
+import toast from "react-hot-toast";
+
 
 const COLORS = [
   { name: 'Black', hex: '#000000' },
@@ -228,78 +230,87 @@ export default function CreateProduct() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Mark all fields as touched
-    const allTouched = {};
-    Object.keys(formData).forEach(key => {
-      allTouched[key] = true;
-    });
-    setTouched(allTouched);
+  e.preventDefault();
 
-    // Validate all fields
-    const isValid = validateAllFields();
+  // Mark all fields as touched
+  const allTouched = {};
+  Object.keys(formData).forEach((key) => {
+    allTouched[key] = true;
+  });
+  setTouched(allTouched);
 
-    if (!isValid) {
-      alert('Please fix all validation errors before submitting');
-      return;
-    }
+  // Validate all fields
+  const isValid = validateAllFields();
 
-    // Prepare data for backend
-    const dataToSend = {
-      title: formData.title.trim(),
-      description: formData.description.trim(),
-      category: formData.category,
-      brand: formData.brand,
-      model: formData.model.trim(),
-      
-      condition: formData.condition,
-      usageDuration: formData.condition === 'USED' ? formData.usageDuration.trim() : null,
-      physicalCondition: formData.condition === 'USED' ? formData.physicalCondition : null,
-      isRefurbished: formData.condition === 'USED' ? formData.isRefurbished : false,
-      
-      ram: formData.ram.trim() || null,
-      rom: formData.rom.trim() || null,
-      color: formData.color || null,
-      processor: {
-        model: formData.processorModel.trim() || null,
-        generation: formData.processorGeneration.trim() || null,
-        company: formData.processorCompany.trim() || null
-      },
-      
-      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
-      sellingPrice: parseFloat(formData.sellingPrice),
-      negotiable: formData.negotiable,
-      
-      warrantyAvailable: formData.warrantyAvailable,
-      warrantyPeriod: formData.warrantyAvailable ? formData.warrantyPeriod.trim() : null,
-      
-      images: formData.images,
-      status: 'AVAILABLE'
-    };
+  if (!isValid) {
+    toast.error("Please fix all validation errors before submitting");
+    return;
+  }
 
-    console.log('Data to send to backend:', dataToSend);
+  const dataToSend = {
+    title: formData.title.trim(),
+    description: formData.description.trim(),
+    category: formData.category,
+    brand: formData.brand,
+    model: formData.model.trim(),
 
-    try {
-      // Replace with your actual API endpoint
-      const response = await axios.post(import.meta.env.VITE_API_PRODUCT, dataToSend, {
-        withCredentials: true
-      });
+    condition: formData.condition,
+    usageDuration:
+      formData.condition === "USED" ? formData.usageDuration.trim() : null,
+    physicalCondition:
+      formData.condition === "USED" ? formData.physicalCondition : null,
+    isRefurbished:
+      formData.condition === "USED" ? formData.isRefurbished : false,
 
-      if (response.ok) {
-        const result = await response.json();
-        alert('Product created successfully!');
-        console.log('Response:', result);
-        // Reset form or redirect
-      } else {
-        const error = await response.json();
-        alert(`Error: ${error.message || 'Failed to create product'}`);
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Network error. Please try again.');
-    }
+    ram: formData.ram.trim() || null,
+    rom: formData.rom.trim() || null,
+    color: formData.color || null,
+    processor: {
+      model: formData.processorModel.trim() || null,
+      generation: formData.processorGeneration.trim() || null,
+      company: formData.processorCompany.trim() || null,
+    },
+
+    originalPrice: formData.originalPrice
+      ? parseFloat(formData.originalPrice)
+      : null,
+    sellingPrice: parseFloat(formData.sellingPrice),
+    negotiable: formData.negotiable,
+
+    warrantyAvailable: formData.warrantyAvailable,
+    warrantyPeriod: formData.warrantyAvailable
+      ? formData.warrantyPeriod.trim()
+      : null,
+
+    images: formData.images,
+    status: "AVAILABLE",
   };
+
+  const toastId = toast.loading("Creating product...");
+
+  try {
+    const res = await axios.post(
+      import.meta.env.VITE_API_PRODUCT,
+      dataToSend,
+      { withCredentials: true }
+    );
+
+    toast.success("Product created successfully!", { id: toastId });
+
+    console.log("Response:", res.data);
+
+    // Optional: reset form or navigate
+    // navigate("/dashboard/products");
+
+  } catch (error) {
+    toast.error(
+      error.response?.data?.msg || "Failed to create product",
+      { id: toastId }
+    );
+    console.error("Error submitting form:", error);
+  }
+};
+
 
   const progress = calculateProgress();
 
