@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, CheckCircle } from 'lucide-react';
+import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, CheckCircle, Monitor, Code } from 'lucide-react';
 import axios from 'axios';
 import toast from "react-hot-toast";
 
@@ -38,10 +38,31 @@ export default function CreateProduct() {
     // Hardware
     ram: '',
     rom: '',
+    processor: {
+      company: '',
+      model: '',
+      generation: ''
+    },
+    graphics: '',
+    
+    // Display
+    display: {
+      size: '',
+      resolution: '',
+      panel: '',
+      refreshRate: ''
+    },
+    
+    // Software
+    operatingSystem: '',
+    preInstalledSoftware: [],
+    
+    // Build & Design
     color: '',
-    processorModel: '',
-    processorGeneration: '',
-    processorCompany: '',
+    keyboard: {
+      backlit: false,
+      layout: ''
+    },
     
     // Pricing
     originalPrice: '',
@@ -52,7 +73,7 @@ export default function CreateProduct() {
     warrantyAvailable: false,
     warrantyPeriod: '',
     
-    // Images (placeholder)
+    // Images
     images: []
   });
 
@@ -60,9 +81,20 @@ export default function CreateProduct() {
   const [touched, setTouched] = useState({});
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    // Handle nested objects
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
     
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -70,11 +102,14 @@ export default function CreateProduct() {
 
   const handleBlur = (field) => {
     setTouched(prev => ({ ...prev, [field]: true }));
-    validateField(field, formData[field]);
+    validateField(field);
   };
 
-  const validateField = (field, value) => {
+  const validateField = (field) => {
     let error = '';
+    const value = field.includes('.') 
+      ? formData[field.split('.')[0]][field.split('.')[1]]
+      : formData[field];
 
     switch (field) {
       case 'title':
@@ -117,7 +152,6 @@ export default function CreateProduct() {
         if (value && (isNaN(value) || parseFloat(value) <= 0)) {
           error = 'Original price must be greater than 0';
         }
-        // Re-validate selling price if original price changes
         if (value && formData.sellingPrice && parseFloat(formData.sellingPrice) > parseFloat(value)) {
           setErrors(prev => ({ ...prev, sellingPrice: 'Selling price must be less than or equal to original price' }));
         } else if (value && formData.sellingPrice && parseFloat(formData.sellingPrice) <= parseFloat(value)) {
@@ -163,36 +197,33 @@ export default function CreateProduct() {
   const validateAllFields = () => {
     const newErrors = {};
     
-    // Required fields
     const requiredFields = ['title', 'category', 'brand', 'model', 'sellingPrice'];
     
     requiredFields.forEach(field => {
-      const error = validateField(field, formData[field]);
+      const error = validateField(field);
       if (error) newErrors[field] = error;
     });
 
-    // Conditional validations
     if (formData.condition === 'USED') {
-      const usageDurationError = validateField('usageDuration', formData.usageDuration);
+      const usageDurationError = validateField('usageDuration');
       if (usageDurationError) newErrors.usageDuration = usageDurationError;
       
-      const physicalConditionError = validateField('physicalCondition', formData.physicalCondition);
+      const physicalConditionError = validateField('physicalCondition');
       if (physicalConditionError) newErrors.physicalCondition = physicalConditionError;
     }
 
     if (formData.warrantyAvailable) {
-      const warrantyError = validateField('warrantyPeriod', formData.warrantyPeriod);
+      const warrantyError = validateField('warrantyPeriod');
       if (warrantyError) newErrors.warrantyPeriod = warrantyError;
     }
 
-    // Validate format fields if filled
     if (formData.ram) {
-      const ramError = validateField('ram', formData.ram);
+      const ramError = validateField('ram');
       if (ramError) newErrors.ram = ramError;
     }
 
     if (formData.rom) {
-      const romError = validateField('rom', formData.rom);
+      const romError = validateField('rom');
       if (romError) newErrors.rom = romError;
     }
 
@@ -204,7 +235,9 @@ export default function CreateProduct() {
     const allFields = [
       'title', 'description', 'category', 'brand', 'model',
       'condition', 'ram', 'rom', 'color',
-      'processorModel', 'processorGeneration', 'processorCompany',
+      'processor.company', 'processor.model', 'processor.generation',
+      'graphics', 'display.size', 'display.resolution', 'display.panel', 'display.refreshRate',
+      'operatingSystem', 'keyboard.layout',
       'originalPrice', 'sellingPrice'
     ];
 
@@ -218,7 +251,9 @@ export default function CreateProduct() {
 
     const totalFields = [...allFields, ...conditionalFields];
     const filledFields = totalFields.filter(field => {
-      const value = formData[field];
+      const value = field.includes('.') 
+        ? formData[field.split('.')[0]][field.split('.')[1]]
+        : formData[field];
       return value !== '' && value !== null && value !== undefined;
     });
 
@@ -230,87 +265,88 @@ export default function CreateProduct() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // Mark all fields as touched
-  const allTouched = {};
-  Object.keys(formData).forEach((key) => {
-    allTouched[key] = true;
-  });
-  setTouched(allTouched);
+    const allTouched = {};
+    Object.keys(formData).forEach((key) => {
+      allTouched[key] = true;
+    });
+    setTouched(allTouched);
 
-  // Validate all fields
-  const isValid = validateAllFields();
+    const isValid = validateAllFields();
 
-  if (!isValid) {
-    toast.error("Please fix all validation errors before submitting");
-    return;
-  }
+    if (!isValid) {
+      alert("Please fix all validation errors before submitting");
+      return;
+    }
 
-  const dataToSend = {
-    title: formData.title.trim(),
-    description: formData.description.trim(),
-    category: formData.category,
-    brand: formData.brand,
-    model: formData.model.trim(),
+    const dataToSend = {
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      category: formData.category,
+      brand: formData.brand,
+      model: formData.model.trim(),
 
-    condition: formData.condition,
-    usageDuration:
-      formData.condition === "USED" ? formData.usageDuration.trim() : null,
-    physicalCondition:
-      formData.condition === "USED" ? formData.physicalCondition : null,
-    isRefurbished:
-      formData.condition === "USED" ? formData.isRefurbished : false,
+      condition: formData.condition,
+      usageDuration: formData.condition === "USED" ? formData.usageDuration.trim() : null,
+      physicalCondition: formData.condition === "USED" ? formData.physicalCondition : null,
+      isRefurbished: formData.condition === "USED" ? formData.isRefurbished : false,
 
-    ram: formData.ram.trim() || null,
-    rom: formData.rom.trim() || null,
-    color: formData.color || null,
-    processor: {
-      model: formData.processorModel.trim() || null,
-      generation: formData.processorGeneration.trim() || null,
-      company: formData.processorCompany.trim() || null,
-    },
+      ram: formData.ram.trim() || null,
+      rom: formData.rom.trim() || null,
+      color: formData.color || null,
+      
+      processor: {
+        company: formData.processor.company.trim() || null,
+        model: formData.processor.model.trim() || null,
+        generation: formData.processor.generation.trim() || null,
+      },
+      
+      graphics: formData.graphics.trim() || null,
 
-    originalPrice: formData.originalPrice
-      ? parseFloat(formData.originalPrice)
-      : null,
-    sellingPrice: parseFloat(formData.sellingPrice),
-    negotiable: formData.negotiable,
+      display: {
+        size: formData.display.size.trim() || null,
+        resolution: formData.display.resolution.trim() || null,
+        panel: formData.display.panel.trim() || null,
+        refreshRate: formData.display.refreshRate.trim() || null,
+      },
 
-    warrantyAvailable: formData.warrantyAvailable,
-    warrantyPeriod: formData.warrantyAvailable
-      ? formData.warrantyPeriod.trim()
-      : null,
+      operatingSystem: formData.operatingSystem.trim() || null,
+      preInstalledSoftware: formData.preInstalledSoftware,
 
-    images: formData.images,
-    status: "AVAILABLE",
+      keyboard: {
+        backlit: formData.keyboard.backlit,
+        layout: formData.keyboard.layout.trim() || null,
+      },
+
+      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
+      sellingPrice: parseFloat(formData.sellingPrice),
+      negotiable: formData.negotiable,
+
+      warrantyAvailable: formData.warrantyAvailable,
+      warrantyPeriod: formData.warrantyAvailable ? formData.warrantyPeriod.trim() : null,
+
+      images: formData.images,
+      status: "AVAILABLE",
+    };
+
+    console.log("Submitting data:", dataToSend);
+
+    try {
+      const res = await axios.post(
+        import.meta.env.VITE_API_PRODUCT || '/api/products',
+        dataToSend,
+        { withCredentials: true }
+      );
+
+      alert("Product created successfully!");
+      console.log("Response:", res.data);
+
+    } catch (error) {
+      alert(error.response?.data?.msg || "Failed to create product");
+      console.error("Error submitting form:", error);
+    }
   };
-
-  const toastId = toast.loading("Creating product...");
-
-  try {
-    const res = await axios.post(
-      import.meta.env.VITE_API_PRODUCT,
-      dataToSend,
-      { withCredentials: true }
-    );
-
-    toast.success("Product created successfully!", { id: toastId });
-
-    console.log("Response:", res.data);
-
-    // Optional: reset form or navigate
-    // navigate("/dashboard/products");
-
-  } catch (error) {
-    toast.error(
-      error.response?.data?.msg || "Failed to create product",
-      { id: toastId }
-    );
-    console.error("Error submitting form:", error);
-  }
-};
-
 
   const progress = calculateProgress();
 
@@ -327,7 +363,6 @@ export default function CreateProduct() {
               <h1 className="text-3xl font-bold text-white">Create Product</h1>
             </div>
             
-            {/* Progress Indicator */}
             <div className="bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
@@ -348,30 +383,8 @@ export default function CreateProduct() {
           <p className="text-slate-400">Add new or second-hand product to your inventory</p>
         </div>
 
-        {/* Extract Section */}
-        <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-6 mb-8 backdrop-blur-sm">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-blue-400" />
-            </div>
-            <h2 className="font-semibold text-white">AI Extract Details</h2>
-            <span className="ml-auto text-xs bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">Beta</span>
-          </div>
-          <textarea
-            className="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none transition-all"
-            rows={3}
-            placeholder="Paste WhatsApp message, invoice, or product details here..."
-          />
-          <button 
-            onClick={(e) => e.preventDefault()}
-            className="mt-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 px-6 py-2.5 rounded-xl text-white font-medium transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40"
-          >
-            Extract Details
-          </button>
-        </div>
-
         {/* Form */}
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <Section icon={Package} title="Basic Information" badge="Required">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -545,22 +558,134 @@ export default function CreateProduct() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input 
+                label="Processor Company" 
+                placeholder="e.g., Intel, AMD, Apple"
+                value={formData.processor.company}
+                onChange={(e) => handleChange('processor.company', e.target.value)}
+              />
+              <Input 
                 label="Processor Model" 
-                placeholder="e.g., A16 Bionic"
-                value={formData.processorModel}
-                onChange={(e) => handleChange('processorModel', e.target.value)}
+                placeholder="e.g., Core i5 120U, A16 Bionic"
+                value={formData.processor.model}
+                onChange={(e) => handleChange('processor.model', e.target.value)}
               />
               <Input 
                 label="Processor Generation" 
-                placeholder="e.g., 12th Gen"
-                value={formData.processorGeneration}
-                onChange={(e) => handleChange('processorGeneration', e.target.value)}
+                placeholder="e.g., 12th Gen, M2"
+                value={formData.processor.generation}
+                onChange={(e) => handleChange('processor.generation', e.target.value)}
+              />
+            </div>
+
+            <Input 
+              label="Graphics" 
+              placeholder="e.g., Integrated, RTX 3050, M1 GPU"
+              value={formData.graphics}
+              onChange={(e) => handleChange('graphics', e.target.value)}
+            />
+          </Section>
+
+          {/* Display Specifications */}
+          <Section icon={Monitor} title="Display Specifications">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input 
+                label="Display Size" 
+                placeholder="e.g., 15.6 inch, 13.3 inch"
+                value={formData.display.size}
+                onChange={(e) => handleChange('display.size', e.target.value)}
               />
               <Input 
-                label="Processor Company" 
-                placeholder="e.g., Apple, Intel"
-                value={formData.processorCompany}
-                onChange={(e) => handleChange('processorCompany', e.target.value)}
+                label="Resolution" 
+                placeholder="e.g., FHD (1920x1080), QHD"
+                value={formData.display.resolution}
+                onChange={(e) => handleChange('display.resolution', e.target.value)}
+              />
+              <Input 
+                label="Panel Type" 
+                placeholder="e.g., IPS, OLED, AMOLED"
+                value={formData.display.panel}
+                onChange={(e) => handleChange('display.panel', e.target.value)}
+              />
+              <Input 
+                label="Refresh Rate" 
+                placeholder="e.g., 60Hz, 120Hz, 144Hz"
+                value={formData.display.refreshRate}
+                onChange={(e) => handleChange('display.refreshRate', e.target.value)}
+              />
+            </div>
+          </Section>
+
+          {/* Software & OS */}
+          <Section icon={Code} title="Software & Operating System">
+            <Input 
+              label="Operating System" 
+              placeholder="e.g., Windows 11, macOS Sonoma, Android 14"
+              value={formData.operatingSystem}
+              onChange={(e) => handleChange('operatingSystem', e.target.value)}
+            />
+            
+            <div>
+              <label className="text-sm font-medium text-slate-300 mb-2 block">
+                Pre-installed Software
+              </label>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="e.g., MS Office 2024, Adobe Photoshop (Press Enter to add)"
+                  className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-cyan-400 focus:border-transparent outline-none transition-all"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                      e.preventDefault();
+                      handleChange('preInstalledSoftware', [...formData.preInstalledSoftware, e.target.value.trim()]);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+                <p className="text-xs text-slate-400">Press Enter to add software</p>
+                
+                {formData.preInstalledSoftware.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {formData.preInstalledSoftware.map((software, index) => (
+                      <span
+                        key={index}
+                        className="bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 px-3 py-1 rounded-lg text-sm flex items-center gap-2"
+                      >
+                        {software}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = formData.preInstalledSoftware.filter((_, i) => i !== index);
+                            handleChange('preInstalledSoftware', updated);
+                          }}
+                          className="hover:text-red-400 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </Section>
+
+          {/* Build & Design */}
+          <Section icon={Tag} title="Build & Design">
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-300 mb-3 block">Keyboard Features</label>
+                <Checkbox
+                  label="Backlit Keyboard"
+                  checked={formData.keyboard.backlit}
+                  onChange={(e) => handleChange('keyboard.backlit', e.target.checked)}
+                />
+              </div>
+              
+              <Input 
+                label="Keyboard Layout" 
+                placeholder="e.g., QWERTY, US International"
+                value={formData.keyboard.layout}
+                onChange={(e) => handleChange('keyboard.layout', e.target.value)}
               />
             </div>
           </Section>
@@ -639,16 +764,15 @@ export default function CreateProduct() {
               Save as Draft
             </button>
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               className="px-8 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold transition-all shadow-lg shadow-green-500/20 hover:shadow-green-500/40"
             >
               Create Product
             </button>
           </div>
-        </div>
+        </form>
       </div>
-    </div>
+    </div>    
   );
 }
 

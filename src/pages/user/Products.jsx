@@ -73,14 +73,20 @@ export default function Products() {
       </div>
 
       {/* CONTENT */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-slate-800 text-slate-300">
             <tr>
               <th className="p-3 text-left">Title</th>
+              <th className="p-3 text-left">Brand</th>
+              <th className="p-3 text-left">Model</th>
               <th className="p-3 text-left">Category</th>
               <th className="p-3 text-left">Price</th>
               <th className="p-3 text-left">Condition</th>
+              <th className="p-3 text-left">Warranty</th>
+              <th className="p-3 text-left">Status</th>
+              <th className="p-3 text-left">Approved</th>
+              <th className="p-3 text-left">Created</th>
               <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
@@ -88,7 +94,7 @@ export default function Products() {
           <tbody>
             {loading && (
               <tr>
-                <td colSpan="5" className="p-4 text-center text-slate-400">
+                <td colSpan="11" className="p-4 text-center text-slate-400">
                   Loading...
                 </td>
               </tr>
@@ -96,7 +102,7 @@ export default function Products() {
 
             {!loading && products.length === 0 && (
               <tr>
-                <td colSpan="5" className="p-4 text-center text-slate-400">
+                <td colSpan="11" className="p-4 text-center text-slate-400">
                   No products found
                 </td>
               </tr>
@@ -104,12 +110,67 @@ export default function Products() {
 
             {products.map((product) => (
               <tr key={product._id} className="border-t border-slate-800">
-                <td className="p-3 text-white">{product.title}</td>
-                <td className="p-3 text-slate-300">{product.category}</td>
+                <td className="p-3 text-white font-medium">
+                  {product.title}
+                </td>
+
+                <td className="p-3 text-slate-300">
+                  {product.brand || "-"}
+                </td>
+
+                <td className="p-3 text-slate-300">
+                  {product.model || "-"}
+                </td>
+
+                <td className="p-3 text-slate-300">
+                  {product.category}
+                </td>
+
                 <td className="p-3 text-slate-300">
                   ₹{product.sellingPrice}
                 </td>
-                <td className="p-3 text-slate-300">{product.condition}</td>
+
+                <td className="p-3 text-slate-300">
+                  {product.condition}
+                </td>
+
+                <td className="p-3 text-slate-300">
+                  {product.warrantyAvailable
+                    ? product.warrantyPeriod || "Yes"
+                    : "No"}
+                </td>
+
+                <td className="p-3">
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-semibold ${
+                      product.status === "AVAILABLE"
+                        ? "bg-green-500/20 text-green-400"
+                        : product.status === "SOLD"
+                        ? "bg-red-500/20 text-red-400"
+                        : "bg-yellow-500/20 text-yellow-400"
+                    }`}
+                  >
+                    {product.status}
+                  </span>
+                </td>
+
+                <td className="p-3">
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-semibold ${
+                      product.isApproved
+                        ? "bg-cyan-500/20 text-cyan-400"
+                        : "bg-slate-700 text-slate-300"
+                    }`}
+                  >
+                    {product.isApproved ? "Approved" : "Pending"}
+                  </span>
+                </td>
+
+                <td className="p-3 text-slate-400">
+                  {product.createdAt
+                    ? new Date(product.createdAt).toLocaleDateString()
+                    : "-"}
+                </td>
 
                 <td className="p-3 text-center flex justify-center gap-3">
                   <Link
