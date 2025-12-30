@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
+import toast from "react-hot-toast";
 
 const COLORS = [
   { name: 'Black', hex: '#000000' },
