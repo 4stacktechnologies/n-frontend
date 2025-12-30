@@ -17,6 +17,8 @@ import CreateUser from "../pages/user/CreateUser";
 import CreateProduct from "../pages/user/CreateProduct";
 import EditProduct from "../pages/user/EditProducts";
 import NotFound from "../pages/NotFound";
+import Contact from "../pages/Contact";
+import About from "../pages/About";
 
 export default function AppRoutes() {
   return (
@@ -35,6 +37,10 @@ export default function AppRoutes() {
           <Route path="/products" element={
             <Userproducts />
           } />
+          
+          <Route path="/About" element={<About/>} />
+          
+          <Route path="/Contact" element={<Contact/>} />
 
           <Route path="/products/:id" element={
             <ProductDetails />
