@@ -5,6 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 import Login from "../pages/auth/Login";
 import Products from "../pages/user/Products";
+import Userproducts from "../pages/user/Userproducts";
 import ProductDetails from "../pages/user/ProductDetails";
 import Signup from "../pages/auth/Signup";
 import Home from "../pages/Home";
@@ -31,7 +32,7 @@ export default function AppRoutes() {
           <Route path="/login" element={<Login />} />
 
           <Route path="/products" element={
-            <Products />
+            <Userproducts />
           } />
 
           <Route path="/products/:id" element={
