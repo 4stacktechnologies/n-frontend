@@ -91,7 +91,7 @@ const EditProduct = () => {
       } catch (error) {
         console.error('Error fetching product:', error);
         alert('Failed to load product data');
-        navigate('/admin/products');
+        navigate('/dashboard/products');
       }
     };
 
@@ -309,7 +309,7 @@ const EditProduct = () => {
       });
 
       alert('Product updated successfully!');
-      navigate('/admin/products');
+      navigate('/dashboard/products');
     } catch (error) {
       console.error('Error updating product:', error);
       alert(error.response?.data?.message || 'Failed to update product');
@@ -334,7 +334,7 @@ const EditProduct = () => {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => navigate('/admin/products')}
+                onClick={() => navigate('/dashboard/products')}
                 className="w-10 h-10 bg-slate-800 hover:bg-slate-700 rounded-xl flex items-center justify-center transition-all"
               >
                 <ArrowLeft className="w-5 h-5 text-white" />
@@ -629,7 +629,7 @@ const EditProduct = () => {
           <div className="sticky bottom-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 -mx-4 md:-mx-8 px-4 md:px-8 py-4 flex flex-col sm:flex-row gap-3 justify-end">
             <button
               type="button"
-              onClick={() => navigate('/admin/products')}
+              onClick={() => navigate('/dashboard/products')}
               className="px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 transition-all"
             >
               Cancel

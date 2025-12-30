@@ -7,12 +7,10 @@ export default function UserProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API = import.meta.env.VITE_API_PRODUCTS;
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(API);
+        const res = await axios.get(import.meta.env.VITE_API_PRODUCT);
         setProducts(res.data.data || []);
       } catch (err) {
         console.error("Failed to fetch products");

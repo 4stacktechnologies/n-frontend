@@ -30,7 +30,7 @@ export default function Products() {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      await axios.delete(`${import.meta.env.VITE_API_PRODUCTS}/${id}`);
+      await axios.delete(`${import.meta.env.VITE_API_PRODUCT}/${id}`);
       setProducts(prev => prev.filter(p => p._id !== id));
     } catch (err) {
       console.error("Delete failed");
