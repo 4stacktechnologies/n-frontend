@@ -16,6 +16,7 @@ import Users from "../pages/user/Users";
 import CreateUser from "../pages/user/CreateUser";
 import CreateProduct from "../pages/user/CreateProduct";
 import EditProduct from "../pages/user/EditProducts";
+import NotFound from "../pages/NotFound";
 
 export default function AppRoutes() {
   return (
@@ -62,6 +63,7 @@ export default function AppRoutes() {
              <Route path="products/edit/:id" element={<EditProduct />} />
           </Route>
 
+             <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </>
