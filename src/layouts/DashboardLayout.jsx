@@ -7,7 +7,7 @@ export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0b1a20]">
+    <div className="min-h-screen  bg-[#0b1a20]">
       {/* Dashboard Navbar */}
       <Navbar isDashboard onMenuClick={() => setOpen(true)} />
 
@@ -15,7 +15,7 @@ export default function DashboardLayout() {
       <Sidebar open={open} onClose={() => setOpen(false)} />
 
       {/* Content */}
-      <main className="pt-[80px] md:ml-64 p-4 md:p-6">
+      <main className="mt-[80px] md:ml-64 p-4 md:p-6">
         <Outlet />
       </main>
     </div>

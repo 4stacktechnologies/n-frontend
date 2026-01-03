@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, CheckCircle, Monitor, Code } from 'lucide-react';
 import axios from 'axios';
 import toast from "react-hot-toast";
+import ExtractDetailsBox from '../../components/ExtractDetailsBox';
+
 
 
 const COLORS = [
@@ -119,6 +121,8 @@ export default function CreateProduct() {
     images: []
   });
   const [uploading, setUploading] = useState(false);
+
+  const [rawText, setRawText] = useState("");
 
 
   const [errors, setErrors] = useState({});
@@ -308,98 +312,98 @@ export default function CreateProduct() {
     };
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Mark all fields as touched
-  const allTouched = {};
-  Object.keys(formData).forEach((key) => {
-    allTouched[key] = true;
-  });
-  setTouched(allTouched);
+    // Mark all fields as touched
+    const allTouched = {};
+    Object.keys(formData).forEach((key) => {
+      allTouched[key] = true;
+    });
+    setTouched(allTouched);
 
-  const isValid = validateAllFields();
-  if (!isValid) {
-    toast.error("Please fix all validation errors before submitting");
-    return;
-  }
+    const isValid = validateAllFields();
+    if (!isValid) {
+      toast.error("Please fix all validation errors before submitting");
+      return;
+    }
 
-  const dataToSend = {
-    title: formData.title.trim(),
-    description: formData.description.trim(),
-    category: formData.category,
-    brand: formData.brand,
-    model: formData.model.trim(),
+    const dataToSend = {
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      category: formData.category,
+      brand: formData.brand,
+      model: formData.model.trim(),
 
-    condition: formData.condition,
-    usageDuration:
-      formData.condition === "USED" ? formData.usageDuration.trim() : null,
-    physicalCondition:
-      formData.condition === "USED" ? formData.physicalCondition : null,
-    isRefurbished:
-      formData.condition === "USED" ? formData.isRefurbished : false,
+      condition: formData.condition,
+      usageDuration:
+        formData.condition === "USED" ? formData.usageDuration.trim() : null,
+      physicalCondition:
+        formData.condition === "USED" ? formData.physicalCondition : null,
+      isRefurbished:
+        formData.condition === "USED" ? formData.isRefurbished : false,
 
-    ram: formData.ram.trim() || null,
-    rom: formData.rom.trim() || null,
-    color: formData.color || null,
+      ram: formData.ram.trim() || null,
+      rom: formData.rom.trim() || null,
+      color: formData.color || null,
 
-    processor: {
-      company: formData.processor.company.trim() || null,
-      model: formData.processor.model.trim() || null,
-      generation: formData.processor.generation.trim() || null,
-    },
+      processor: {
+        company: formData.processor.company.trim() || null,
+        model: formData.processor.model.trim() || null,
+        generation: formData.processor.generation.trim() || null,
+      },
 
-    graphics: formData.graphics.trim() || null,
+      graphics: formData.graphics.trim() || null,
 
-    display: {
-      size: formData.display.size.trim() || null,
-      resolution: formData.display.resolution.trim() || null,
-      panel: formData.display.panel.trim() || null,
-      refreshRate: formData.display.refreshRate.trim() || null,
-    },
+      display: {
+        size: formData.display.size.trim() || null,
+        resolution: formData.display.resolution.trim() || null,
+        panel: formData.display.panel.trim() || null,
+        refreshRate: formData.display.refreshRate.trim() || null,
+      },
 
-    operatingSystem: formData.operatingSystem.trim() || null,
-    preInstalledSoftware: formData.preInstalledSoftware,
+      operatingSystem: formData.operatingSystem.trim() || null,
+      preInstalledSoftware: formData.preInstalledSoftware,
 
-    keyboard: {
-      backlit: formData.keyboard.backlit,
-      layout: formData.keyboard.layout.trim() || null,
-    },
+      keyboard: {
+        backlit: formData.keyboard.backlit,
+        layout: formData.keyboard.layout.trim() || null,
+      },
 
-    originalPrice: formData.originalPrice
-      ? parseFloat(formData.originalPrice)
-      : null,
-    sellingPrice: parseFloat(formData.sellingPrice),
-    negotiable: formData.negotiable,
+      originalPrice: formData.originalPrice
+        ? parseFloat(formData.originalPrice)
+        : null,
+      sellingPrice: parseFloat(formData.sellingPrice),
+      negotiable: formData.negotiable,
 
-    warrantyAvailable: formData.warrantyAvailable,
-    warrantyPeriod: formData.warrantyAvailable
-      ? formData.warrantyPeriod.trim()
-      : null,
+      warrantyAvailable: formData.warrantyAvailable,
+      warrantyPeriod: formData.warrantyAvailable
+        ? formData.warrantyPeriod.trim()
+        : null,
 
-    images: formData.images,
-    status: formData.status || "AVAILABLE",
+      images: formData.images,
+      status: formData.status || "AVAILABLE",
+    };
+
+    const toastId = toast.loading("Creating product...");
+
+    try {
+      const res = await axios.post(
+        import.meta.env.VITE_API_PRODUCT || "/api/products",
+        dataToSend,
+        { withCredentials: true }
+      );
+
+      toast.success("Product created successfully!", { id: toastId });
+      console.log("Response:", res.data);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.msg || "Failed to create product",
+        { id: toastId }
+      );
+      console.error("Error submitting form:", error);
+    }
   };
-
-  const toastId = toast.loading("Creating product...");
-
-  try {
-    const res = await axios.post(
-      import.meta.env.VITE_API_PRODUCT || "/api/products",
-      dataToSend,
-      { withCredentials: true }
-    );
-
-    toast.success("Product created successfully!", { id: toastId });
-    console.log("Response:", res.data);
-  } catch (error) {
-    toast.error(
-      error.response?.data?.msg || "Failed to create product",
-      { id: toastId }
-    );
-    console.error("Error submitting form:", error);
-  }
-};
 
 
   const progress = calculateProgress();
@@ -436,6 +440,15 @@ export default function CreateProduct() {
           </div>
           <p className="text-slate-400">Add new or second-hand product to your inventory</p>
         </div>
+        <ExtractDetailsBox
+          value={rawText}
+          onChange={setRawText}
+          onExtract={() => {
+            toast.success("Extraction logic will be added next 🚀");
+            console.log("Raw text:", rawText);
+          }}
+        />
+
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
