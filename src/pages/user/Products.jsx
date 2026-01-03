@@ -63,13 +63,13 @@ export default function Products() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">Products</h1>
 
-        <a
-          href="/dashboard/products/create"
+        <Link
+          to="/dashboard/products/create"
           className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
         >
           <Plus size={18} />
           Add Product
-        </a>
+        </Link>
       </div>
 
       {/* CONTENT */}
@@ -180,12 +180,14 @@ export default function Products() {
                   >
                     <Pencil size={18} />
                   </Link>
-                  <button
+
+                  <Link
+                    to={`/dashboard/products/${product._id}`}
                     className="text-green-400 hover:text-green-500 transition"
-                    title="Delete Product"
+                    title="View Product"
                   >
-                    <Eye   size={18} />
-                  </button>
+                    <Eye size={18} />
+                  </Link>
 
                   <button
                     onClick={() => deleteProduct(product._id)}

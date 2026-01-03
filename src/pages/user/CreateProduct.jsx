@@ -308,91 +308,99 @@ export default function CreateProduct() {
     };
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const allTouched = {};
-    Object.keys(formData).forEach((key) => {
-      allTouched[key] = true;
-    });
-    setTouched(allTouched);
+  // Mark all fields as touched
+  const allTouched = {};
+  Object.keys(formData).forEach((key) => {
+    allTouched[key] = true;
+  });
+  setTouched(allTouched);
 
-    const isValid = validateAllFields();
+  const isValid = validateAllFields();
+  if (!isValid) {
+    toast.error("Please fix all validation errors before submitting");
+    return;
+  }
 
-    if (!isValid) {
-      alert("Please fix all validation errors before submitting");
-      return;
-    }
+  const dataToSend = {
+    title: formData.title.trim(),
+    description: formData.description.trim(),
+    category: formData.category,
+    brand: formData.brand,
+    model: formData.model.trim(),
 
-    const dataToSend = {
-      title: formData.title.trim(),
-      description: formData.description.trim(),
-      category: formData.category,
-      brand: formData.brand,
-      model: formData.model.trim(),
+    condition: formData.condition,
+    usageDuration:
+      formData.condition === "USED" ? formData.usageDuration.trim() : null,
+    physicalCondition:
+      formData.condition === "USED" ? formData.physicalCondition : null,
+    isRefurbished:
+      formData.condition === "USED" ? formData.isRefurbished : false,
 
-      condition: formData.condition,
-      usageDuration: formData.condition === "USED" ? formData.usageDuration.trim() : null,
-      physicalCondition: formData.condition === "USED" ? formData.physicalCondition : null,
-      isRefurbished: formData.condition === "USED" ? formData.isRefurbished : false,
+    ram: formData.ram.trim() || null,
+    rom: formData.rom.trim() || null,
+    color: formData.color || null,
 
+    processor: {
+      company: formData.processor.company.trim() || null,
+      model: formData.processor.model.trim() || null,
+      generation: formData.processor.generation.trim() || null,
+    },
 
-      ram: formData.ram.trim() || null,
-      rom: formData.rom.trim() || null,
-      color: formData.color || null,
+    graphics: formData.graphics.trim() || null,
 
-      processor: {
-        company: formData.processor.company.trim() || null,
-        model: formData.processor.model.trim() || null,
-        generation: formData.processor.generation.trim() || null,
-      },
+    display: {
+      size: formData.display.size.trim() || null,
+      resolution: formData.display.resolution.trim() || null,
+      panel: formData.display.panel.trim() || null,
+      refreshRate: formData.display.refreshRate.trim() || null,
+    },
 
-      graphics: formData.graphics.trim() || null,
-      status: formData.status || "AVAILABLE",
+    operatingSystem: formData.operatingSystem.trim() || null,
+    preInstalledSoftware: formData.preInstalledSoftware,
 
+    keyboard: {
+      backlit: formData.keyboard.backlit,
+      layout: formData.keyboard.layout.trim() || null,
+    },
 
-      display: {
-        size: formData.display.size.trim() || null,
-        resolution: formData.display.resolution.trim() || null,
-        panel: formData.display.panel.trim() || null,
-        refreshRate: formData.display.refreshRate.trim() || null,
-      },
+    originalPrice: formData.originalPrice
+      ? parseFloat(formData.originalPrice)
+      : null,
+    sellingPrice: parseFloat(formData.sellingPrice),
+    negotiable: formData.negotiable,
 
-      operatingSystem: formData.operatingSystem.trim() || null,
-      preInstalledSoftware: formData.preInstalledSoftware,
+    warrantyAvailable: formData.warrantyAvailable,
+    warrantyPeriod: formData.warrantyAvailable
+      ? formData.warrantyPeriod.trim()
+      : null,
 
-      keyboard: {
-        backlit: formData.keyboard.backlit,
-        layout: formData.keyboard.layout.trim() || null,
-      },
-
-      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
-      sellingPrice: parseFloat(formData.sellingPrice),
-      negotiable: formData.negotiable,
-
-      warrantyAvailable: formData.warrantyAvailable,
-      warrantyPeriod: formData.warrantyAvailable ? formData.warrantyPeriod.trim() : null,
-
-      images: formData.images,
-    };
-
-    console.log("Submitting data:", dataToSend);
-
-    try {
-      const res = await axios.post(
-        import.meta.env.VITE_API_PRODUCT || '/api/products',
-        dataToSend,
-        { withCredentials: true }
-      );
-
-      alert("Product created successfully!");
-      console.log("Response:", res.data);
-
-    } catch (error) {
-      alert(error.response?.data?.msg || "Failed to create product");
-      console.error("Error submitting form:", error);
-    }
+    images: formData.images,
+    status: formData.status || "AVAILABLE",
   };
+
+  const toastId = toast.loading("Creating product...");
+
+  try {
+    const res = await axios.post(
+      import.meta.env.VITE_API_PRODUCT || "/api/products",
+      dataToSend,
+      { withCredentials: true }
+    );
+
+    toast.success("Product created successfully!", { id: toastId });
+    console.log("Response:", res.data);
+  } catch (error) {
+    toast.error(
+      error.response?.data?.msg || "Failed to create product",
+      { id: toastId }
+    );
+    console.error("Error submitting form:", error);
+  }
+};
+
 
   const progress = calculateProgress();
 
