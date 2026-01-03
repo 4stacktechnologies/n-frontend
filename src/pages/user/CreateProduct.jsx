@@ -20,6 +20,46 @@ const COLORS = [
 const CATEGORIES = ['Mobile', 'Laptop', 'Tablet', 'Smartwatch', 'Headphones', 'Other'];
 const BRANDS = ['Apple', 'Samsung', 'Dell', 'HP', 'Lenovo', 'OnePlus', 'Xiaomi', 'Asus', 'Other'];
 
+/* ===============================
+   Cloudinary Upload + Text Extractor
+================================ */
+
+export const extractText = (value) =>
+  typeof value === "string" ? value.trim() : value;
+
+export const uploadToCloudinary = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append(
+    "upload_preset",
+    import.meta.env.VITE_API_CLOUDINARY_PRESET
+  );
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_API_CLOUDINARY_CLOUD_NAME}/image/upload`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await res.json();
+
+  console.log("Cloudinary response:", data); // 👈 IMPORTANT
+
+  if (!res.ok) {
+    throw new Error(data.error?.message || "Upload failed");
+  }
+
+  return {
+    id: data.public_id,
+    url: data.secure_url,
+  };
+};
+
+
+
+
 export default function CreateProduct() {
   const [formData, setFormData] = useState({
     // Basic Info
@@ -28,13 +68,13 @@ export default function CreateProduct() {
     category: '',
     brand: '',
     model: '',
-    
+
     // Condition
     condition: 'NEW',
     usageDuration: '',
     physicalCondition: '',
     isRefurbished: false,
-    
+
     // Hardware
     ram: '',
     rom: '',
@@ -44,7 +84,7 @@ export default function CreateProduct() {
       generation: ''
     },
     graphics: '',
-    
+
     // Display
     display: {
       size: '',
@@ -52,30 +92,34 @@ export default function CreateProduct() {
       panel: '',
       refreshRate: ''
     },
-    
+
     // Software
     operatingSystem: '',
     preInstalledSoftware: [],
-    
+
     // Build & Design
     color: '',
     keyboard: {
       backlit: false,
       layout: ''
     },
-    
+
     // Pricing
     originalPrice: '',
     sellingPrice: '',
     negotiable: false,
-    
+
     // Warranty
     warrantyAvailable: false,
     warrantyPeriod: '',
-    
+    status: "AVAILABLE",
+
+
     // Images
     images: []
   });
+  const [uploading, setUploading] = useState(false);
+
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -94,7 +138,7 @@ export default function CreateProduct() {
     } else {
       setFormData(prev => ({ ...prev, [field]: value }));
     }
-    
+
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -107,7 +151,7 @@ export default function CreateProduct() {
 
   const validateField = (field) => {
     let error = '';
-    const value = field.includes('.') 
+    const value = field.includes('.')
       ? formData[field.split('.')[0]][field.split('.')[1]]
       : formData[field];
 
@@ -196,9 +240,9 @@ export default function CreateProduct() {
 
   const validateAllFields = () => {
     const newErrors = {};
-    
+
     const requiredFields = ['title', 'category', 'brand', 'model', 'sellingPrice'];
-    
+
     requiredFields.forEach(field => {
       const error = validateField(field);
       if (error) newErrors[field] = error;
@@ -207,7 +251,7 @@ export default function CreateProduct() {
     if (formData.condition === 'USED') {
       const usageDurationError = validateField('usageDuration');
       if (usageDurationError) newErrors.usageDuration = usageDurationError;
-      
+
       const physicalConditionError = validateField('physicalCondition');
       if (physicalConditionError) newErrors.physicalCondition = physicalConditionError;
     }
@@ -251,7 +295,7 @@ export default function CreateProduct() {
 
     const totalFields = [...allFields, ...conditionalFields];
     const filledFields = totalFields.filter(field => {
-      const value = field.includes('.') 
+      const value = field.includes('.')
         ? formData[field.split('.')[0]][field.split('.')[1]]
         : formData[field];
       return value !== '' && value !== null && value !== undefined;
@@ -292,17 +336,20 @@ export default function CreateProduct() {
       physicalCondition: formData.condition === "USED" ? formData.physicalCondition : null,
       isRefurbished: formData.condition === "USED" ? formData.isRefurbished : false,
 
+
       ram: formData.ram.trim() || null,
       rom: formData.rom.trim() || null,
       color: formData.color || null,
-      
+
       processor: {
         company: formData.processor.company.trim() || null,
         model: formData.processor.model.trim() || null,
         generation: formData.processor.generation.trim() || null,
       },
-      
+
       graphics: formData.graphics.trim() || null,
+      status: formData.status || "AVAILABLE",
+
 
       display: {
         size: formData.display.size.trim() || null,
@@ -327,7 +374,6 @@ export default function CreateProduct() {
       warrantyPeriod: formData.warrantyAvailable ? formData.warrantyPeriod.trim() : null,
 
       images: formData.images,
-      status: "AVAILABLE",
     };
 
     console.log("Submitting data:", dataToSend);
@@ -362,7 +408,7 @@ export default function CreateProduct() {
               </div>
               <h1 className="text-3xl font-bold text-white">Create Product</h1>
             </div>
-            
+
             <div className="bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
@@ -371,7 +417,7 @@ export default function CreateProduct() {
                   <span className="text-slate-500"> / {progress.total}</span> fields
                 </span>
                 <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500"
                     style={{ width: `${progress.percentage}%` }}
                   />
@@ -388,18 +434,18 @@ export default function CreateProduct() {
           {/* Basic Information */}
           <Section icon={Package} title="Basic Information" badge="Required">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input 
-                label="Product Title" 
-                required 
+              <Input
+                label="Product Title"
+                required
                 placeholder="e.g., iPhone 14 Pro Max"
                 value={formData.title}
                 onChange={(e) => handleChange('title', e.target.value)}
                 onBlur={() => handleBlur('title')}
                 error={touched.title && errors.title}
               />
-              
-              <Select 
-                label="Category" 
+
+              <Select
+                label="Category"
                 required
                 value={formData.category}
                 onChange={(e) => handleChange('category', e.target.value)}
@@ -409,9 +455,9 @@ export default function CreateProduct() {
                 <option value="">Select category</option>
                 {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </Select>
-              
-              <Select 
-                label="Brand" 
+
+              <Select
+                label="Brand"
                 required
                 value={formData.brand}
                 onChange={(e) => handleChange('brand', e.target.value)}
@@ -421,10 +467,10 @@ export default function CreateProduct() {
                 <option value="">Select brand</option>
                 {BRANDS.map(brand => <option key={brand} value={brand}>{brand}</option>)}
               </Select>
-              
-              <Input 
-                label="Model" 
-                required 
+
+              <Input
+                label="Model"
+                required
                 placeholder="e.g., A2894"
                 value={formData.model}
                 onChange={(e) => handleChange('model', e.target.value)}
@@ -432,9 +478,9 @@ export default function CreateProduct() {
                 error={touched.model && errors.model}
               />
             </div>
-            
-            <Textarea 
-              label="Description" 
+
+            <Textarea
+              label="Description"
               placeholder="Describe the product features, condition, and other details..."
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
@@ -452,11 +498,10 @@ export default function CreateProduct() {
                       key={cond}
                       type="button"
                       onClick={() => handleChange('condition', cond)}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        formData.condition === cond
-                          ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400'
-                          : 'border-slate-700 bg-slate-900/50 text-slate-400 hover:border-slate-600'
-                      }`}
+                      className={`p-4 rounded-xl border-2 transition-all ${formData.condition === cond
+                        ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400'
+                        : 'border-slate-700 bg-slate-900/50 text-slate-400 hover:border-slate-600'
+                        }`}
                     >
                       <div className="font-semibold">{cond === 'NEW' ? '🆕 New' : '♻️ Used'}</div>
                     </button>
@@ -466,8 +511,8 @@ export default function CreateProduct() {
 
               {formData.condition === 'USED' && (
                 <>
-                  <Input 
-                    label="Usage Duration" 
+                  <Input
+                    label="Usage Duration"
                     placeholder="e.g., 6 months, 1 year"
                     value={formData.usageDuration}
                     onChange={(e) => handleChange('usageDuration', e.target.value)}
@@ -475,8 +520,8 @@ export default function CreateProduct() {
                     error={touched.usageDuration && errors.usageDuration}
                     required
                   />
-                  
-                  <Select 
+
+                  <Select
                     label="Physical Condition"
                     value={formData.physicalCondition}
                     onChange={(e) => handleChange('physicalCondition', e.target.value)}
@@ -506,23 +551,23 @@ export default function CreateProduct() {
           {/* Hardware Details */}
           <Section icon={Cpu} title="Hardware Specifications">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input 
-                label="RAM" 
+              <Input
+                label="RAM"
                 placeholder="e.g., 8GB, 16GB"
                 value={formData.ram}
                 onChange={(e) => handleChange('ram', e.target.value)}
                 onBlur={() => handleBlur('ram')}
                 error={touched.ram && errors.ram}
               />
-              <Input 
-                label="Storage (ROM)" 
+              <Input
+                label="Storage (ROM)"
                 placeholder="e.g., 128GB, 256GB"
                 value={formData.rom}
                 onChange={(e) => handleChange('rom', e.target.value)}
                 onBlur={() => handleBlur('rom')}
                 error={touched.rom && errors.rom}
               />
-              
+
               <div>
                 <label className="text-sm font-medium text-slate-300 mb-2 block">Color</label>
                 <div className="grid grid-cols-5 gap-2">
@@ -532,11 +577,10 @@ export default function CreateProduct() {
                       type="button"
                       title={color.name}
                       onClick={() => handleChange('color', color.name)}
-                      className={`w-full aspect-square rounded-lg border-2 transition-all relative ${
-                        formData.color === color.name
-                          ? 'border-cyan-400 shadow-lg shadow-cyan-400/30 scale-110'
-                          : 'border-slate-700 hover:border-slate-600'
-                      }`}
+                      className={`w-full aspect-square rounded-lg border-2 transition-all relative ${formData.color === color.name
+                        ? 'border-cyan-400 shadow-lg shadow-cyan-400/30 scale-110'
+                        : 'border-slate-700 hover:border-slate-600'
+                        }`}
                       style={{ backgroundColor: color.hex }}
                     >
                       {color.hex === '#FFFFFF' && (
@@ -557,28 +601,28 @@ export default function CreateProduct() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input 
-                label="Processor Company" 
+              <Input
+                label="Processor Company"
                 placeholder="e.g., Intel, AMD, Apple"
                 value={formData.processor.company}
                 onChange={(e) => handleChange('processor.company', e.target.value)}
               />
-              <Input 
-                label="Processor Model" 
+              <Input
+                label="Processor Model"
                 placeholder="e.g., Core i5 120U, A16 Bionic"
                 value={formData.processor.model}
                 onChange={(e) => handleChange('processor.model', e.target.value)}
               />
-              <Input 
-                label="Processor Generation" 
+              <Input
+                label="Processor Generation"
                 placeholder="e.g., 12th Gen, M2"
                 value={formData.processor.generation}
                 onChange={(e) => handleChange('processor.generation', e.target.value)}
               />
             </div>
 
-            <Input 
-              label="Graphics" 
+            <Input
+              label="Graphics"
               placeholder="e.g., Integrated, RTX 3050, M1 GPU"
               value={formData.graphics}
               onChange={(e) => handleChange('graphics', e.target.value)}
@@ -588,26 +632,26 @@ export default function CreateProduct() {
           {/* Display Specifications */}
           <Section icon={Monitor} title="Display Specifications">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input 
-                label="Display Size" 
+              <Input
+                label="Display Size"
                 placeholder="e.g., 15.6 inch, 13.3 inch"
                 value={formData.display.size}
                 onChange={(e) => handleChange('display.size', e.target.value)}
               />
-              <Input 
-                label="Resolution" 
+              <Input
+                label="Resolution"
                 placeholder="e.g., FHD (1920x1080), QHD"
                 value={formData.display.resolution}
                 onChange={(e) => handleChange('display.resolution', e.target.value)}
               />
-              <Input 
-                label="Panel Type" 
+              <Input
+                label="Panel Type"
                 placeholder="e.g., IPS, OLED, AMOLED"
                 value={formData.display.panel}
                 onChange={(e) => handleChange('display.panel', e.target.value)}
               />
-              <Input 
-                label="Refresh Rate" 
+              <Input
+                label="Refresh Rate"
                 placeholder="e.g., 60Hz, 120Hz, 144Hz"
                 value={formData.display.refreshRate}
                 onChange={(e) => handleChange('display.refreshRate', e.target.value)}
@@ -617,13 +661,13 @@ export default function CreateProduct() {
 
           {/* Software & OS */}
           <Section icon={Code} title="Software & Operating System">
-            <Input 
-              label="Operating System" 
+            <Input
+              label="Operating System"
               placeholder="e.g., Windows 11, macOS Sonoma, Android 14"
               value={formData.operatingSystem}
               onChange={(e) => handleChange('operatingSystem', e.target.value)}
             />
-            
+
             <div>
               <label className="text-sm font-medium text-slate-300 mb-2 block">
                 Pre-installed Software
@@ -642,7 +686,7 @@ export default function CreateProduct() {
                   }}
                 />
                 <p className="text-xs text-slate-400">Press Enter to add software</p>
-                
+
                 {formData.preInstalledSoftware.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     {formData.preInstalledSoftware.map((software, index) => (
@@ -680,9 +724,9 @@ export default function CreateProduct() {
                   onChange={(e) => handleChange('keyboard.backlit', e.target.checked)}
                 />
               </div>
-              
-              <Input 
-                label="Keyboard Layout" 
+
+              <Input
+                label="Keyboard Layout"
                 placeholder="e.g., QWERTY, US International"
                 value={formData.keyboard.layout}
                 onChange={(e) => handleChange('keyboard.layout', e.target.value)}
@@ -693,19 +737,19 @@ export default function CreateProduct() {
           {/* Pricing */}
           <Section icon={DollarSign} title="Pricing" badge="Required">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input 
-                label="Original Price (MRP)" 
-                type="number" 
+              <Input
+                label="Original Price (MRP)"
+                type="number"
                 placeholder="₹ 0"
                 value={formData.originalPrice}
                 onChange={(e) => handleChange('originalPrice', e.target.value)}
                 onBlur={() => handleBlur('originalPrice')}
                 error={touched.originalPrice && errors.originalPrice}
               />
-              <Input 
-                label="Selling Price" 
-                type="number" 
-                required 
+              <Input
+                label="Selling Price"
+                type="number"
+                required
                 placeholder="₹ 0"
                 value={formData.sellingPrice}
                 onChange={(e) => handleChange('sellingPrice', e.target.value)}
@@ -713,7 +757,7 @@ export default function CreateProduct() {
                 error={touched.sellingPrice && errors.sellingPrice}
               />
             </div>
-            
+
             <Checkbox
               label="Price is negotiable"
               checked={formData.negotiable}
@@ -728,12 +772,12 @@ export default function CreateProduct() {
               checked={formData.warrantyAvailable}
               onChange={(e) => handleChange('warrantyAvailable', e.target.checked)}
             />
-            
+
             {formData.warrantyAvailable && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <Input 
-                  label="Warranty Period" 
-                  placeholder="e.g., 6 months, 1 year" 
+                <Input
+                  label="Warranty Period"
+                  placeholder="e.g., 6 months, 1 year"
                   required
                   value={formData.warrantyPeriod}
                   onChange={(e) => handleChange('warrantyPeriod', e.target.value)}
@@ -743,16 +787,87 @@ export default function CreateProduct() {
               </div>
             )}
           </Section>
+          <Section icon={Shield} title="Product Status">
+            <Select
+              label="Availability Status"
+              value={formData.status}
+              onChange={(e) => handleChange("status", e.target.value)}
+            >
+              <option value="AVAILABLE">Available</option>
+              <option value="UNAVAILABLE">Unavailable</option>
+            </Select>
+          </Section>
+
 
           {/* Images */}
+          {/* Images */}
           <Section icon={Image} title="Product Images">
-            <div className="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-cyan-400/50 transition-all cursor-pointer bg-slate-900/30">
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              className="hidden"
+              id="imageUpload"
+              onChange={async (e) => {
+                const files = Array.from(e.target.files);
+                if (!files.length) return;
+
+                setUploading(true);
+                try {
+                  const uploads = [];
+                  for (const file of files) {
+                    const uploaded = await uploadToCloudinary(file);
+                    uploads.push(uploaded);
+                  }
+
+                  handleChange("images", [...formData.images, ...uploads]);
+                  toast.success("Images uploaded successfully");
+                } catch (err) {
+                  toast.error("Image upload failed");
+                } finally {
+                  setUploading(false);
+                }
+              }}
+            />
+
+            <label
+              htmlFor="imageUpload"
+              className="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-cyan-400/50 transition-all cursor-pointer bg-slate-900/30 block"
+            >
               <Image className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-              <p className="text-slate-300 font-medium mb-1">Click to upload images</p>
+              <p className="text-slate-300 font-medium mb-1">
+                {uploading ? "Uploading..." : "Click to upload images"}
+              </p>
               <p className="text-sm text-slate-500">or drag and drop</p>
               <p className="text-xs text-slate-600 mt-2">PNG, JPG up to 10MB</p>
-            </div>
+            </label>
+
+            {formData.images.length > 0 && (
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mt-4">
+                {formData.images.map((img, idx) => (
+                  <div key={img.id} className="relative group">
+                    <img
+                      src={img.url}
+                      className="rounded-lg h-24 w-full object-cover border border-slate-700"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleChange(
+                          "images",
+                          formData.images.filter((_, i) => i !== idx)
+                        )
+                      }
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 transition"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </Section>
+
 
           {/* Actions */}
           <div className="sticky bottom-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 -mx-4 md:-mx-8 px-4 md:px-8 py-4 flex flex-col sm:flex-row gap-3 justify-end">
@@ -772,7 +887,7 @@ export default function CreateProduct() {
           </div>
         </form>
       </div>
-    </div>    
+    </div>
   );
 }
 
@@ -801,9 +916,8 @@ const Input = ({ label, required, error, ...props }) => (
     </label>
     <input
       {...props}
-      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:border-transparent outline-none transition-all ${
-        error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
-      }`}
+      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:border-transparent outline-none transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
+        }`}
     />
     {error && (
       <div className="flex items-center gap-1 mt-1">
@@ -822,9 +936,8 @@ const Textarea = ({ label, required, error, ...props }) => (
     <textarea
       {...props}
       rows={4}
-      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:border-transparent outline-none resize-none transition-all ${
-        error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
-      }`}
+      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:border-transparent outline-none resize-none transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
+        }`}
     />
     {error && (
       <div className="flex items-center gap-1 mt-1">
@@ -840,11 +953,10 @@ const Select = ({ label, required, error, children, ...props }) => (
     <label className="text-sm font-medium text-slate-300 mb-2 block">
       {label} {required && <span className="text-red-400">*</span>}
     </label>
-    <select 
+    <select
       {...props}
-      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 focus:ring-2 focus:border-transparent outline-none transition-all ${
-        error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
-      }`}
+      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 focus:ring-2 focus:border-transparent outline-none transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
+        }`}
     >
       {children}
     </select>

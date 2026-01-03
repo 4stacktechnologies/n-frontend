@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -180,6 +180,12 @@ export default function Products() {
                   >
                     <Pencil size={18} />
                   </Link>
+                  <button
+                    className="text-green-400 hover:text-green-500 transition"
+                    title="Delete Product"
+                  >
+                    <Eye   size={18} />
+                  </button>
 
                   <button
                     onClick={() => deleteProduct(product._id)}
