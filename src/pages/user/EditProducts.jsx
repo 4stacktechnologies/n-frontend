@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
+import toast from "react-hot-toast";
 
 const COLORS = [
   { name: 'Black', hex: '#000000' },
@@ -90,7 +91,7 @@ const EditProduct = () => {
         setLoading(false);
       } catch (error) {
         console.error('Error fetching product:', error);
-        alert('Failed to load product data');
+        toast.error('Failed to load product data');
         navigate('/dashboard/products');
       }
     };
@@ -273,7 +274,7 @@ const EditProduct = () => {
     const isValid = validateAllFields();
 
     if (!isValid) {
-      alert('Please fix all validation errors before submitting');
+      toast.error('Please fix all validation errors before submitting');
       return;
     }
 
@@ -308,11 +309,11 @@ const EditProduct = () => {
         withCredentials: true
       });
 
-      alert('Product updated successfully!');
+      toast.success('Product updated successfully!');
       navigate('/dashboard/products');
     } catch (error) {
       console.error('Error updating product:', error);
-      alert(error.response?.data?.message || 'Failed to update product');
+      toast.error(error.response?.data?.message || 'Failed to update product');
     }
   };
 

@@ -2,76 +2,69 @@ import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import RoleGuard from "../auth/RoleGuard";
 import DashboardLayout from "../layouts/DashboardLayout";
+import PublicLayout from "../layouts/PublicLayout";
 
 import Login from "../pages/auth/Login";
-import Products from "../pages/user/Products";
+import Signup from "../pages/auth/Signup";
+import ResetPassword from "../pages/auth/ResetPassword";
+
+import Home from "../pages/Home";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+
 import Userproducts from "../pages/user/Userproducts";
 import ProductDetails from "../pages/user/ProductDetails";
-import Signup from "../pages/auth/Signup";
-import Home from "../pages/Home";
-import ResetPassword from "../pages/auth/ResetPassword";
-import Navbar from "../components/Navbar";
+
 import Profile from "../pages/Profile";
-import Users from "../pages/user/Users";
-import CreateUser from "../pages/user/CreateUser";
+import Products from "../pages/user/Products";
 import CreateProduct from "../pages/user/CreateProduct";
 import EditProduct from "../pages/user/EditProducts";
+import CreateUser from "../pages/user/CreateUser";
+
 import NotFound from "../pages/NotFound";
-import Contact from "../pages/Contact";
-import About from "../pages/About";
 
 export default function AppRoutes() {
   return (
-    <>
-      <Navbar />
-      <div className="pt-20">
+    <Routes>
+      {/* 🌐 PUBLIC ROUTES */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
+        <Route path="/products" element={<Userproducts />} />
+        <Route path="/products/:id" element={<ProductDetails />} />
+      </Route>
 
-          <Route path="/login" element={<Login />} />
+      {/* 🔐 DASHBOARD ROUTES */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <RoleGuard allowedRoles={["ADMIN", "OWNER"]}>
+              <DashboardLayout />
+            </RoleGuard>
+          </ProtectedRoute>
+        }
+      >
+        {/* Default dashboard page */}
+        <Route index element={<Profile />} />
 
-          <Route path="/products" element={
-            <Userproducts />
-          } />
-          
-          <Route path="/About" element={<About/>} />
-          
-          <Route path="/Contact" element={<Contact/>} />
+        {/* Users */}
+        <Route path="users/create" element={<CreateUser />} />
 
-          <Route path="/products/:id" element={
-            <ProductDetails />
-          } />
+        {/* Products */}
+        <Route path="products" element={<Products />} />
+        <Route path="products/create" element={<CreateProduct />} />
+        <Route path="products/edit/:id" element={<EditProduct />} />
+      </Route>
 
-          {/* DASHBOARD */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <RoleGuard allowedRoles={["ADMIN", "OWNER"]}>
-                  <DashboardLayout />
-                </RoleGuard>
-              </ProtectedRoute>
-            }
-          >
-            {/* DEFAULT */}
-            <Route index element={<Profile />} />
-
-            {/* USERS */}
-            <Route path="users" element={<Users />} />
-            <Route path="users/create" element={<CreateUser />} />
-
-            <Route path="products" element={<Products />} />
-            <Route path="products/create" element={<CreateProduct />} />
-             <Route path="products/edit/:id" element={<EditProduct />} />
-          </Route>
-
-             <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-    </>
+      {/* ❌ 404 */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
