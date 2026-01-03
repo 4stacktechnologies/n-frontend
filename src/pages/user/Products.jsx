@@ -3,10 +3,14 @@ import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import ProductViewModal from "../../components/ProductViewModal";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
 
   /* ======================
      FETCH PRODUCTS
@@ -181,13 +185,16 @@ export default function Products() {
                     <Pencil size={18} />
                   </Link>
 
-                  <Link
-                    to={`/dashboard/products/${product._id}`}
-                    className="text-green-400 hover:text-green-500 transition"
-                    title="View Product"
-                  >
-                    <Eye size={18} />
-                  </Link>
+                  <button
+                      onClick={() => {
+                        setSelectedProductId(product._id);
+                        setIsViewOpen(true);
+                      }}
+                      className="text-green-400 hover:text-green-500"
+                      title="View Product"
+                    >
+                      <Eye size={18} />
+                    </button>
 
                   <button
                     onClick={() => deleteProduct(product._id)}
@@ -202,6 +209,12 @@ export default function Products() {
           </tbody>
         </table>
       </div>
+       {isViewOpen && (
+        <ProductViewModal
+          productId={selectedProductId}
+          onClose={() => setIsViewOpen(false)}
+        />
+      )}
     </div>
   );
 }
