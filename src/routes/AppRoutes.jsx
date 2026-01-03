@@ -7,15 +7,21 @@ import PublicLayout from "../layouts/PublicLayout";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
 import ResetPassword from "../pages/auth/ResetPassword";
+
 import Home from "../pages/Home";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
+
 import Userproducts from "../pages/user/Userproducts";
 import ProductDetails from "../pages/user/ProductDetails";
+
 import Profile from "../pages/Profile";
+import Products from "../pages/user/Products";
 import CreateProduct from "../pages/user/CreateProduct";
 import EditProduct from "../pages/user/EditProducts";
-import NotFound from "../pages/NotFound";
-import Products from "../pages/user/Products";
 import CreateUser from "../pages/user/CreateUser";
+
+import NotFound from "../pages/NotFound";
 
 export default function AppRoutes() {
   return (
@@ -23,9 +29,13 @@ export default function AppRoutes() {
       {/* 🌐 PUBLIC ROUTES */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
         <Route path="/products" element={<Userproducts />} />
         <Route path="/products/:id" element={<ProductDetails />} />
       </Route>
@@ -41,10 +51,13 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        {/* Default dashboard page */}
         <Route index element={<Profile />} />
-        {/* <Route path="users" element={<Users />} /> */}
+
+        {/* Users */}
         <Route path="users/create" element={<CreateUser />} />
 
+        {/* Products */}
         <Route path="products" element={<Products />} />
         <Route path="products/create" element={<CreateProduct />} />
         <Route path="products/edit/:id" element={<EditProduct />} />
