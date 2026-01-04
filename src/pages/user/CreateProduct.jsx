@@ -33,7 +33,7 @@ export const uploadToCloudinary = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append(
-    "upload_preset",
+    "products",
     import.meta.env.VITE_API_CLOUDINARY_PRESET
   );
 
