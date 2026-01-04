@@ -22,6 +22,8 @@ import EditProduct from "../pages/user/EditProducts";
 import CreateUser from "../pages/user/CreateUser";
 
 import NotFound from "../pages/NotFound";
+import Dashboard from "../pages/user/Dashboard";
+import Users from "../pages/user/Users";
 
 export default function AppRoutes() {
   return (
@@ -31,6 +33,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="profile" element={<Profile/>}/>
 
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
@@ -52,10 +55,11 @@ export default function AppRoutes() {
         }
       >
         {/* Default dashboard page */}
-        <Route index element={<Profile />} />
+        <Route index element={<Dashboard />} />
 
         {/* Users */}
         <Route path="users/create" element={<CreateUser />} />
+            <Route path="users" element={<Users />} />
 
         {/* Products */}
         <Route path="products" element={<Products />} />
