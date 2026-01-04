@@ -11,8 +11,7 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/admin/users/all",
+        const res = await axios.get(`${import.meta.env.VITE_API_ADMIN_URL}/users/all`,
           { withCredentials: true }
         );
 

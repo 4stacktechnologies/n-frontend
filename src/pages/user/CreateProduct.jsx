@@ -417,8 +417,7 @@ const handleExtract = async () => {
   try {
     setExtractLoading(true);
 
-    const res = await axios.post(
-      "http://localhost:5000/api/products/extract",
+    const res = await axios.post(`${import.meta.env.VITE_API_PRODUCT}/extract`,
       { text: rawText },
       { withCredentials: true }
     );
