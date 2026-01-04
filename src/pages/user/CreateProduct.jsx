@@ -121,6 +121,8 @@ export default function CreateProduct() {
     images: []
   });
   const [uploading, setUploading] = useState(false);
+  const [extractLoading, setExtractLoading] = useState(false);
+
 
   const [rawText, setRawText] = useState("");
 
@@ -405,6 +407,80 @@ export default function CreateProduct() {
     }
   };
 
+  
+const handleExtract = async () => {
+  if (!rawText.trim()) {
+    toast.error("Please paste product details first");
+    return;
+  }
+
+  try {
+    setExtractLoading(true);
+
+    const res = await axios.post(
+      "http://localhost:5000/api/products/extract",
+      { text: rawText },
+      { withCredentials: true }
+    );
+
+    const data = res.data;
+
+    /* =========================
+       MAP API RESPONSE → FORM
+    ========================= */
+    setFormData((prev) => ({
+      ...prev,
+
+      // BASIC
+      title: data.basic?.title || "",
+      brand: data.basic?.brand || "",
+      model: data.basic?.model || "",
+      category: data.basic?.category || prev.category || "Laptop",
+
+      // CONDITION
+      condition: data.condition?.condition || prev.condition,
+
+      // HARDWARE
+      ram: data.hardware?.ram || "",
+      rom: data.hardware?.rom || "",
+
+      processor: {
+        company: data.hardware?.processor?.company || "",
+        model: data.hardware?.processor?.model || "",
+        generation: data.hardware?.processor?.generation || "",
+      },
+
+      graphics: data.hardware?.graphics || "",
+
+      // DISPLAY
+      display: {
+        size: data.display?.size || "",
+        resolution: data.display?.resolution || "",
+        panel: data.display?.panel || "",
+        refreshRate: data.display?.refreshRate || "",
+      },
+
+      // SOFTWARE
+      operatingSystem: data.software?.operatingSystem || "",
+      preInstalledSoftware: data.software?.preInstalledSoftware || [],
+
+      // DESIGN
+      color: data.design?.color || "",
+      keyboard: {
+        backlit: Boolean(data.design?.keyboard?.backlit),
+        layout: data.design?.keyboard?.layout || "",
+      },
+    }));
+
+    toast.success("Product details extracted successfully ✨");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to extract product details");
+  } finally {
+    setExtractLoading(false);
+  }
+};
+
 
   const progress = calculateProgress();
 
@@ -441,13 +517,12 @@ export default function CreateProduct() {
           <p className="text-slate-400">Add new or second-hand product to your inventory</p>
         </div>
         <ExtractDetailsBox
-          value={rawText}
-          onChange={setRawText}
-          onExtract={() => {
-            toast.success("Extraction logic will be added next 🚀");
-            console.log("Raw text:", rawText);
-          }}
-        />
+  value={rawText}
+  onChange={setRawText}
+  onExtract={handleExtract}
+  loading={extractLoading}
+/>
+
 
 
         {/* Form */}
