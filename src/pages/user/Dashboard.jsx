@@ -16,10 +16,10 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [dashRes, userRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/admin/dashboard", {
+          axios.get("http://n-frontend.vercel.app/api/admin/dashboard", {
             withCredentials: true,
           }),
-          axios.get("http://localhost:5000/api/admin/users/all", {
+          axios.get("http://n-frontend.vercel.app/api/admin/users/all", {
             withCredentials: true,
           }),
         ]);
