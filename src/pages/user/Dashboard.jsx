@@ -15,14 +15,14 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [dashRes, userRes] = await Promise.all([
-          axios.get("https://n-frontend.vercel.app/api/admin/dashboard", {
-            withCredentials: true,
-          }),
-          axios.get("https://n-frontend.vercel.app/api/admin/users/all", {
-            withCredentials: true,
-          }),
-        ]);
+
+        const dashRes = await axios.get(`${import.meta.env.VITE_API_ADMIN_URL}/dashboard`,
+          { withCredentials: true }
+        );
+
+        const userRes = await axios.get(`${import.meta.env.VITE_API_ADMIN_URL}/users/all`,
+          { withCredentials: true }
+        );
 
         setDashboard(dashRes.data);
         setUsers(userRes.data.users);
