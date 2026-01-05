@@ -19,7 +19,7 @@ const Dashboard = () => {
           axios.get("https://n-frontend.vercel.app/api/admin/dashboard", {
             withCredentials: true,
           }),
-          axios.get("https://n-frontend.vercel.app/api/users/all", {
+          axios.get("https://n-frontend.vercel.app/api/admin/users/all", {
             withCredentials: true,
           }),
         ]);
