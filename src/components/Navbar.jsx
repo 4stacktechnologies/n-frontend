@@ -67,6 +67,7 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
             <NavLink to="/" className={navLinkClass}>Home</NavLink>
             <NavLink to="/about" className={navLinkClass}>About</NavLink>
             <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
+            <NavLink to="/products" className={navLinkClass}>Explore</NavLink>
 
             {!user ? (
               <>
@@ -159,7 +160,7 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
             <NavLink to="/" onClick={() => setOpen(false)} className={navLinkClass}>Home</NavLink>
             <NavLink to="/about" onClick={() => setOpen(false)} className={navLinkClass}>About</NavLink>
             <NavLink to="/contact" onClick={() => setOpen(false)} className={navLinkClass}>Contact</NavLink>
-
+            <NavLink to="/products" onClick={() => setOpen(false)} className={navLinkClass}>Explore</NavLink> 
             {user && (
               <>
                 <button

@@ -64,62 +64,77 @@ export const uploadToCloudinary = async (file) => {
 
 export default function CreateProduct() {
   const [formData, setFormData] = useState({
-    // Basic Info
-    title: '',
-    description: '',
-    category: '',
-    brand: '',
-    model: '',
+    title: "",
+    description: "",
+    category: "",
+    brand: "",
+    model: "",
 
-    // Condition
-    condition: 'NEW',
-    usageDuration: '',
-    physicalCondition: '',
+    condition: "NEW",
+    usageDuration: "",
+    physicalCondition: "",
     isRefurbished: false,
 
-    // Hardware
-    ram: '',
-    rom: '',
+    ram: { size: "", type: "" },
+    storage: { size: "", type: "" },
+
     processor: {
-      company: '',
-      model: '',
-      generation: ''
+      company: "",
+      model: "",
+      generation: "",
+      baseClock: "",
+      turboClock: "",
+      cache: "",
     },
-    graphics: '',
 
-    // Display
+    graphics: "",
+
     display: {
-      size: '',
-      resolution: '',
-      panel: '',
-      refreshRate: ''
+      size: "",
+      resolution: "",
+      panel: "",
+      refreshRate: "",
+      brightness: "",
+      aspectRatio: "",
     },
 
-    // Software
-    operatingSystem: '',
+    operatingSystem: "",
     preInstalledSoftware: [],
 
-    // Build & Design
-    color: '',
-    keyboard: {
-      backlit: false,
-      layout: ''
+    color: "",
+    keyboard: { backlit: false, layout: "" },
+
+    ports: {
+      usbTypeC: 0,
+      usbTypeA: 0,
+      hdmi: 0,
+      microSD: false,
+      rj45: false,
+      headphoneJack: true,
     },
 
-    // Pricing
-    originalPrice: '',
-    sellingPrice: '',
+    wifi: "",
+    bluetooth: "",
+
+    battery: { capacity: "" },
+    charger: { power: "", type: "" },
+    camera: { resolution: "" },
+
+    audio: "",
+    fingerprintReader: false,
+    opticalDrive: false,
+
+    originalPrice: "",
+    sellingPrice: "",
     negotiable: false,
 
-    // Warranty
     warrantyAvailable: false,
-    warrantyPeriod: '',
+    warrantyPeriod: "",
+
     status: "AVAILABLE",
-
-
-    // Images
-    images: []
+    images: [],
   });
+
   const [uploading, setUploading] = useState(false);
   const [extractLoading, setExtractLoading] = useState(false);
 
@@ -131,24 +146,20 @@ export default function CreateProduct() {
   const [touched, setTouched] = useState({});
 
   const handleChange = (field, value) => {
-    // Handle nested objects
-    if (field.includes('.')) {
-      const [parent, child] = field.split('.');
-      setFormData(prev => ({
+    if (field.includes(".")) {
+      const [parent, child] = field.split(".");
+      setFormData((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent],
-          [child]: value
-        }
+          [child]: value,
+        },
       }));
     } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    }
-
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setFormData((prev) => ({ ...prev, [field]: value }));
     }
   };
+
 
   const handleBlur = (field) => {
     setTouched(prev => ({ ...prev, [field]: true }));
@@ -209,15 +220,15 @@ export default function CreateProduct() {
         }
         break;
 
-      case 'ram':
-        if (value && !/^\d+\s?(GB|MB|gb|mb)$/i.test(value.trim())) {
-          error = 'RAM format should be like "8GB" or "16GB"';
+      case 'ram.size':
+        if (value && !/^\d+\s?(GB|MB)$/i.test(value)) {
+          error = 'RAM size must be like 16GB';
         }
         break;
 
-      case 'rom':
-        if (value && !/^\d+\s?(GB|TB|gb|tb)$/i.test(value.trim())) {
-          error = 'Storage format should be like "128GB" or "256GB"';
+      case 'storage.size':
+        if (value && !/^\d+\s?(GB|TB)$/i.test(value)) {
+          error = 'Storage must be like 512GB';
         }
         break;
 
@@ -272,10 +283,10 @@ export default function CreateProduct() {
       if (ramError) newErrors.ram = ramError;
     }
 
-    if (formData.rom) {
-      const romError = validateField('rom');
-      if (romError) newErrors.rom = romError;
+    if (formData.storage?.size) {
+      validateField("storage.size");
     }
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -284,11 +295,28 @@ export default function CreateProduct() {
   const calculateProgress = () => {
     const allFields = [
       'title', 'description', 'category', 'brand', 'model',
-      'condition', 'ram', 'rom', 'color',
+      'condition', 'color',
       'processor.company', 'processor.model', 'processor.generation',
       'graphics', 'display.size', 'display.resolution', 'display.panel', 'display.refreshRate',
       'operatingSystem', 'keyboard.layout',
-      'originalPrice', 'sellingPrice'
+      'originalPrice', 'sellingPrice',
+      'ram.size',
+      'ram.type',
+      'storage.size',
+      'storage.type',
+
+      'processor.baseClock',
+      'processor.turboClock',
+      'processor.cache',
+
+      'display.brightness',
+      'display.aspectRatio',
+
+      'wifi',
+      'battery.capacity',
+      'charger.power',
+      'camera.resolution',
+
     ];
 
     const conditionalFields = [];
@@ -345,23 +373,47 @@ export default function CreateProduct() {
       isRefurbished:
         formData.condition === "USED" ? formData.isRefurbished : false,
 
-      ram: formData.ram.trim() || null,
-      rom: formData.rom.trim() || null,
+      ram: {
+        size: formData.ram.size || null,
+        type: formData.ram.type || null,
+      },
+
+      storage: {
+        size: formData.storage.size || null,
+        type: formData.storage.type || null,
+      },
+
       color: formData.color || null,
 
       processor: {
-        company: formData.processor.company.trim() || null,
-        model: formData.processor.model.trim() || null,
-        generation: formData.processor.generation.trim() || null,
+        company: formData.processor.company || null,
+        model: formData.processor.model || null,
+        generation: formData.processor.generation || null,
+        baseClock: formData.processor.baseClock || null,
+        turboClock: formData.processor.turboClock || null,
+        cache: formData.processor.cache || null,
       },
+      ports: formData.ports,
+      wifi: formData.wifi || null,
+      bluetooth: formData.bluetooth || null,
+
+      battery: formData.battery,
+      charger: formData.charger,
+
+      camera: formData.camera,
+      audio: formData.audio || null,
+
+      fingerprintReader: formData.fingerprintReader,
+      opticalDrive: formData.opticalDrive,
+
 
       graphics: formData.graphics.trim() || null,
 
       display: {
-        size: formData.display.size.trim() || null,
-        resolution: formData.display.resolution.trim() || null,
-        panel: formData.display.panel.trim() || null,
-        refreshRate: formData.display.refreshRate.trim() || null,
+        size: formData.display.size || null,
+        resolution: formData.display.resolution || null,
+        panel: formData.display.panel || null,
+        refreshRate: formData.display.refreshRate || null,
       },
 
       operatingSystem: formData.operatingSystem.trim() || null,
@@ -407,7 +459,7 @@ export default function CreateProduct() {
     }
   };
 
-  
+
 const handleExtract = async () => {
   if (!rawText.trim()) {
     toast.error("Please paste product details first");
@@ -417,7 +469,8 @@ const handleExtract = async () => {
   try {
     setExtractLoading(true);
 
-    const res = await axios.post(`${import.meta.env.VITE_API_PRODUCT}/extract`,
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_PRODUCT}/extract`,
       { text: rawText },
       { withCredentials: true }
     );
@@ -426,30 +479,46 @@ const handleExtract = async () => {
 
     /* =========================
        MAP API RESPONSE → FORM
+       (NEW PROMPT STRUCTURE)
     ========================= */
     setFormData((prev) => ({
       ...prev,
 
       // BASIC
-      title: data.basic?.title || "",
-      brand: data.basic?.brand || "",
-      model: data.basic?.model || "",
-      category: data.basic?.category || prev.category || "Laptop",
+      title: data.title || "",
+      description: data.description || "",
+      category: data.category || "Laptop",
+      brand: data.brand || "",
+      model: data.model || "",
 
       // CONDITION
-      condition: data.condition?.condition || prev.condition,
+      condition: data.condition || "NEW",
+      usageDuration: data.usageDuration || "",
+      physicalCondition: data.physicalCondition || "",
+      isRefurbished: Boolean(data.isRefurbished),
 
-      // HARDWARE
-      ram: data.hardware?.ram || "",
-      rom: data.hardware?.rom || "",
-
-      processor: {
-        company: data.hardware?.processor?.company || "",
-        model: data.hardware?.processor?.model || "",
-        generation: data.hardware?.processor?.generation || "",
+      // RAM & STORAGE
+      ram: {
+        size: data.ram?.size || "",
+        type: data.ram?.type || "",
+      },
+      storage: {
+        size: data.storage?.size || "",
+        type: data.storage?.type || "",
       },
 
-      graphics: data.hardware?.graphics || "",
+      // PROCESSOR
+      processor: {
+        company: data.processor?.company || "",
+        model: data.processor?.model || "",
+        generation: data.processor?.generation || "",
+        baseClock: data.processor?.baseClock || "",
+        turboClock: data.processor?.turboClock || "",
+        cache: data.processor?.cache || "",
+      },
+
+      // GRAPHICS
+      graphics: data.graphics || "",
 
       // DISPLAY
       display: {
@@ -457,18 +526,69 @@ const handleExtract = async () => {
         resolution: data.display?.resolution || "",
         panel: data.display?.panel || "",
         refreshRate: data.display?.refreshRate || "",
+        brightness: data.display?.brightness || "",
+        aspectRatio: data.display?.aspectRatio || "",
       },
 
       // SOFTWARE
-      operatingSystem: data.software?.operatingSystem || "",
-      preInstalledSoftware: data.software?.preInstalledSoftware || [],
+      operatingSystem: data.operatingSystem || "",
+      preInstalledSoftware: Array.isArray(data.preInstalledSoftware)
+        ? data.preInstalledSoftware
+        : [],
 
       // DESIGN
-      color: data.design?.color || "",
+      color: data.color || "",
       keyboard: {
-        backlit: Boolean(data.design?.keyboard?.backlit),
-        layout: data.design?.keyboard?.layout || "",
+        backlit: Boolean(data.keyboard?.backlit),
+        layout: data.keyboard?.layout || "",
       },
+
+      // PORTS & CONNECTIVITY
+      ports: {
+        usbTypeC: data.ports?.usbTypeC ?? prev.ports.usbTypeC,
+        usbTypeA: data.ports?.usbTypeA ?? prev.ports.usbTypeA,
+        hdmi: data.ports?.hdmi ?? prev.ports.hdmi,
+        microSD: Boolean(data.ports?.microSD),
+        rj45: Boolean(data.ports?.rj45),
+        headphoneJack:
+          data.ports?.headphoneJack !== undefined
+            ? Boolean(data.ports.headphoneJack)
+            : prev.ports.headphoneJack,
+      },
+
+      wifi: data.wifi || "",
+      bluetooth: data.bluetooth || "",
+
+      // POWER
+      battery: {
+        capacity: data.battery?.capacity || "",
+      },
+      charger: {
+        power: data.charger?.power || "",
+        type: data.charger?.type || "",
+      },
+
+      // CAMERA / AUDIO
+      camera: {
+        resolution: data.camera?.resolution || "",
+      },
+      audio: data.audio || "",
+
+      // SECURITY
+      fingerprintReader: Boolean(data.fingerprintReader),
+      opticalDrive: Boolean(data.opticalDrive),
+
+      // PRICING (IMPORTANT)
+      originalPrice: data.originalPrice ?? "",
+      sellingPrice: data.sellingPrice ?? "",
+      negotiable: true, // ALWAYS TRUE as per prompt
+
+      // WARRANTY
+      warrantyAvailable: Boolean(data.warrantyAvailable),
+      warrantyPeriod: data.warrantyPeriod || "",
+
+      // STATUS
+      status: data.status || "AVAILABLE",
     }));
 
     toast.success("Product details extracted successfully ✨");
@@ -479,6 +599,7 @@ const handleExtract = async () => {
     setExtractLoading(false);
   }
 };
+
 
 
   const progress = calculateProgress();
@@ -516,11 +637,11 @@ const handleExtract = async () => {
           <p className="text-slate-400">Add new or second-hand product to your inventory</p>
         </div>
         <ExtractDetailsBox
-  value={rawText}
-  onChange={setRawText}
-  onExtract={handleExtract}
-  loading={extractLoading}
-/>
+          value={rawText}
+          onChange={setRawText}
+          onExtract={handleExtract}
+          loading={extractLoading}
+        />
 
 
 
@@ -647,21 +768,32 @@ const handleExtract = async () => {
           <Section icon={Cpu} title="Hardware Specifications">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input
-                label="RAM"
-                placeholder="e.g., 8GB, 16GB"
-                value={formData.ram}
-                onChange={(e) => handleChange('ram', e.target.value)}
-                onBlur={() => handleBlur('ram')}
-                error={touched.ram && errors.ram}
+                label="RAM Size"
+                placeholder="16GB"
+                value={formData.ram.size}
+                onChange={(e) => handleChange("ram.size", e.target.value)}
               />
+
               <Input
-                label="Storage (ROM)"
-                placeholder="e.g., 128GB, 256GB"
-                value={formData.rom}
-                onChange={(e) => handleChange('rom', e.target.value)}
-                onBlur={() => handleBlur('rom')}
-                error={touched.rom && errors.rom}
+                label="RAM Type (LPDDR4X)"
+                value={formData.ram.type}
+                onChange={(e) => handleChange("ram.type", e.target.value)}
               />
+
+              <Input
+                label="Storage Size"
+                placeholder="512GB"
+                value={formData.storage.size}
+                onChange={(e) => handleChange("storage.size", e.target.value)}
+              />
+
+              <Input
+                label="Storage Type (SSD / HDD)"
+                value={formData.storage.type}
+                onChange={(e) => handleChange("storage.type", e.target.value)}
+              />
+
+
 
               <div>
                 <label className="text-sm font-medium text-slate-300 mb-2 block">Color</label>
@@ -714,6 +846,24 @@ const handleExtract = async () => {
                 value={formData.processor.generation}
                 onChange={(e) => handleChange('processor.generation', e.target.value)}
               />
+              <Input
+                label="Base Clock (GHz)"
+                value={formData.processor.baseClock}
+                onChange={(e) => handleChange("processor.baseClock", e.target.value)}
+              />
+
+              <Input
+                label="Turbo Clock (GHz)"
+                value={formData.processor.turboClock}
+                onChange={(e) => handleChange("processor.turboClock", e.target.value)}
+              />
+
+              <Input
+                label="Cache (MB)"
+                value={formData.processor.cache}
+                onChange={(e) => handleChange("processor.cache", e.target.value)}
+              />
+
             </div>
 
             <Input
@@ -751,8 +901,159 @@ const handleExtract = async () => {
                 value={formData.display.refreshRate}
                 onChange={(e) => handleChange('display.refreshRate', e.target.value)}
               />
+              <Input
+                label="Brightness (nits)"
+                value={formData.display.brightness}
+                onChange={(e) => handleChange("display.brightness", e.target.value)}
+              />
+
+              <Input
+                label="Aspect Ratio (16:9)"
+                value={formData.display.aspectRatio}
+                onChange={(e) => handleChange("display.aspectRatio", e.target.value)}
+              />
+
+
             </div>
           </Section>
+          <Section icon={Cpu} title="Ports & Connectivity">
+            <Input
+              label="USB Type-C Count"
+              type="number"
+              value={formData.ports.usbTypeC}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  ports: { ...prev.ports, usbTypeC: Number(e.target.value) }
+                }))
+              }
+            />
+
+            <Input
+              label="HDMI Count"
+              type="number"
+              value={formData.ports.hdmi}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  ports: { ...prev.ports, hdmi: Number(e.target.value) }
+                }))
+              }
+            />
+
+            <Input
+              label="HDMI Count"
+              type="number"
+              value={formData.ports.hdmi}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  ports: { ...prev.ports, hdmi: Number(e.target.value) }
+                }))
+              }
+            />
+
+            <Input
+              label="HDMI Count"
+              type="number"
+              value={formData.ports.hdmi}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  ports: { ...prev.ports, hdmi: Number(e.target.value) }
+                }))
+              }
+            />
+
+
+            <Checkbox
+              label="RJ45 LAN"
+              checked={formData.ports.rj45}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  ports: { ...prev.ports, rj45: e.target.checked }
+                }))
+              }
+            />
+
+            <Checkbox
+              label="Headphone Jack"
+              checked={formData.ports.headphoneJack}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  ports: { ...prev.ports, headphoneJack: e.target.checked }
+                }))
+              }
+            />
+
+
+            <Input
+              label="Wi-Fi Version (Wi-Fi 6)"
+              value={formData.wifi}
+              onChange={(e) => handleChange("wifi", e.target.value)}
+            />
+
+            <Input
+              label="Bluetooth Version"
+              value={formData.bluetooth}
+              onChange={(e) => handleChange("bluetooth", e.target.value)}
+            />
+
+          </Section>
+          <Section icon={Shield} title="Battery & Security">
+            <Input
+              label="Battery Capacity (Wh)"
+              value={formData.battery.capacity}
+              onChange={(e) => handleChange("battery.capacity", e.target.value)}
+            />
+
+            <Input
+              label="Charger Power (W)"
+              value={formData.charger.power}
+              onChange={(e) => handleChange("charger.power", e.target.value)}
+            />
+
+            <Input
+              label="Charger Type (USB-C)"
+              value={formData.charger.type}
+              onChange={(e) => handleChange("charger.type", e.target.value)}
+            />
+
+            <Input
+              label="Camera Resolution (720p)"
+              value={formData.camera.resolution}
+              onChange={(e) => handleChange("camera.resolution", e.target.value)}
+            />
+
+            <Input label="Audio (Dolby Atmos)" />
+            <Input
+              label="Battery Capacity (Wh)"
+              value={formData.battery.capacity}
+              onChange={(e) => handleChange("battery.capacity", e.target.value)}
+            />
+
+            <Input
+              label="Charger Power (W)"
+              value={formData.charger.power}
+              onChange={(e) => handleChange("charger.power", e.target.value)}
+            />
+
+            <Input
+              label="Charger Type (USB-C)"
+              value={formData.charger.type}
+              onChange={(e) => handleChange("charger.type", e.target.value)}
+            />
+
+            <Input
+              label="Camera Resolution (720p)"
+              value={formData.camera.resolution}
+              onChange={(e) => handleChange("camera.resolution", e.target.value)}
+            />
+
+          </Section>
+
 
           {/* Software & OS */}
           <Section icon={Code} title="Software & Operating System">
@@ -976,6 +1277,7 @@ const handleExtract = async () => {
             <button
               type="submit"
               className="px-8 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold transition-all shadow-lg shadow-green-500/20 hover:shadow-green-500/40"
+              onClick={handleSubmit}
             >
               Create Product
             </button>

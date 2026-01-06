@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="mt-16 bg-gradient-to-b
+    <footer className=" bg-gradient-to-b
                        from-[#1b1b33]
                        to-[#141428]
                        text-gray-300
