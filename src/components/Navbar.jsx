@@ -20,11 +20,10 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
     `px-4 py-2 rounded-xl transition font-medium
      ${
        isActive
-         ? "bg-cyan-400 text-[#062028]"
-         : "text-gray-300 hover:text-cyan-400"
+         ? "bg-pink-400 text-[#141428]"
+         : "text-gray-300 hover:text-pink-400"
      }`;
 
-  // Get initials for fallback
   const getInitials = (name) => {
     if (!name) return "U";
     const parts = name.trim().split(" ");
@@ -34,15 +33,15 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
 
   return (
     <header className="fixed top-0 left-0 w-full h-[80px] z-50">
-      <div className="h-full backdrop-blur-xl bg-[#0f1f26]/90 border-b border-[#1f3a44]">
+      <div className="h-full backdrop-blur-xl bg-[#1b1b33]/85 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-          
-          {/* Left */}
+
+          {/* LEFT */}
           <div className="flex items-center gap-3">
             {isDashboard && (
               <button
                 onClick={onMenuClick}
-                className="md:hidden text-cyan-400"
+                className="md:hidden text-pink-400"
               >
                 <Menu size={26} />
               </button>
@@ -57,13 +56,13 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
                 alt="logo"
                 className="w-8"
               />
-              <span className="text-xl font-bold text-white">
+              <span className="text-xl font-bold text-white tracking-wide">
                 {import.meta.env.VITE_API_COMPANY_NAME}
               </span>
             </div>
           </div>
 
-          {/* Desktop */}
+          {/* DESKTOP */}
           <div className="hidden md:flex items-center gap-6">
             <NavLink to="/" className={navLinkClass}>Home</NavLink>
             <NavLink to="/about" className={navLinkClass}>About</NavLink>
@@ -73,51 +72,66 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
               <>
                 <button
                   onClick={() => navigate("/login")}
-                  className="px-5 py-2 rounded-xl bg-cyan-400 text-[#062028] font-semibold"
+                  className="px-5 py-2 rounded-xl
+                             bg-pink-400 text-[#141428]
+                             font-semibold hover:bg-pink-300 transition"
                 >
                   Login
                 </button>
+
                 <button
                   onClick={() => navigate("/signup")}
-                  className="px-5 py-2 rounded-xl border border-cyan-400 text-cyan-400"
+                  className="px-5 py-2 rounded-xl
+                             border border-pink-400
+                             text-pink-400
+                             hover:bg-pink-400 hover:text-[#141428]
+                             transition"
                 >
                   Signup
                 </button>
               </>
             ) : (
               <div className="flex items-center gap-4">
-                {/* Profile Avatar */}
+
+                {/* PROFILE */}
                 <button onClick={() => navigate("/profile")}>
                   {user.avatar?.url ? (
                     <img
                       src={user.avatar.url}
                       alt="profile"
-                      className="w-10 h-10 rounded-full object-cover border-2 border-cyan-400"
+                      className="w-10 h-10 rounded-full object-cover
+                                 border-2 border-pink-400"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center
-                                    bg-gradient-to-br from-cyan-500 to-blue-500
-                                    text-sm font-bold text-[#062028]">
+                    <div className="w-10 h-10 rounded-full
+                                    flex items-center justify-center
+                                    bg-gradient-to-br
+                                    from-pink-400 to-purple-500
+                                    text-sm font-bold text-[#141428]">
                       {getInitials(user.name)}
                     </div>
                   )}
                 </button>
 
-                {/* Dashboard Button */}
+                {/* DASHBOARD */}
                 {isAdmin && (
                   <button
                     onClick={() => navigate("/dashboard")}
-                    className="flex items-center gap-2 px-5 py-2 rounded-xl bg-cyan-400 text-[#062028] font-semibold"
+                    className="flex items-center gap-2 px-5 py-2
+                               rounded-xl bg-pink-400 text-[#141428]
+                               font-semibold hover:bg-pink-300 transition"
                   >
                     <LayoutDashboard size={18} />
                     Dashboard
                   </button>
                 )}
 
-                {/* Logout */}
+                {/* LOGOUT */}
                 <button
                   onClick={logout}
-                  className="flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500 text-white"
+                  className="flex items-center gap-2 px-5 py-2
+                             rounded-xl bg-red-500/90
+                             text-white hover:bg-red-500 transition"
                 >
                   <LogOut size={18} />
                   Logout
@@ -126,7 +140,7 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* MOBILE TOGGLE */}
           <button
             onClick={() => setOpen(!open)}
             className="md:hidden text-gray-300"
@@ -135,9 +149,13 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* MOBILE MENU */}
         {open && (
-          <div className="md:hidden absolute top-[80px] left-0 w-full bg-[#0f1f26]/95 border-t border-[#1f3a44] px-6 py-6 space-y-4">
+          <div className="md:hidden absolute top-[80px] left-0 w-full
+                          bg-[#1b1b33]/95 backdrop-blur-xl
+                          border-t border-white/10
+                          px-6 py-6 space-y-4">
+
             <NavLink to="/" onClick={() => setOpen(false)} className={navLinkClass}>Home</NavLink>
             <NavLink to="/about" onClick={() => setOpen(false)} className={navLinkClass}>About</NavLink>
             <NavLink to="/contact" onClick={() => setOpen(false)} className={navLinkClass}>Contact</NavLink>
@@ -146,7 +164,10 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
               <>
                 <button
                   onClick={() => navigate("/profile")}
-                  className="w-full py-2 rounded-xl border border-cyan-400 text-cyan-400"
+                  className="w-full py-2 rounded-xl
+                             border border-pink-400
+                             text-pink-400 hover:bg-pink-400
+                             hover:text-[#141428] transition"
                 >
                   Profile
                 </button>
@@ -154,7 +175,9 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
                 {isAdmin && (
                   <button
                     onClick={() => navigate("/dashboard")}
-                    className="w-full py-2 rounded-xl bg-cyan-400 text-[#062028] font-semibold"
+                    className="w-full py-2 rounded-xl
+                               bg-pink-400 text-[#141428]
+                               font-semibold hover:bg-pink-300 transition"
                   >
                     Dashboard
                   </button>
@@ -162,7 +185,8 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
 
                 <button
                   onClick={logout}
-                  className="w-full py-2 rounded-xl bg-red-500 text-white"
+                  className="w-full py-2 rounded-xl
+                             bg-red-500/90 text-white"
                 >
                   Logout
                 </button>
