@@ -3,6 +3,7 @@ import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, Ch
 import axios from 'axios';
 import toast from "react-hot-toast";
 import ExtractDetailsBox from '../../components/ExtractDetailsBox';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -140,7 +141,7 @@ export default function CreateProduct() {
 
 
   const [rawText, setRawText] = useState("");
-
+  const navigate = useNavigate()
 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -450,6 +451,8 @@ export default function CreateProduct() {
 
       toast.success("Product created successfully!", { id: toastId });
       console.log("Response:", res.data);
+      navigate("/products");
+
     } catch (error) {
       toast.error(
         error.response?.data?.msg || "Failed to create product",

@@ -4,7 +4,6 @@ import axios from "axios";
 
 export default function ProductViewModal({ productId, onClose }) {
   const [product, setProduct] = useState(null);
-  const [activeImage, setActiveImage] = useState(null);
 
   useEffect(() => {
     if (!productId) return;
@@ -14,13 +13,7 @@ export default function ProductViewModal({ productId, onClose }) {
         `${import.meta.env.VITE_API_PRODUCT}/${productId}`,
         { withCredentials: true }
       );
-
       setProduct(res.data.data);
-
-      // set first image as default
-      if (res.data.data?.images?.length > 0) {
-        setActiveImage(res.data.data.images[0].url);
-      }
     };
 
     fetchProduct();
@@ -43,75 +36,108 @@ export default function ProductViewModal({ productId, onClose }) {
         ) : (
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
 
-            {/* =====================
-               IMAGE SECTION
-            ===================== */}
-            <div>
-              {/* MAIN IMAGE */}
-              <div className="bg-slate-800 rounded-lg overflow-hidden border border-slate-700 h-72 flex items-center justify-center">
-                {activeImage ? (
-                  <img
-                    src={activeImage}
-                    alt={product.title}
-                    className="h-full w-full object-contain"
-                  />
-                ) : (
-                  <span className="text-slate-400">No Image</span>
-                )}
-              </div>
-
-              {/* THUMBNAILS */}
-              {product.images?.length > 1 && (
-                <div className="flex gap-3 mt-4 overflow-x-auto">
-                  {product.images.map((img) => (
-                    <button
-                      key={img._id}
-                      onClick={() => setActiveImage(img.url)}
-                      className={`h-16 w-16 rounded-lg border overflow-hidden flex-shrink-0 ${
-                        activeImage === img.url
-                          ? "border-green-500"
-                          : "border-slate-700"
-                      }`}
-                    >
-                      <img
-                        src={img.url}
-                        alt="thumbnail"
-                        className="h-full w-full object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
+            {/* ================= IMAGE ================= */}
+            <div className="bg-slate-800 rounded-lg border border-slate-700 h-72 flex items-center justify-center">
+              {product.images?.length > 0 ? (
+                <img
+                  src={product.images[0].url}
+                  alt={product.title}
+                  className="h-full w-full object-contain"
+                />
+              ) : (
+                <span className="text-slate-400">No Image Available</span>
               )}
             </div>
 
-            {/* =====================
-               DETAILS SECTION
-            ===================== */}
+            {/* ================= DETAILS ================= */}
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">
                 {product.title}
               </h2>
 
+              {/* BASIC INFO */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <Info label="Brand" value={product.brand} />
                 <Info label="Model" value={product.model} />
                 <Info label="Category" value={product.category} />
                 <Info label="Price" value={`₹${product.sellingPrice}`} />
-                <Info label="RAM" value={product.ram} />
-                <Info label="ROM" value={product.rom} />
-                <Info label="OS" value={product.operatingSystem} />
                 <Info label="Condition" value={product.condition} />
+                <Info label="Status" value={product.status} />
                 <Info
                   label="Warranty"
-                  value={product.warrantyAvailable ? product.warrantyPeriod : "No"}
+                  value={
+                    product.warrantyAvailable
+                      ? product.warrantyPeriod
+                      : "No"
+                  }
                 />
-                <Info label="Status" value={product.status} />
               </div>
 
+              {/* SPECIFICATIONS */}
+              <div>
+                <h3 className="text-white font-semibold mb-2">
+                  Specifications
+                </h3>
+
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <Info
+                    label="RAM"
+                    value={
+                      product.ram
+                        ? `${product.ram.size} GB ${product.ram.type}`
+                        : "-"
+                    }
+                  />
+                  <Info
+                    label="Storage"
+                    value={
+                      product.storage
+                        ? `${product.storage.size} GB ${product.storage.type}`
+                        : "-"
+                    }
+                  />
+                  <Info
+                    label="Processor"
+                    value={
+                      product.processor
+                        ? `${product.processor.company} ${product.processor.model}`
+                        : "-"
+                    }
+                  />
+                  <Info
+                    label="Display"
+                    value={
+                      product.display
+                        ? `${product.display.size}" ${product.display.panel} ${product.display.refreshRate}Hz`
+                        : "-"
+                    }
+                  />
+                  <Info
+                    label="Battery"
+                    value={
+                      product.battery
+                        ? `${product.battery.capacity} mAh`
+                        : "-"
+                    }
+                  />
+                  <Info
+                    label="Camera"
+                    value={product.camera?.resolution}
+                  />
+                  <Info label="OS" value={product.operatingSystem} />
+                  <Info label="Graphics" value={product.graphics} />
+                </div>
+              </div>
+
+              {/* DESCRIPTION */}
               {product.description && (
                 <div>
-                  <h3 className="text-white font-semibold mb-2">Description</h3>
-                  <p className="text-slate-400">{product.description}</p>
+                  <h3 className="text-white font-semibold mb-2">
+                    Description
+                  </h3>
+                  <p className="text-slate-400">
+                    {product.description}
+                  </p>
                 </div>
               )}
             </div>

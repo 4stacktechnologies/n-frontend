@@ -12,6 +12,9 @@ import {
   User,
   Calendar,
   Settings,
+  Battery,
+  Camera,
+  Plug,
 } from "lucide-react";
 
 export default function ProductDetails() {
@@ -27,7 +30,7 @@ export default function ProductDetails() {
           `${import.meta.env.VITE_API_PRODUCT}/${id}`
         );
         setProduct(res.data.data);
-        setActiveImage(res.data.data?.images?.[0]?.url);
+        setActiveImage(res.data.data?.images?.[0]?.url || null);
       } catch (err) {
         console.error("Failed to fetch product");
       } finally {
@@ -57,9 +60,7 @@ export default function ProductDetails() {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6">
       <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-2">
 
-        {/* =====================
-           IMAGE GALLERY
-        ===================== */}
+        {/* ================= IMAGE ================= */}
         <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
           <img
             src={activeImage || "/placeholder.png"}
@@ -90,9 +91,7 @@ export default function ProductDetails() {
           )}
         </div>
 
-        {/* =====================
-           DETAILS
-        ===================== */}
+        {/* ================= DETAILS ================= */}
         <div className="space-y-6">
           {/* TITLE */}
           <div>
@@ -111,12 +110,6 @@ export default function ProductDetails() {
               {product.sellingPrice}
             </p>
 
-            {product.originalPrice && (
-              <p className="text-sm text-slate-500 line-through">
-                MRP ₹{product.originalPrice}
-              </p>
-            )}
-
             {product.negotiable && (
               <span className="text-sm text-yellow-400">
                 Negotiable
@@ -130,9 +123,6 @@ export default function ProductDetails() {
             {product.isRefurbished && (
               <Badge text="Refurbished" color="blue" />
             )}
-            {product.physicalCondition && (
-              <Badge text={product.physicalCondition} />
-            )}
           </div>
 
           {/* DESCRIPTION */}
@@ -142,23 +132,28 @@ export default function ProductDetails() {
             </p>
           )}
 
-          {/* =====================
-             SPECIFICATIONS
-          ===================== */}
+          {/* ================= CORE SPECS ================= */}
           <Section title="Core Specifications">
             <Spec icon={<Cpu size={16} />} label="Processor">
-              {product.processor?.company} {product.processor?.model}{" "}
-              {product.processor?.generation}
+              {product.processor?.company} {product.processor?.model}
             </Spec>
+
             <Spec icon={<HardDrive size={16} />} label="RAM">
-              {product.ram}
+              {product.ram
+                ? `${product.ram.size} GB ${product.ram.type}`
+                : "N/A"}
             </Spec>
+
             <Spec icon={<HardDrive size={16} />} label="Storage">
-              {product.rom}
+              {product.storage
+                ? `${product.storage.size} GB ${product.storage.type}`
+                : "N/A"}
             </Spec>
+
             <Spec icon={<Settings size={16} />} label="Operating System">
               {product.operatingSystem}
             </Spec>
+
             <Spec icon={<Monitor size={16} />} label="Graphics">
               {product.graphics}
             </Spec>
@@ -168,7 +163,9 @@ export default function ProductDetails() {
           {product.display && (
             <Section title="Display">
               <Spec label="Size">{product.display.size}"</Spec>
-              <Spec label="Resolution">{product.display.resolution}</Spec>
+              <Spec label="Resolution">
+                {product.display.resolution}
+              </Spec>
               <Spec label="Panel">{product.display.panel}</Spec>
               <Spec label="Refresh Rate">
                 {product.display.refreshRate}Hz
@@ -176,17 +173,27 @@ export default function ProductDetails() {
             </Section>
           )}
 
-          {/* KEYBOARD */}
+          {/* BATTERY & CAMERA */}
+          <Section title="Battery & Camera">
+            <Spec icon={<Battery size={16} />} label="Battery">
+              {product.battery?.capacity} mAh
+            </Spec>
+            <Spec icon={<Camera size={16} />} label="Camera">
+              {product.camera?.resolution}
+            </Spec>
+            <Spec icon={<Plug size={16} />} label="Charging">
+              {product.charger?.type || "N/A"}
+            </Spec>
+          </Section>
+
+          {/* KEYBOARD (for laptops only) */}
           {product.keyboard && (
             <Section title="Keyboard">
-              <Spec
-                icon={<Keyboard size={16} />}
-                label="Backlit"
-              >
+              <Spec icon={<Keyboard size={16} />} label="Backlit">
                 {product.keyboard.backlit ? "Yes" : "No"}
               </Spec>
               <Spec label="Layout">
-                {product.keyboard.layout}
+                {product.keyboard.layout || "N/A"}
               </Spec>
             </Section>
           )}
@@ -218,9 +225,7 @@ export default function ProductDetails() {
   );
 }
 
-/* =====================
-   REUSABLE UI
-===================== */
+/* ================= UI ================= */
 
 function Section({ title, children }) {
   return (
@@ -249,9 +254,7 @@ function Badge({ text, color = "slate" }) {
     blue: "bg-blue-900/40 text-blue-400",
   };
   return (
-    <span
-      className={`px-3 py-1 rounded ${colors[color]} text-xs`}
-    >
+    <span className={`px-3 py-1 rounded ${colors[color]} text-xs`}>
       {text}
     </span>
   );

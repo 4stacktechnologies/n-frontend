@@ -65,12 +65,18 @@ export default function Home() {
           segment: "random",
         },
       });
+      console.log(`Fetched ${category} products:`, res.data.data.map((p) => ({
+        id: p._id,
+        name: p.title,
+        price: `₹${p.sellingPrice}`,
+        img: p.images?.[0] || "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1600&q=80",
+      })));
 
       return res.data.data.map((p) => ({
         id: p._id,
         name: p.title,
         price: `₹${p.sellingPrice}`,
-        img: p.images?.[0] || "/no-image.png",
+        img: p.images?.[0] || "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1600&q=80https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1600&q=80",
       }));
     } catch (error) {
       console.error("Failed to fetch products", error);
@@ -93,6 +99,7 @@ export default function Home() {
     };
 
     fetchData();
+    console.log("Fetching products for home page");
   }, []);
 
   /* ================= PRODUCT SECTION ================= */
@@ -121,7 +128,7 @@ export default function Home() {
             >
               <div className="h-44 bg-black/40 rounded-xl flex items-center justify-center mb-4">
                 <img
-                  src={item.img}
+                  src={item.img.url}
                   alt={item.name}
                   className="h-full object-contain"
                 />
@@ -174,9 +181,13 @@ export default function Home() {
               {slides[current].subtitle}
             </p>
 
-            <button className="mt-8 w-fit px-10 py-3 rounded-full bg-pink-500 text-black font-semibold hover:bg-pink-400 transition">
-              Explore Now
-            </button>
+            <button
+  onClick={() => navigate("/products")}
+  className="mt-8 w-fit px-10 py-3 rounded-full bg-pink-500 text-black font-semibold hover:bg-pink-400 transition"
+>
+  Explore Now
+</button>
+
           </div>
 
           <button
