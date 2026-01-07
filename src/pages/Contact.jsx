@@ -19,18 +19,40 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white flex flex-col items-center px-4 py-16">
-      <h1 className="text-4xl md:text-5xl font-bold mb-6 text-center">
+    <div
+      className="
+        relative min-h-screen overflow-hidden
+        bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f]
+        text-white
+        flex flex-col items-center
+        px-4 py-20
+      "
+    >
+      {/* Glow blobs */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500/20 blur-[140px]" />
+      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-600/20 blur-[160px]" />
+
+      {/* Header */}
+      <h1 className="relative text-4xl md:text-5xl font-extrabold mb-6 text-center">
         Contact Us
       </h1>
 
-      <p className="max-w-3xl text-center text-lg md:text-xl mb-12">
-        Have a question or want to work with us? Fill out the form below and we will get back to you as soon as possible.
+      <p className="relative max-w-3xl text-center text-lg md:text-xl mb-14 text-gray-400">
+        Have a question or want to work with us? Fill out the form below and we
+        will get back to you as soon as possible.
       </p>
 
+      {/* Contact Form */}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-2xl bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-lg flex flex-col gap-6"
+        className="
+          relative w-full max-w-2xl
+          bg-white/5 backdrop-blur-xl
+          border border-white/10
+          rounded-3xl
+          p-8 md:p-10
+          flex flex-col gap-6
+        "
       >
         <input
           type="text"
@@ -39,7 +61,16 @@ const Contact = () => {
           onChange={handleChange}
           placeholder="Your Name"
           required
-          className="p-4 rounded-lg bg-white/20 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
+          className="
+            w-full p-4 rounded-xl
+            bg-black/40
+            border border-white/10
+            text-white placeholder-gray-400
+            focus:outline-none
+            focus:border-pink-400
+            focus:ring-2 focus:ring-pink-400/40
+            transition
+          "
         />
 
         <input
@@ -49,7 +80,16 @@ const Contact = () => {
           onChange={handleChange}
           placeholder="Your Email"
           required
-          className="p-4 rounded-lg bg-white/20 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
+          className="
+            w-full p-4 rounded-xl
+            bg-black/40
+            border border-white/10
+            text-white placeholder-gray-400
+            focus:outline-none
+            focus:border-pink-400
+            focus:ring-2 focus:ring-pink-400/40
+            transition
+          "
         />
 
         <textarea
@@ -59,21 +99,53 @@ const Contact = () => {
           placeholder="Your Message"
           rows="6"
           required
-          className="p-4 rounded-lg bg-white/20 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-[#00bcd4]"
+          className="
+            w-full p-4 rounded-xl
+            bg-black/40
+            border border-white/10
+            text-white placeholder-gray-400
+            focus:outline-none
+            focus:border-pink-400
+            focus:ring-2 focus:ring-pink-400/40
+            transition resize-none
+          "
         ></textarea>
 
         <button
           type="submit"
-          className="bg-[#00bcd4] hover:bg-[#00a4c4] transition-colors font-semibold py-3 rounded-lg text-black"
+          className="
+            mt-2 w-full py-3 rounded-xl
+            bg-pink-400 text-[#141428]
+            font-semibold
+            hover:bg-pink-300
+            hover:shadow-[0_0_25px_rgba(236,72,153,0.6)]
+            transition
+          "
         >
           Send Message
         </button>
       </form>
 
-      <div className="mt-12 text-center space-y-4">
-        <p>Email: <span className="font-semibold">info@yourcompany.com</span></p>
-        <p>Phone: <span className="font-semibold">+91 123 456 7890</span></p>
-        <p>Address: <span className="font-semibold">123 Main Street, Your City, India</span></p>
+      {/* Contact Info */}
+      <div className="relative mt-14 text-center space-y-4 text-gray-400">
+        <p>
+          Email:{" "}
+          <span className="text-white font-medium">
+            info@yourcompany.com
+          </span>
+        </p>
+        <p>
+          Phone:{" "}
+          <span className="text-white font-medium">
+            +91 123 456 7890
+          </span>
+        </p>
+        <p>
+          Address:{" "}
+          <span className="text-white font-medium">
+            123 Main Street, Your City, India
+          </span>
+        </p>
       </div>
     </div>
   );

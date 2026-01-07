@@ -4,10 +4,13 @@ import axios from "axios";
 import { Camera, Edit2, Save, X, Loader2 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
 
+/* =========================
+   SKELETON
+========================= */
 const ProfileSkeleton = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#081b22] to-[#0f2b33] flex justify-center p-6">
-      <div className="w-full max-w-xl bg-[#11232b]/90 rounded-2xl p-6 shadow-xl border border-white/10 animate-pulse">
+    <div className="min-h-screen bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f] flex justify-center p-6">
+      <div className="w-full max-w-xl bg-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/10 animate-pulse">
         <div className="flex justify-between items-center">
           <div className="h-5 w-32 bg-white/10 rounded" />
           <div className="h-4 w-16 bg-white/10 rounded" />
@@ -58,25 +61,18 @@ const Profile = () => {
   const [preview, setPreview] = useState("");
 
   /* =========================
-     INITIALS LOGIC
+     INITIALS
   ========================= */
- const getInitials = (name) => {
-  if (!name || typeof name !== "string") return "U";
-
-  const parts = name.trim().split(" ").filter(Boolean);
-
-  if (parts.length === 0) return "U";
-
-  if (parts.length === 1) {
-    return parts[0].substring(0, 3).toUpperCase();
-  }
-
-  return (
-    parts[0].substring(0, 2) +
-    parts[parts.length - 1].substring(0, 1)
-  ).toUpperCase();
-};
-
+  const getInitials = (name) => {
+    if (!name || typeof name !== "string") return "U";
+    const parts = name.trim().split(" ").filter(Boolean);
+    if (parts.length === 0) return "U";
+    if (parts.length === 1) return parts[0].substring(0, 3).toUpperCase();
+    return (
+      parts[0].substring(0, 2) +
+      parts[parts.length - 1].substring(0, 1)
+    ).toUpperCase();
+  };
 
   /* =========================
      LOAD USER
@@ -104,7 +100,6 @@ const Profile = () => {
 
   const handleImageChange = async (e) => {
     if (!editMode) return;
-
     const file = e.target.files[0];
     if (!file) return;
 
@@ -117,7 +112,7 @@ const Profile = () => {
         avatarUrl: uploaded.url,
         avatarPublicId: uploaded.id,
       }));
-    } catch (err) {
+    } catch {
       console.error("Avatar upload failed");
     }
   };
@@ -125,19 +120,13 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-
       const res = await axios.put(
         `${import.meta.env.VITE_API_AUTH_URL}/edit-profile`,
         form,
         { withCredentials: true }
       );
-
       setUser(res.data.user);
-
-      // ✅ IMPORTANT
       setEditMode(false);
-    } catch (err) {
-      console.error("Profile update failed");
     } finally {
       setSaving(false);
     }
@@ -159,17 +148,21 @@ const Profile = () => {
      UI
   ========================= */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#081b22] to-[#0f2b33] flex justify-center p-6">
-      <div className="w-full max-w-xl bg-[#11232b]/90 rounded-2xl p-6 text-white shadow-xl border border-white/10">
+    <div className="relative min-h-screen bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f] flex justify-center p-6 overflow-hidden">
+      {/* Glow blobs */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500/20 blur-[140px]" />
+      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-600/20 blur-[160px]" />
+
+      <div className="relative w-full max-w-xl bg-white/5 backdrop-blur-xl rounded-3xl p-6 text-white border border-white/10 shadow-xl">
 
         {/* HEADER */}
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">My Profile</h2>
+          <h2 className="text-xl font-bold tracking-wide">My Profile</h2>
 
           {!editMode ? (
             <button
               onClick={() => setEditMode(true)}
-              className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
+              className="flex items-center gap-2 text-pink-400 hover:text-pink-300 transition"
             >
               <Edit2 size={16} /> Edit
             </button>
@@ -177,7 +170,7 @@ const Profile = () => {
             <div className="flex gap-3">
               <button
                 onClick={handleCancel}
-                className="text-gray-300 hover:text-white"
+                className="text-gray-400 hover:text-white transition"
               >
                 <X size={18} />
               </button>
@@ -185,7 +178,16 @@ const Profile = () => {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 px-4 py-1.5 rounded-lg disabled:opacity-50"
+                className="
+                  flex items-center gap-2
+                  bg-pink-400 text-[#141428]
+                  hover:bg-pink-300
+                  px-4 py-1.5 rounded-xl
+                  font-semibold
+                  hover:shadow-[0_0_18px_rgba(236,72,153,0.6)]
+                  disabled:opacity-50
+                  transition
+                "
               >
                 {saving ? (
                   <>
@@ -209,16 +211,16 @@ const Profile = () => {
             {preview ? (
               <img
                 src={preview}
-                className="w-28 h-28 rounded-full object-cover border-4 border-white/20"
+                className="w-28 h-28 rounded-full object-cover border-4 border-pink-400/60 shadow-[0_0_20px_rgba(236,72,153,0.6)]"
               />
             ) : (
-              <div className="w-28 h-28 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-xl font-bold">
+              <div className="w-28 h-28 rounded-full flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-500 text-xl font-bold text-[#141428] shadow-[0_0_20px_rgba(236,72,153,0.6)]">
                 {getInitials(form.name)}
               </div>
             )}
 
             {editMode && (
-              <label className="absolute bottom-1 right-1 bg-black/60 p-2 rounded-full cursor-pointer">
+              <label className="absolute bottom-1 right-1 bg-black/60 backdrop-blur p-2 rounded-full cursor-pointer hover:bg-pink-400 hover:text-[#141428] transition">
                 <Camera size={16} />
                 <input
                   type="file"
@@ -230,8 +232,12 @@ const Profile = () => {
             )}
           </div>
 
-          <h3 className="text-lg font-semibold mt-3">{user.email}</h3>
-          <p className="text-gray-400 text-sm">{user.role}</p>
+          <h3 className="text-lg font-semibold mt-3 text-white">
+            {user.email}
+          </h3>
+          <span className="mt-1 px-3 py-1 rounded-full text-xs bg-white/10 text-gray-300">
+            {user.role}
+          </span>
         </div>
 
         {/* FORM */}
@@ -249,7 +255,14 @@ const Profile = () => {
               onChange={handleChange}
               disabled={!editMode}
               rows={3}
-              className="mt-1 w-full rounded-md bg-[#0c1f26] border border-white/10 p-2 disabled:opacity-50"
+              className="
+                mt-1 w-full rounded-lg
+                bg-black/40 border border-white/10
+                p-2 text-white
+                focus:border-pink-400 focus:ring-2 focus:ring-pink-400/40
+                disabled:opacity-50
+                transition
+              "
             />
           </div>
         </div>
@@ -266,7 +279,14 @@ const Field = ({ label, ...props }) => (
     <label className="text-sm text-gray-300">{label}</label>
     <input
       {...props}
-      className="mt-1 w-full rounded-md bg-[#0c1f26] border border-white/10 p-2 disabled:opacity-50"
+      className="
+        mt-1 w-full rounded-lg
+        bg-black/40 border border-white/10
+        p-2 text-white
+        focus:border-pink-400 focus:ring-2 focus:ring-pink-400/40
+        disabled:opacity-50
+        transition
+      "
     />
   </div>
 );
