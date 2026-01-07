@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import ProductViewModal from "../../components/ProductViewModal";
 
-
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -63,24 +62,59 @@ export default function Products() {
   }, []);
 
   return (
-    <div className="p-6">
+    <div
+      className="
+        relative p-6 min-h-screen
+        bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f]
+        text-white
+      "
+    >
+      {/* Soft glow */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500/10 blur-[140px]" />
+      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-600/10 blur-[160px]" />
+
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Products</h1>
+      <div className="relative flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold tracking-wide text-white">
+          Products
+        </h1>
 
         <Link
           to="/dashboard/products/create"
-          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition"
+          className="
+            flex items-center gap-2
+            bg-gradient-to-r from-pink-400 to-purple-500
+            hover:from-pink-300 hover:to-purple-400
+            text-[#141428]
+            px-5 py-2 rounded-xl
+            font-semibold
+            hover:shadow-[0_0_20px_rgba(236,72,153,0.6)]
+            transition
+          "
         >
           <Plus size={18} />
           Add Product
         </Link>
       </div>
 
-      {/* CONTENT */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto">
+      {/* TABLE CARD */}
+      <div
+        className="
+          relative
+          bg-white/5 backdrop-blur-xl
+          border border-white/10
+          rounded-2xl
+          overflow-x-auto
+        "
+      >
         <table className="w-full text-sm">
-          <thead className="bg-slate-800 text-slate-300">
+          <thead
+            className="
+              bg-gradient-to-r from-[#0f0f23] to-[#141428]
+              text-gray-400
+              uppercase text-xs tracking-wider
+            "
+          >
             <tr>
               <th className="p-3 text-left">Title</th>
               <th className="p-3 text-left">Brand</th>
@@ -99,7 +133,7 @@ export default function Products() {
           <tbody>
             {loading && (
               <tr>
-                <td colSpan="11" className="p-4 text-center text-slate-400">
+                <td colSpan="11" className="p-6 text-center text-gray-400">
                   Loading...
                 </td>
               </tr>
@@ -107,99 +141,129 @@ export default function Products() {
 
             {!loading && products.length === 0 && (
               <tr>
-                <td colSpan="11" className="p-4 text-center text-slate-400">
+                <td colSpan="11" className="p-6 text-center text-gray-400">
                   No products found
                 </td>
               </tr>
             )}
 
             {products.map((product) => (
-              <tr key={product._id} className="border-t border-slate-800">
-                <td className="p-3 text-white font-medium">
+              <tr
+                key={product._id}
+                className="
+                  border-t border-white/5
+                  hover:bg-pink-500/5
+                  transition
+                "
+              >
+                <td className="p-3 font-medium text-white">
                   {product.title}
                 </td>
 
-                <td className="p-3 text-slate-300">
+                <td className="p-3 text-gray-300">
                   {product.brand || "-"}
                 </td>
 
-                <td className="p-3 text-slate-300">
+                <td className="p-3 text-gray-300">
                   {product.model || "-"}
                 </td>
 
-                <td className="p-3 text-slate-300">
+                <td className="p-3 text-gray-300">
                   {product.category}
                 </td>
 
-                <td className="p-3 text-slate-300">
+                <td className="p-3 text-pink-400 font-medium">
                   ₹{product.sellingPrice}
                 </td>
 
-                <td className="p-3 text-slate-300">
+                <td className="p-3 text-gray-300">
                   {product.condition}
                 </td>
 
-                <td className="p-3 text-slate-300">
+                <td className="p-3 text-gray-300">
                   {product.warrantyAvailable
                     ? product.warrantyPeriod || "Yes"
                     : "No"}
                 </td>
 
+                {/* STATUS */}
                 <td className="p-3">
                   <span
-                    className={`px-2 py-1 rounded text-xs font-semibold ${
-                      product.status === "AVAILABLE"
-                        ? "bg-green-500/20 text-green-400"
-                        : product.status === "SOLD"
-                        ? "bg-red-500/20 text-red-400"
-                        : "bg-yellow-500/20 text-yellow-400"
-                    }`}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold
+                      ${
+                        product.status === "AVAILABLE"
+                          ? "bg-green-500/20 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.4)]"
+                          : product.status === "SOLD"
+                          ? "bg-red-500/20 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.4)]"
+                          : "bg-yellow-500/20 text-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.4)]"
+                      }`}
                   >
                     {product.status}
                   </span>
                 </td>
 
+                {/* APPROVED */}
                 <td className="p-3">
                   <span
-                    className={`px-2 py-1 rounded text-xs font-semibold ${
-                      product.isApproved
-                        ? "bg-cyan-500/20 text-cyan-400"
-                        : "bg-slate-700 text-slate-300"
-                    }`}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold
+                      ${
+                        product.isApproved
+                          ? "bg-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.4)]"
+                          : "bg-white/10 text-gray-400"
+                      }`}
                   >
                     {product.isApproved ? "Approved" : "Pending"}
                   </span>
                 </td>
 
-                <td className="p-3 text-slate-400">
+                <td className="p-3 text-gray-400">
                   {product.createdAt
                     ? new Date(product.createdAt).toLocaleDateString()
                     : "-"}
                 </td>
 
-                <td className="p-3 text-center flex justify-center gap-3">
+                {/* ACTIONS */}
+                <td className="p-3 flex justify-center gap-4">
                   <Link
                     to={`/dashboard/products/edit/${product._id}`}
-                    className="text-blue-400 hover:text-blue-500 transition"
+                    className="
+                      text-cyan-400
+                      hover:text-cyan-300
+                      hover:scale-110
+                      hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]
+                      transition
+                    "
                     title="Edit Product"
                   >
                     <Pencil size={18} />
                   </Link>
 
                   <button
-                      onClick={() => {
-                        setSelectedProductId(product._id);
-                        setIsViewOpen(true);
-                      }}
-                      className="text-green-400 hover:text-green-500"
-                      title="View Product"
-                    >
-                      <Eye size={18} />
-                    </button>
+                    onClick={() => {
+                      setSelectedProductId(product._id);
+                      setIsViewOpen(true);
+                    }}
+                    className="
+                      text-green-400
+                      hover:text-green-300
+                      hover:scale-110
+                      hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]
+                      transition
+                    "
+                    title="View Product"
+                  >
+                    <Eye size={18} />
+                  </button>
 
                   <button
                     onClick={() => deleteProduct(product._id)}
-                    className="text-red-400 hover:text-red-500 transition"
+                    className="
+                      text-red-400
+                      hover:text-red-300
+                      hover:scale-110
+                      hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]
+                      transition
+                    "
                     title="Delete Product"
                   >
                     <Trash2 size={18} />
@@ -210,7 +274,9 @@ export default function Products() {
           </tbody>
         </table>
       </div>
-       {isViewOpen && (
+
+      {/* VIEW MODAL */}
+      {isViewOpen && (
         <ProductViewModal
           productId={selectedProductId}
           onClose={() => setIsViewOpen(false)}

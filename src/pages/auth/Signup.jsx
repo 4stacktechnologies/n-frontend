@@ -96,18 +96,36 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b1c22] via-[#0f2027] to-[#13232a] p-4 relative overflow-hidden">
+    <div
+      className="
+        relative min-h-screen flex items-center justify-center p-4
+        bg-gradient-to-br from-[#141428] via-[#1b1b33] to-[#0f0f23]
+        overflow-hidden
+      "
+    >
       <Toaster position="top-right" />
 
-      {/* Glow */}
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+      {/* Glow blobs */}
+      <div className="absolute -top-40 -right-40 w-[30rem] h-[30rem] bg-pink-500/20 blur-[160px]" />
+      <div className="absolute -bottom-40 -left-40 w-[30rem] h-[30rem] bg-purple-600/20 blur-[180px]" />
 
-      <div className="relative z-10 w-[420px] bg-[#0f1f26]/90 backdrop-blur-xl p-8 rounded-3xl shadow-[0_0_60px_rgba(0,200,255,0.15)]">
-        {/* LOGO */}
+      <div
+        className="
+          relative z-10 w-[420px]
+          bg-white/5 backdrop-blur-xl
+          border border-white/10
+          p-8 rounded-3xl
+          shadow-[0_0_50px_rgba(236,72,153,0.15)]
+        "
+      >
+        {/* Branding */}
         <div className="text-center mb-6">
-          <img src={import.meta.env.VITE_API_LOGO} alt="logo" className="w-14 mx-auto mb-2" />
-          <h2 className="text-2xl font-bold text-white">
+          <img
+            src={import.meta.env.VITE_API_LOGO}
+            alt="logo"
+            className="w-14 mx-auto mb-2 drop-shadow-[0_0_15px_rgba(236,72,153,0.6)]"
+          />
+          <h2 className="text-2xl font-bold tracking-wide text-white">
             {import.meta.env.VITE_API_COMPANY_NAME}
           </h2>
           <p className="text-gray-400 text-sm">
@@ -115,20 +133,40 @@ export default function Signup() {
           </p>
         </div>
 
-        {/* SIGNUP FORM */}
+        {/* Signup Form */}
         <div className="space-y-4">
           <input
             name="name"
             placeholder="Full Name"
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
+            className="
+              w-full px-4 py-3
+              bg-black/40
+              border border-white/10
+              rounded-xl
+              text-gray-200 placeholder-gray-500
+              focus:outline-none
+              focus:border-pink-400
+              focus:ring-2 focus:ring-pink-400/40
+              transition
+            "
           />
 
           <input
             name="email"
             placeholder="Email"
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
+            className="
+              w-full px-4 py-3
+              bg-black/40
+              border border-white/10
+              rounded-xl
+              text-gray-200 placeholder-gray-500
+              focus:outline-none
+              focus:border-pink-400
+              focus:ring-2 focus:ring-pink-400/40
+              transition
+            "
           />
 
           <input
@@ -136,40 +174,89 @@ export default function Signup() {
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
+            className="
+              w-full px-4 py-3
+              bg-black/40
+              border border-white/10
+              rounded-xl
+              text-gray-200 placeholder-gray-500
+              focus:outline-none
+              focus:border-pink-400
+              focus:ring-2 focus:ring-pink-400/40
+              transition
+            "
           />
 
           <input
             name="mobile"
             placeholder="Mobile (optional)"
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
+            className="
+              w-full px-4 py-3
+              bg-black/40
+              border border-white/10
+              rounded-xl
+              text-gray-200 placeholder-gray-500
+              focus:outline-none
+              focus:border-pink-400
+              focus:ring-2 focus:ring-pink-400/40
+              transition
+            "
           />
 
           <button
             onClick={signup}
             disabled={loadingSignup}
-            className="w-full bg-cyan-400 hover:bg-cyan-300 text-[#062028] py-3 rounded-xl font-semibold transition"
+            className="
+              w-full py-3 rounded-xl
+              bg-gradient-to-r from-pink-400 to-purple-500
+              hover:from-pink-300 hover:to-purple-400
+              text-[#141428]
+              font-semibold
+              disabled:opacity-50
+              hover:shadow-[0_0_25px_rgba(236,72,153,0.6)]
+              transition
+            "
           >
             {loadingSignup ? "Sending OTP..." : "Signup"}
           </button>
         </div>
 
-        {/* OTP SECTION */}
+        {/* OTP Section */}
         {otpSent && (
-          <div className="mt-6 border-t border-[#1f3a44] pt-4 space-y-4">
+          <div className="mt-6 border-t border-white/10 pt-4 space-y-4">
             <input
               maxLength="6"
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full px-4 py-3 bg-[#132a33] border border-[#1f3a44] rounded-xl text-center tracking-widest text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-400"
+              className="
+                w-full px-4 py-3
+                bg-black/40
+                border border-white/10
+                rounded-xl
+                text-center tracking-widest
+                text-gray-200 placeholder-gray-500
+                focus:outline-none
+                focus:border-pink-400
+                focus:ring-2 focus:ring-pink-400/40
+                transition
+              "
             />
 
             <button
               onClick={verifyOtp}
               disabled={loadingOtp}
-              className="w-full bg-cyan-400 hover:bg-cyan-300 text-[#062028] py-3 rounded-xl font-semibold transition"
+              className="
+                w-full py-3 rounded-xl
+                bg-gradient-to-r from-pink-400 to-purple-500
+                hover:from-pink-300 hover:to-purple-400
+                text-[#141428]
+                font-semibold
+                disabled:opacity-50
+                hover:shadow-[0_0_25px_rgba(236,72,153,0.6)]
+                transition
+              "
             >
               {loadingOtp ? "Verifying..." : "Verify OTP"}
             </button>
@@ -182,7 +269,7 @@ export default function Signup() {
               ) : (
                 <button
                   onClick={resendOtp}
-                  className="text-cyan-400 font-semibold"
+                  className="text-pink-400 font-semibold hover:underline"
                 >
                   Resend OTP
                 </button>
@@ -191,12 +278,12 @@ export default function Signup() {
           </div>
         )}
 
-        {/* LOGIN LINK */}
+        {/* Login link */}
         <p className="text-center text-sm mt-6 text-gray-400">
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login", { state: { from } })}
-            className="text-cyan-400 font-semibold cursor-pointer hover:underline"
+            className="text-pink-400 font-semibold cursor-pointer hover:underline"
           >
             Login
           </span>

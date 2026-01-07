@@ -26,41 +26,68 @@ export default function UserProducts() {
       }
     };
 
-    console.log("Fetching user products...");
     fetchProducts();
   }, []);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-400">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#141428] via-[#1b1b33] to-[#0f0f23] text-gray-400">
         Loading products...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8">
+    <div
+      className="
+        relative min-h-screen overflow-hidden
+        bg-gradient-to-br
+        from-[#141428]
+        via-[#1b1b33]
+        to-[#0f0f23]
+        p-6
+      "
+    >
+      {/* Glow blobs */}
+      <div className="absolute -top-40 -left-40 w-[32rem] h-[32rem] bg-pink-500/20 blur-[160px]" />
+      <div className="absolute top-1/3 -right-40 w-[32rem] h-[32rem] bg-purple-600/20 blur-[180px]" />
+
+      <div className="relative max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold tracking-wide text-white mb-8">
           Available Products
         </h1>
 
         {products.length === 0 && (
-          <p className="text-slate-400">No products available</p>
+          <p className="text-gray-400">No products available</p>
         )}
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
             <div
               key={product._id}
-              className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition"
+              className="
+                group
+                bg-white/5 backdrop-blur-xl
+                border border-white/10
+                rounded-3xl overflow-hidden
+                transition-all duration-300
+                hover:scale-[1.03]
+                hover:shadow-[0_0_35px_rgba(236,72,153,0.35)]
+              "
             >
               {/* IMAGE */}
-              <img
-                src={product.images?.[0]?.url || "/placeholder.png"}
-                alt={product.title}
-                className="h-52 w-full object-cover"
-              />
+              <div className="relative overflow-hidden rounded-t-3xl">
+                <img
+                  src={product.images?.[0]?.url || "/placeholder.png"}
+                  alt={product.title}
+                  className="
+                    h-52 w-full object-cover
+                    transition-transform duration-500
+                    group-hover:scale-110
+                  "
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              </div>
 
               {/* CONTENT */}
               <div className="p-4 space-y-3">
@@ -69,56 +96,56 @@ export default function UserProducts() {
                   <h2 className="text-lg font-semibold text-white line-clamp-1">
                     {product.title}
                   </h2>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-gray-400">
                     {product.brand} • {product.model}
                   </p>
                 </div>
 
                 {/* BADGES */}
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <span className="px-2 py-1 rounded bg-slate-800 text-slate-300">
+                  <span className="px-3 py-1 rounded-full bg-white/10 text-gray-300">
                     {product.condition}
                   </span>
 
                   {product.isRefurbished && (
-                    <span className="px-2 py-1 rounded bg-blue-900/40 text-blue-400">
+                    <span className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.45)]">
                       Refurbished
                     </span>
                   )}
 
                   {product.negotiable && (
-                    <span className="px-2 py-1 rounded bg-yellow-900/40 text-yellow-400">
+                    <span className="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.45)]">
                       Negotiable
                     </span>
                   )}
                 </div>
 
-                {/* KEY SPECS */}
-                <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+                {/* SPECS */}
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-300">
                   {product.processor?.model && (
                     <Spec
-                      icon={<Cpu size={14} />}
+                      icon={<Cpu size={14} className="text-cyan-400" />}
                       value={`${product.processor.model} ${product.processor.generation || ""}`}
                     />
                   )}
 
                   {product.ram && (
                     <Spec
-                      icon={<MemoryStick size={14} />}
+                      icon={<MemoryStick size={14} className="text-cyan-400" />}
                       value={`${product.ram} RAM`}
                     />
                   )}
 
                   {product.rom && (
                     <Spec
-                      icon={<HardDrive size={14} />}
+                      icon={<HardDrive size={14} className="text-cyan-400" />}
                       value={product.rom}
                     />
                   )}
 
                   {product.graphics && (
                     <Spec
-                      icon={<Monitor size={14} />}
+                      icon={<Monitor size={14} className="text-cyan-400" />}
                       value={`Graphics ${product.graphics}`}
                     />
                   )}
@@ -126,7 +153,7 @@ export default function UserProducts() {
 
                 {/* DISPLAY */}
                 {product.display && (
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-gray-400">
                     Display: {product.display.size}" {product.display.resolution} •{" "}
                     {product.display.refreshRate}Hz
                   </p>
@@ -134,7 +161,7 @@ export default function UserProducts() {
 
                 {/* PRICE */}
                 <div className="flex items-center justify-between pt-2">
-                  <p className="text-xl font-bold text-green-400 flex items-center gap-1">
+                  <p className="text-xl font-bold text-emerald-400 flex items-center gap-1">
                     <IndianRupee size={18} />
                     {product.sellingPrice}
                   </p>
@@ -154,10 +181,18 @@ export default function UserProducts() {
                   </p>
                 )}
 
-                {/* BUTTON */}
+                {/* CTA */}
                 <Link
                   to={`/products/${product._id}`}
-                  className="block text-center mt-3 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm transition"
+                  className="
+                    block text-center mt-3
+                    bg-gradient-to-r from-pink-400 to-purple-500
+                    hover:from-pink-300 hover:to-purple-400
+                    text-[#141428]
+                    py-2 rounded-xl text-sm font-semibold
+                    hover:shadow-[0_0_22px_rgba(236,72,153,0.6)]
+                    transition
+                  "
                 >
                   View Full Details
                 </Link>
@@ -169,7 +204,6 @@ export default function UserProducts() {
     </div>
   );
 }
-
 
 /* ======================
    SMALL COMPONENT

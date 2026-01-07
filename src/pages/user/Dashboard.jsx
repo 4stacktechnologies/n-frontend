@@ -15,12 +15,13 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
-        const dashRes = await axios.get(`${import.meta.env.VITE_API_ADMIN_URL}/dashboard`,
+        const dashRes = await axios.get(
+          `${import.meta.env.VITE_API_ADMIN_URL}/dashboard`,
           { withCredentials: true }
         );
 
-        const userRes = await axios.get(`${import.meta.env.VITE_API_ADMIN_URL}/users/all`,
+        const userRes = await axios.get(
+          `${import.meta.env.VITE_API_ADMIN_URL}/users/all`,
           { withCredentials: true }
         );
 
@@ -56,16 +57,37 @@ const Dashboard = () => {
   }, [userName, userRole, users]);
 
   if (loading)
-    return <p className="text-center mt-10 text-gray-400">Loading...</p>;
+    return (
+      <p className="text-center mt-10 text-gray-400">
+        Loading...
+      </p>
+    );
 
   if (error)
-    return <p className="text-center mt-10 text-red-400">{error}</p>;
+    return (
+      <p className="text-center mt-10 text-red-400">
+        {error}
+      </p>
+    );
 
   const { summary, charts } = dashboard;
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-gray-200 p-6 space-y-10">
-      <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+    <div
+      className="
+        relative min-h-screen p-6 space-y-10
+        bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f]
+        text-gray-200 overflow-hidden
+      "
+    >
+      {/* Glow blobs */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500/10 blur-[140px]" />
+      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-600/10 blur-[160px]" />
+
+      {/* HEADER */}
+      <h1 className="relative text-3xl font-bold tracking-wide text-white">
+        Admin Dashboard
+      </h1>
 
       {/* ================= SUMMARY ================= */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -110,16 +132,27 @@ const Dashboard = () => {
           {charts.productsByCategory.map((item) => (
             <div
               key={item._id}
-              className="bg-[#020617] border border-white/10 rounded-xl p-6 text-center hover:bg-white/5 transition"
+              className="
+                bg-white/5 backdrop-blur-xl
+                border border-white/10
+                rounded-2xl p-6 text-center
+                hover:bg-pink-500/5
+                hover:shadow-[0_0_25px_rgba(236,72,153,0.3)]
+                transition
+              "
             >
-              <p className="text-gray-400 text-sm">Category</p>
+              <p className="text-gray-400 text-sm">
+                Category
+              </p>
               <h3 className="text-xl font-semibold text-white mt-1">
                 {item._id}
               </h3>
-              <p className="text-3xl font-bold text-indigo-400 mt-3">
+              <p className="text-3xl font-bold text-pink-400 mt-3">
                 {item.count}
               </p>
-              <p className="text-gray-500 text-sm mt-1">Products</p>
+              <p className="text-gray-500 text-sm mt-1">
+                Products
+              </p>
             </div>
           ))}
         </div>
@@ -128,18 +161,36 @@ const Dashboard = () => {
   );
 };
 
-/* ================= REUSABLE DARK COMPONENTS ================= */
+/* ================= REUSABLE COMPONENTS ================= */
 
 const Card = ({ title, value }) => (
-  <div className="bg-[#020617] border border-white/10 rounded-xl p-6 text-center shadow-lg">
+  <div
+    className="
+      bg-white/5 backdrop-blur-xl
+      border border-white/10
+      rounded-2xl p-6 text-center
+      shadow-lg
+    "
+  >
     <p className="text-gray-400">{title}</p>
-    <h2 className="text-3xl font-bold text-white mt-2">{value}</h2>
+    <h2 className="text-3xl font-bold text-pink-400 mt-2">
+      {value}
+    </h2>
   </div>
 );
 
 const Section = ({ title, children }) => (
-  <div className="bg-[#020617] border border-white/10 rounded-xl p-6 shadow-lg">
-    <h2 className="text-lg font-semibold mb-4 text-white">{title}</h2>
+  <div
+    className="
+      bg-white/5 backdrop-blur-xl
+      border border-white/10
+      rounded-2xl p-6
+      shadow-lg
+    "
+  >
+    <h2 className="text-lg font-semibold mb-4 text-white">
+      {title}
+    </h2>
     {children}
   </div>
 );
@@ -147,26 +198,51 @@ const Section = ({ title, children }) => (
 const Input = (props) => (
   <input
     {...props}
-    className="bg-[#020617] border border-white/10 rounded-lg px-4 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    className="
+      bg-black/40
+      border border-white/10
+      rounded-lg px-4 py-2
+      text-gray-200 placeholder-gray-500
+      focus:outline-none
+      focus:border-pink-400
+      focus:ring-2 focus:ring-pink-400/40
+      transition
+    "
   />
 );
 
 const Select = (props) => (
   <select
     {...props}
-    className="bg-[#020617] border border-white/10 rounded-lg px-4 py-2 text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    className="
+      bg-black/40
+      border border-white/10
+      rounded-lg px-4 py-2
+      text-gray-200
+      focus:outline-none
+      focus:border-cyan-400
+      focus:ring-2 focus:ring-cyan-400/40
+      transition
+    "
   />
 );
 
 const Table = ({ headers, data }) => (
-  <div className="overflow-x-auto">
-    <table className="w-full border border-white/10">
-      <thead className="bg-[#020617]">
+  <div
+    className="
+      overflow-x-auto
+      bg-white/5 backdrop-blur-xl
+      border border-white/10
+      rounded-xl
+    "
+  >
+    <table className="w-full text-sm">
+      <thead className="bg-black/40">
         <tr>
           {headers.map((h) => (
             <th
               key={h}
-              className="border border-white/10 px-4 py-2 text-left text-gray-300"
+              className="px-4 py-2 text-left text-gray-400 font-medium"
             >
               {h}
             </th>
@@ -185,11 +261,18 @@ const Table = ({ headers, data }) => (
           </tr>
         ) : (
           data.map((row, i) => (
-            <tr key={i} className="hover:bg-white/5 transition">
+            <tr
+              key={i}
+              className="
+                border-t border-white/5
+                hover:bg-pink-500/5
+                transition
+              "
+            >
               {row.map((cell, j) => (
                 <td
                   key={j}
-                  className="border border-white/10 px-4 py-2"
+                  className="px-4 py-2 text-gray-300"
                 >
                   {cell}
                 </td>
