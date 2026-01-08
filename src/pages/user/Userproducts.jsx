@@ -8,10 +8,13 @@ import {
   Monitor,
   HardDrive,
   MemoryStick,
+  Search,
 } from "lucide-react";
 
 export default function UserProducts() {
   const [products, setProducts] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,15 +22,27 @@ export default function UserProducts() {
       try {
         const res = await axios.get(import.meta.env.VITE_API_PRODUCT);
         setProducts(res.data.data || []);
-      } catch (err) {
+        setFiltered(res.data.data || []);
+      } catch {
         console.error("Failed to fetch products");
       } finally {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
+
+  // Local search filter
+  useEffect(() => {
+    const s = search.toLowerCase();
+    setFiltered(
+      products.filter((p) =>
+        [p.title, p.brand, p.model, p.category]
+          .filter(Boolean)
+          .some((v) => v.toLowerCase().includes(s))
+      )
+    );
+  }, [search, products]);
 
   if (loading) {
     return (
@@ -53,16 +68,32 @@ export default function UserProducts() {
       <div className="absolute top-1/3 -right-40 w-[32rem] h-[32rem] bg-purple-600/20 blur-[180px]" />
 
       <div className="relative max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold tracking-wide text-white mb-8">
+        <h1 className="text-3xl font-bold tracking-wide text-white mb-6">
           Available Products
         </h1>
 
-        {products.length === 0 && (
-          <p className="text-gray-400">No products available</p>
+        {/* 🔍 SEARCH BAR */}
+        <div className="relative max-w-sm mb-8">
+          <Search
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-300"
+          />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search product..."
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/10 border border-white/20
+              text-white placeholder-pink-200 backdrop-blur-xl
+              focus:outline-none focus:border-pink-400"
+          />
+        </div>
+
+        {filtered.length === 0 && (
+          <p className="text-gray-400">No products found</p>
         )}
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
+          {filtered.map((product) => (
             <div
               key={product._id}
               className="
@@ -174,14 +205,12 @@ export default function UserProducts() {
                   )}
                 </div>
 
-                {/* STATUS */}
                 {product.status !== "AVAILABLE" && (
                   <p className="text-xs text-red-400">
                     {product.status.replace("_", " ")}
                   </p>
                 )}
 
-                {/* CTA */}
                 <Link
                   to={`/products/${product._id}`}
                   className="
@@ -205,9 +234,6 @@ export default function UserProducts() {
   );
 }
 
-/* ======================
-   SMALL COMPONENT
-====================== */
 function Spec({ icon, value }) {
   return (
     <div className="flex items-center gap-1">
