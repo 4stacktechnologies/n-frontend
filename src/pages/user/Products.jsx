@@ -12,9 +12,6 @@ export default function Products() {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
 
-  /* ======================
-     FETCH PRODUCTS
-  ====================== */
   const fetchProducts = async () => {
     const toastId = toast.loading("Loading products...");
     try {
@@ -26,18 +23,12 @@ export default function Products() {
       setProducts(res.data.data || []);
       toast.success("Products loaded", { id: toastId });
     } catch (err) {
-      toast.error(
-        err.response?.data?.msg || "Failed to load products",
-        { id: toastId }
-      );
+      toast.error(err.response?.data?.msg || "Failed to load products", { id: toastId });
     } finally {
       setLoading(false);
     }
   };
 
-  /* ======================
-     DELETE PRODUCT
-  ====================== */
   const deleteProduct = async (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
@@ -50,10 +41,7 @@ export default function Products() {
       setProducts((prev) => prev.filter((p) => p._id !== id));
       toast.success("Product deleted successfully", { id: toastId });
     } catch (err) {
-      toast.error(
-        err.response?.data?.msg || "Delete failed",
-        { id: toastId }
-      );
+      toast.error(err.response?.data?.msg || "Delete failed", { id: toastId });
     }
   };
 
@@ -62,35 +50,27 @@ export default function Products() {
   }, []);
 
   return (
-    <div
-      className="
-        relative p-6 min-h-screen
-        bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f]
-        text-white
-      "
-    >
-      {/* Soft glow */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500/10 blur-[140px]" />
-      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-600/10 blur-[160px]" />
+    <div className="relative min-h-screen p-6 text-white overflow-hidden
+      bg-gradient-to-br from-[#0b0b19] via-[#1e1038] to-[#381040]">
+
+      {/* GLOW BLOBS */}
+      <div className="absolute -top-40 -left-20 w-[420px] h-[420px] bg-pink-500/20 blur-[150px] rounded-full"></div>
+      <div className="absolute top-1/3 right-0 w-[420px] h-[420px] bg-purple-600/20 blur-[140px] rounded-full"></div>
 
       {/* HEADER */}
       <div className="relative flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold tracking-wide text-white">
+        <h1 className="text-3xl font-bold tracking-wide text-white drop-shadow-[0_0_12px_rgba(255,255,255,0.15)]">
           Products
         </h1>
 
         <Link
           to="/dashboard/products/create"
-          className="
-            flex items-center gap-2
-            bg-gradient-to-r from-pink-400 to-purple-500
-            hover:from-pink-300 hover:to-purple-400
-            text-[#141428]
-            px-5 py-2 rounded-xl
-            font-semibold
-            hover:shadow-[0_0_20px_rgba(236,72,153,0.6)]
-            transition
-          "
+          className="flex items-center gap-2
+            bg-gradient-to-r from-pink-500 to-purple-600
+            hover:from-pink-400 hover:to-purple-500
+            text-[#0b0b19] font-semibold rounded-xl px-5 py-2.5
+            transition shadow-[0_0_20px_rgba(236,72,153,0.5)]
+            hover:shadow-[0_0_28px_rgba(236,72,153,0.7)]"
         >
           <Plus size={18} />
           Add Product
@@ -98,35 +78,22 @@ export default function Products() {
       </div>
 
       {/* TABLE CARD */}
-      <div
-        className="
-          relative
-          bg-white/5 backdrop-blur-xl
-          border border-white/10
-          rounded-2xl
-          overflow-x-auto
-        "
-      >
-        <table className="w-full text-sm">
-          <thead
-            className="
-              bg-gradient-to-r from-[#0f0f23] to-[#141428]
-              text-gray-400
-              uppercase text-xs tracking-wider
-            "
-          >
+      <div className="relative backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl overflow-x-auto shadow-[0_0_40px_rgba(0,0,0,0.25)]">
+
+        <table className="w-full text-sm whitespace-nowrap">
+          <thead className="bg-gradient-to-r from-[#221235] to-[#341445] text-gray-300 uppercase text-xs tracking-wider">
             <tr>
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left">Brand</th>
-              <th className="p-3 text-left">Model</th>
-              <th className="p-3 text-left">Category</th>
-              <th className="p-3 text-left">Price</th>
-              <th className="p-3 text-left">Condition</th>
-              <th className="p-3 text-left">Warranty</th>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-left">Approved</th>
-              <th className="p-3 text-left">Created</th>
-              <th className="p-3 text-center">Actions</th>
+              <Th>Title</Th>
+              <Th>Brand</Th>
+              <Th>Model</Th>
+              <Th>Category</Th>
+              <Th>Price</Th>
+              <Th>Condition</Th>
+              <Th>Warranty</Th>
+              <Th>Status</Th>
+              <Th>Approved</Th>
+              <Th>Created</Th>
+              <Th className="text-center">Actions</Th>
             </tr>
           </thead>
 
@@ -150,90 +117,39 @@ export default function Products() {
             {products.map((product) => (
               <tr
                 key={product._id}
-                className="
-                  border-t border-white/5
-                  hover:bg-pink-500/5
-                  transition
-                "
+                className="border-t border-white/10 hover:bg-white/5 transition"
               >
-                <td className="p-3 font-medium text-white">
-                  {product.title}
-                </td>
+                <Td className="font-semibold text-white">{product.title}</Td>
+                <Td>{product.brand || "-"}</Td>
+                <Td>{product.model || "-"}</Td>
+                <Td>{product.category}</Td>
+                <Td className="text-pink-400 font-semibold">₹{product.sellingPrice}</Td>
+                <Td>{product.condition}</Td>
+                <Td>{product.warrantyAvailable ? product.warrantyPeriod || "Yes" : "No"}</Td>
 
-                <td className="p-3 text-gray-300">
-                  {product.brand || "-"}
-                </td>
+                <Td>
+                  <Badge
+                    type={
+                      product.status === "AVAILABLE"
+                        ? "green"
+                        : product.status === "SOLD"
+                        ? "red"
+                        : "yellow"
+                    }
+                    text={product.status}
+                  />
+                </Td>
 
-                <td className="p-3 text-gray-300">
-                  {product.model || "-"}
-                </td>
+                <Td>
+                  <Badge type={product.isApproved ? "cyan" : "gray"} text={product.isApproved ? "Approved" : "Pending"} />
+                </Td>
 
-                <td className="p-3 text-gray-300">
-                  {product.category}
-                </td>
+                <Td>{new Date(product.createdAt).toLocaleDateString()}</Td>
 
-                <td className="p-3 text-pink-400 font-medium">
-                  ₹{product.sellingPrice}
-                </td>
-
-                <td className="p-3 text-gray-300">
-                  {product.condition}
-                </td>
-
-                <td className="p-3 text-gray-300">
-                  {product.warrantyAvailable
-                    ? product.warrantyPeriod || "Yes"
-                    : "No"}
-                </td>
-
-                {/* STATUS */}
-                <td className="p-3">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold
-                      ${
-                        product.status === "AVAILABLE"
-                          ? "bg-green-500/20 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.4)]"
-                          : product.status === "SOLD"
-                          ? "bg-red-500/20 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.4)]"
-                          : "bg-yellow-500/20 text-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.4)]"
-                      }`}
-                  >
-                    {product.status}
-                  </span>
-                </td>
-
-                {/* APPROVED */}
-                <td className="p-3">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold
-                      ${
-                        product.isApproved
-                          ? "bg-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.4)]"
-                          : "bg-white/10 text-gray-400"
-                      }`}
-                  >
-                    {product.isApproved ? "Approved" : "Pending"}
-                  </span>
-                </td>
-
-                <td className="p-3 text-gray-400">
-                  {product.createdAt
-                    ? new Date(product.createdAt).toLocaleDateString()
-                    : "-"}
-                </td>
-
-                {/* ACTIONS */}
-                <td className="p-3 flex justify-center gap-4">
+                <td className="p-3 flex gap-4 justify-center">
                   <Link
                     to={`/dashboard/products/edit/${product._id}`}
-                    className="
-                      text-cyan-400
-                      hover:text-cyan-300
-                      hover:scale-110
-                      hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]
-                      transition
-                    "
-                    title="Edit Product"
+                    className="text-cyan-400 hover:text-cyan-300 hover:scale-110 transition"
                   >
                     <Pencil size={18} />
                   </Link>
@@ -243,28 +159,14 @@ export default function Products() {
                       setSelectedProductId(product._id);
                       setIsViewOpen(true);
                     }}
-                    className="
-                      text-green-400
-                      hover:text-green-300
-                      hover:scale-110
-                      hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]
-                      transition
-                    "
-                    title="View Product"
+                    className="text-green-400 hover:text-green-300 hover:scale-110 transition"
                   >
                     <Eye size={18} />
                   </button>
 
                   <button
                     onClick={() => deleteProduct(product._id)}
-                    className="
-                      text-red-400
-                      hover:text-red-300
-                      hover:scale-110
-                      hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.6)]
-                      transition
-                    "
-                    title="Delete Product"
+                    className="text-red-400 hover:text-red-300 hover:scale-110 transition"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -275,13 +177,33 @@ export default function Products() {
         </table>
       </div>
 
-      {/* VIEW MODAL */}
       {isViewOpen && (
-        <ProductViewModal
-          productId={selectedProductId}
-          onClose={() => setIsViewOpen(false)}
-        />
+        <ProductViewModal productId={selectedProductId} onClose={() => setIsViewOpen(false)} />
       )}
     </div>
+  );
+}
+
+const Th = ({ children, className }) => (
+  <th className={`p-3 text-left font-semibold ${className || ""}`}>{children}</th>
+);
+
+const Td = ({ children, className }) => (
+  <td className={`p-3 text-gray-300 ${className || ""}`}>{children}</td>
+);
+
+function Badge({ type, text }) {
+  const colors = {
+    green: "bg-green-500/20 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.4)]",
+    red: "bg-red-500/20 text-red-400 shadow-[0_0_10px_rgba(239,68,68,0.4)]",
+    yellow: "bg-yellow-500/20 text-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.4)]",
+    cyan: "bg-cyan-500/20 text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.4)]",
+    gray: "bg-white/10 text-gray-400",
+  };
+
+  return (
+    <span className={`px-3 py-1 rounded-full text-xs font-medium ${colors[type]}`}>
+      {text}
+    </span>
   );
 }
