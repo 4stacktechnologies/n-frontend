@@ -1,7 +1,3 @@
-// ███████████████████████████████████████████████
-// ProductDetails.jsx — HiAnime Theme + Related Items
-// ███████████████████████████████████████████████
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
@@ -26,7 +22,7 @@ export default function ProductDetails() {
   const [activeImage, setActiveImage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [related, setRelated] = useState([]); // NEW
+  const [related, setRelated] = useState([]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -36,7 +32,6 @@ export default function ProductDetails() {
         setProduct(data);
         setActiveImage(data?.images?.[0]?.url || null);
 
-        // Fetch related products after loading product
         fetchRelatedProducts(data.category);
       } catch {
         console.error("Failed to fetch product");
@@ -55,7 +50,7 @@ export default function ProductDetails() {
       );
 
       setRelated(
-        (res.data.data || []).filter((p) => p._id !== id) // avoid showing itself
+        (res.data.data || []).filter((p) => p._id !== id)
       );
     } catch (err) {
       console.error("Failed to fetch related products");
@@ -64,7 +59,7 @@ export default function ProductDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b0b1b] flex items-center justify-center text-pink-300">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center text-gray-600">
         Loading product...
       </div>
     );
@@ -72,24 +67,19 @@ export default function ProductDetails() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-[#0b0b1b] flex items-center justify-center text-pink-300">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center text-gray-600">
         Product not found
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen p-6 relative overflow-hidden bg-gradient-to-br from-[#0b0b1b] via-[#130b24] to-[#1a0d32] text-white">
-
-      {/* Background Glow */}
-      <div className="absolute -top-40 -right-40 w-[380px] h-[380px] bg-pink-500/25 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 -left-40 w-[340px] h-[340px] bg-purple-500/20 rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen p-6 bg-gray-50 text-gray-800">
 
       <div className="max-w-7xl mx-auto grid gap-8 lg:grid-cols-2">
 
         {/* IMAGE PANEL */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-[0_0_40px_rgba(255,0,180,0.2)]">
-
+        <div className="bg-white border border-gray-300 rounded-3xl p-4 shadow-sm">
           <img
             src={activeImage || "/placeholder.png"}
             alt={product.title}
@@ -104,8 +94,8 @@ export default function ProductDetails() {
                   onClick={() => setActiveImage(img.url)}
                   className={`rounded-xl overflow-hidden border transition ${
                     activeImage === img.url
-                      ? "border-pink-400 shadow-[0_0_12px_rgba(255,0,180,0.6)]"
-                      : "border-white/10 hover:border-pink-400/40"
+                      ? "border-gray-400 shadow-sm"
+                      : "border-gray-300 hover:border-gray-400"
                   }`}
                 >
                   <img
@@ -120,24 +110,25 @@ export default function ProductDetails() {
 
         {/* DETAILS PANEL */}
         <div className="space-y-6">
+
           {/* TITLE */}
           <div>
-            <h1 className="text-3xl font-bold tracking-wide">
+            <h1 className="text-3xl font-bold tracking-wide text-gray-900">
               {product.title}
             </h1>
-            <p className="text-gray-400">
+            <p className="text-gray-500">
               {product.brand} • {product.model} • {product.category}
             </p>
           </div>
 
           {/* PRICE */}
           <div>
-            <p className="text-3xl font-bold text-pink-400 flex items-center gap-1 drop-shadow-[0_0_6px_rgba(255,0,180,0.6)]">
+            <p className="text-3xl font-bold text-gray-900 flex items-center gap-1">
               <IndianRupee size={22} />
               {product.sellingPrice}
             </p>
             {product.negotiable && (
-              <span className="text-xs bg-pink-500/20 text-pink-300 border border-pink-500/40 px-3 py-1 rounded-full">
+              <span className="text-xs bg-gray-100 border border-gray-300 text-gray-600 px-3 py-1 rounded-full">
                 Negotiable
               </span>
             )}
@@ -151,7 +142,7 @@ export default function ProductDetails() {
 
           {/* DESCRIPTION */}
           {product.description && (
-            <p className="text-gray-300 leading-relaxed">
+            <p className="text-gray-600 leading-relaxed">
               {product.description}
             </p>
           )}
@@ -161,19 +152,18 @@ export default function ProductDetails() {
 
           {/* WARRANTY */}
           {product.warrantyAvailable && (
-            <div className="flex items-center gap-2 text-purple-300 text-sm">
+            <div className="flex items-center gap-2 text-green-700 text-sm">
               <ShieldCheck size={16} />
               Warranty: {product.warrantyPeriod}
             </div>
           )}
-
         </div>
       </div>
 
-      {/* ================= RELATED PRODUCTS ================= */}
+      {/* RELATED PRODUCTS */}
       {related.length > 0 && (
         <div className="max-w-7xl mx-auto mt-14">
-          <h2 className="text-2xl font-bold mb-4 text-pink-300 tracking-wide">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 tracking-wide">
             More in {product.category}
           </h2>
 
@@ -182,25 +172,22 @@ export default function ProductDetails() {
               <Link
                 key={item._id}
                 to={`/products/${item._id}`}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-[0_0_20px_rgba(255,0,180,0.15)] hover:shadow-[0_0_26px_rgba(255,0,180,0.3)] transition block"
+                className="bg-white border border-gray-300 rounded-2xl p-4 shadow-sm hover:shadow-md transition block"
               >
                 <img
                   src={item.images?.[0]?.url || "/placeholder.png"}
                   className="w-full h-40 object-cover rounded-xl mb-3"
                 />
-
-                <p className="text-white font-semibold line-clamp-1">
-                  {item.title}
-                </p>
-                <p className="text-gray-400 text-sm mb-1">
-                  {item.brand} • {item.model}
-                </p>
-
-                <p className="text-pink-400 font-bold flex items-center gap-1">
+                <p className="text-gray-900 font-semibold line-clamp-1">{item.title}</p>
+                <p className="text-gray-500 text-sm mb-1">{item.brand} • {item.model}</p>
+                <p className="text-gray-900 font-bold flex items-center gap-1">
                   <IndianRupee size={15} /> {item.sellingPrice}
                 </p>
-
-                <span className="text-xs bg-pink-500/20 border border-pink-500/20 text-pink-300 px-2 py-1 rounded-xl mt-1 inline-block">
+                <span className={`text-xs px-2 py-1 rounded-xl inline-block border ${
+                  item.condition === "Verified"
+                    ? "bg-green-100 border-green-300 text-green-700"
+                    : "bg-red-100 border-red-300 text-red-700"
+                }`}>
                   {item.condition}
                 </span>
               </Link>
@@ -208,7 +195,6 @@ export default function ProductDetails() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
@@ -259,9 +245,7 @@ function SpecsSections({ product }) {
 
       {product.keyboard && (
         <Section title="Keyboard">
-          <Spec label="Backlit">
-            {product.keyboard.backlit ? "Yes" : "No"}
-          </Spec>
+          <Spec label="Backlit">{product.keyboard.backlit ? "Yes" : "No"}</Spec>
           <Spec label="Layout">{product.keyboard.layout}</Spec>
         </Section>
       )}
@@ -282,29 +266,27 @@ function SpecsSections({ product }) {
 
 function Section({ title, children }) {
   return (
-    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-[0_0_22px_rgba(255,0,180,0.15)] mt-3">
-      <h3 className="font-semibold mb-2 text-pink-300">{title}</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-        {children}
-      </div>
+    <div className="bg-white border border-gray-300 rounded-2xl p-4 shadow-sm mt-3">
+      <h3 className="font-semibold mb-2 text-gray-500">{title}</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">{children}</div>
     </div>
   );
 }
 
 function Spec({ icon, label, children }) {
   return (
-    <div className="flex gap-2 text-gray-300">
-      {icon && <span className="text-pink-300">{icon}</span>}
-      <span className="text-gray-400">{label}:</span>
-      <span className="text-white">{children || "N/A"}</span>
+    <div className="flex gap-2">
+      {icon && <span className="text-gray-500">{icon}</span>}
+      <span className="text-gray-500">{label}:</span>
+      <span className="text-gray-900 font-medium">{children || "N/A"}</span>
     </div>
   );
 }
 
 function Badge({ text, color = "pink" }) {
   const styles = {
-    pink: "bg-pink-500/20 border-pink-500/40 text-pink-300",
-    purple: "bg-purple-500/20 border-purple-500/40 text-purple-300",
+    pink: "bg-gray-100 border-gray-300 text-gray-800",
+    purple: "bg-gray-100 border-gray-300 text-gray-800",
   };
   return (
     <span className={`px-3 py-1 rounded-full border text-xs ${styles[color]}`}>
