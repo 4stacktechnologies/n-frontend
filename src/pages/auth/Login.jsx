@@ -14,7 +14,6 @@ export default function Login() {
 
   const navigate = useNavigate();
   const location = useLocation();
-
   const from = location.state?.from?.pathname || "/";
 
   const handleLogin = async (e) => {
@@ -43,16 +42,10 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="
-        relative min-h-screen flex items-center justify-center p-4
-        bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f]
-        overflow-hidden
-      "
-    >
-      {/* Glow blobs */}
-      <div className="absolute -top-40 -right-40 w-[30rem] h-[30rem] bg-pink-500/20 blur-[160px]" />
-      <div className="absolute -bottom-40 -left-40 w-[30rem] h-[30rem] bg-purple-600/20 blur-[180px]" />
+    <div className="relative min-h-screen flex items-center justify-center p-4 bg-gray-50 overflow-hidden">
+      {/* Optional subtle background blobs */}
+      <div className="absolute -top-40 -right-40 w-[30rem] h-[30rem] bg-gray-200/20 rounded-full blur-[120px]" />
+      <div className="absolute -bottom-40 -left-40 w-[30rem] h-[30rem] bg-gray-200/20 rounded-full blur-[140px]" />
 
       <div className="relative z-10 w-full max-w-md">
         {/* Branding */}
@@ -60,36 +53,28 @@ export default function Login() {
           <img
             src={import.meta.env.VITE_API_LOGO}
             alt="logo"
-            className="w-14 mx-auto mb-2 drop-shadow-[0_0_15px_rgba(236,72,153,0.6)]"
+            className="w-14 mx-auto mb-2 drop-shadow-sm"
           />
-          <h2 className="text-2xl font-bold tracking-wide text-white">
+          <h2 className="text-2xl font-bold tracking-wide text-gray-800">
             {import.meta.env.VITE_API_COMPANY_NAME}
           </h2>
         </div>
 
-        {/* Card */}
-        <div
-          className="
-            bg-white/5 backdrop-blur-xl
-            border border-white/10
-            rounded-3xl
-            p-8
-            shadow-[0_0_50px_rgba(236,72,153,0.15)]
-          "
-        >
-          <h2 className="text-4xl font-extrabold mb-2 text-center text-white">
+        {/* Login Card */}
+        <div className="bg-white border border-gray-300 rounded-3xl p-8 shadow-md">
+          <h2 className="text-3xl font-extrabold mb-2 text-center text-gray-800">
             Log in
           </h2>
-          <p className="text-center text-gray-400 mb-8">
+          <p className="text-center text-gray-500 mb-8">
             Welcome back
           </p>
 
           <div className="space-y-6">
-            {/* Email */}
+            {/* Email Input */}
             <div className="relative">
               <div
                 className={`absolute left-4 top-1/2 -translate-y-1/2 transition ${
-                  isFocused.email ? "text-pink-400" : "text-gray-500"
+                  isFocused.email ? "text-gray-800" : "text-gray-400"
                 }`}
               >
                 <Mail className="w-5 h-5" />
@@ -103,23 +88,23 @@ export default function Login() {
                 onBlur={() => setIsFocused({ ...isFocused, email: false })}
                 className="
                   w-full pl-12 pr-4 py-4
-                  bg-black/40
-                  border border-white/10
+                  bg-white
+                  border border-gray-300
                   rounded-2xl
-                  text-gray-200 placeholder-gray-500
+                  text-gray-800 placeholder-gray-400
                   focus:outline-none
-                  focus:border-pink-400
-                  focus:ring-2 focus:ring-pink-400/40
+                  focus:border-gray-500
+                  focus:ring-2 focus:ring-gray-200
                   transition
                 "
               />
             </div>
 
-            {/* Password */}
+            {/* Password Input */}
             <div className="relative">
               <div
                 className={`absolute left-4 top-1/2 -translate-y-1/2 transition ${
-                  isFocused.password ? "text-pink-400" : "text-gray-500"
+                  isFocused.password ? "text-gray-800" : "text-gray-400"
                 }`}
               >
                 <Lock className="w-5 h-5" />
@@ -133,13 +118,13 @@ export default function Login() {
                 onBlur={() => setIsFocused({ ...isFocused, password: false })}
                 className="
                   w-full pl-12 pr-4 py-4
-                  bg-black/40
-                  border border-white/10
+                  bg-white
+                  border border-gray-300
                   rounded-2xl
-                  text-gray-200 placeholder-gray-500
+                  text-gray-800 placeholder-gray-400
                   focus:outline-none
-                  focus:border-pink-400
-                  focus:ring-2 focus:ring-pink-400/40
+                  focus:border-gray-500
+                  focus:ring-2 focus:ring-gray-200
                   transition
                 "
               />
@@ -150,12 +135,11 @@ export default function Login() {
               onClick={handleLogin}
               className="
                 w-full py-4 rounded-2xl
-                bg-gradient-to-r from-pink-400 to-purple-500
-                hover:from-pink-300 hover:to-purple-400
-                text-[#141428]
+                bg-gray-800 hover:bg-gray-700
+                text-white
                 font-semibold
                 flex items-center justify-center gap-2
-                hover:shadow-[0_0_25px_rgba(236,72,153,0.6)]
+                shadow-sm hover:shadow-md
                 transition
               "
             >
@@ -167,7 +151,7 @@ export default function Login() {
             <div className="text-center">
               <span
                 onClick={() => navigate("/reset-password")}
-                className="text-sm text-pink-400 cursor-pointer hover:underline"
+                className="text-gray-600 cursor-pointer hover:underline"
               >
                 Forgot password?
               </span>
@@ -175,25 +159,18 @@ export default function Login() {
 
             {/* Status Message */}
             {message && (
-              <div
-                className="
-                  text-center p-3
-                  bg-white/5 backdrop-blur
-                  rounded-xl
-                  text-pink-400
-                "
-              >
+              <div className="text-center p-3 bg-gray-100 rounded-xl text-gray-800">
                 {message}
               </div>
             )}
           </div>
 
-          {/* Signup */}
-          <p className="text-center text-gray-400 mt-6">
+          {/* Signup Prompt */}
+          <p className="text-center text-gray-500 mt-6">
             Don’t have an account?{" "}
             <span
               onClick={() => navigate("/signup")}
-              className="text-pink-400 font-semibold cursor-pointer hover:underline"
+              className="text-gray-800 font-semibold cursor-pointer hover:underline"
             >
               Create one
             </span>

@@ -123,7 +123,7 @@ export default function Home() {
           </span>
 
           <h1 className="text-5xl font-bold leading-tight">
-            Find Your Perfect Laptop
+            Find Your Perfect Product
           </h1>
 
           <p className="text-gray-600 max-w-lg">

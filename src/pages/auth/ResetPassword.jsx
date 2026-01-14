@@ -62,31 +62,31 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#141428] via-[#1b1b33] to-[#0f0f23] p-4 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-gray-50 p-4 overflow-hidden">
       <Toaster position="top-right" />
 
-      {/* Glow blobs */}
-      <div className="absolute -top-40 -right-40 w-96 h-96 bg-pink-500/20 blur-[160px]" />
-      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/20 blur-[180px]" />
+      {/* Soft background blobs */}
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-gray-200/20 rounded-full blur-[120px]" />
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gray-200/20 rounded-full blur-[140px]" />
 
       {/* Branding */}
       <div className="absolute top-10 text-center z-10">
         <img
           src={import.meta.env.VITE_API_LOGO}
           alt="logo"
-          className="w-14 mx-auto mb-2 drop-shadow-[0_0_15px_rgba(236,72,153,0.6)]"
+          className="w-14 mx-auto mb-2 drop-shadow-sm"
         />
-        <h2 className="text-2xl font-bold tracking-wide text-white">
+        <h2 className="text-2xl font-bold tracking-wide text-gray-800">
           {import.meta.env.VITE_API_COMPANY_NAME}
         </h2>
       </div>
 
       {/* Card */}
-      <div className="relative z-10 w-[400px] bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-[0_0_50px_rgba(236,72,153,0.15)]">
-        <h2 className="text-2xl font-bold text-center text-white mb-2">
+      <div className="relative z-10 w-full max-w-md bg-white border border-gray-300 rounded-3xl p-8 shadow-md">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
           Reset Password
         </h2>
-        <p className="text-center text-gray-400 text-sm mb-6">
+        <p className="text-center text-gray-500 text-sm mb-6">
           Securely reset your password
         </p>
 
@@ -102,15 +102,15 @@ export default function ResetPassword() {
               setOtp("");
             }}
             required
-            className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/40 transition"
+            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-500 focus:ring-2 focus:ring-gray-100 transition"
           />
 
           <button
             disabled={loadingSend || otpSent}
             className={`w-full py-3 rounded-xl font-semibold transition ${
               otpSent
-                ? "bg-white/10 text-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 text-[#141428] hover:shadow-[0_0_25px_rgba(236,72,153,0.6)]"
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-black text-white hover:bg-gray-800 shadow-sm hover:shadow-md"
             }`}
           >
             {otpSent
@@ -123,33 +123,33 @@ export default function ResetPassword() {
 
         {/* OTP + PASSWORD */}
         {otpSent && (
-          <div className="mt-6 space-y-4 border-t border-white/10 pt-4">
+          <div className="mt-6 space-y-4 border-t border-gray-200 pt-4">
             <input
               maxLength="6"
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-center tracking-widest text-gray-200 placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/40 transition"
+              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-center tracking-widest text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-500 focus:ring-2 focus:ring-gray-100 transition"
             />
 
             <input
               type="password"
               placeholder="New Password"
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/40 transition"
+              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-500 focus:ring-2 focus:ring-gray-100 transition"
             />
 
             <input
               type="password"
               placeholder="Confirm Password"
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-gray-200 placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-400/40 transition"
+              className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-500 focus:ring-2 focus:ring-gray-100 transition"
             />
 
             <button
               onClick={handleResetPassword}
               disabled={loadingReset}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-300 hover:to-purple-400 text-[#141428] font-semibold disabled:opacity-50 hover:shadow-[0_0_25px_rgba(236,72,153,0.6)] transition"
+              className="w-full py-3 rounded-xl bg-black text-white font-semibold disabled:opacity-50 shadow-sm hover:shadow-md transition"
             >
               {loadingReset ? "Updating..." : "Reset Password"}
             </button>

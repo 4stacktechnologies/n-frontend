@@ -19,135 +19,86 @@ const Contact = () => {
   };
 
   return (
-    <div
-      className="
-        relative min-h-screen overflow-hidden
-        bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f]
-        text-white
-        flex flex-col items-center
-        px-4 py-20
-      "
-    >
-      {/* Glow blobs */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500/20 blur-[140px]" />
-      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-600/20 blur-[160px]" />
+    <section className="bg-gray-50 text-gray-900">
+      <div className="max-w-7xl mx-auto px-6 py-24">
 
-      {/* Header */}
-      <h1 className="relative text-4xl md:text-5xl font-extrabold mb-6 text-center">
-        Contact Us
-      </h1>
+        {/* Header */}
+        <h1 className="text-4xl md:text-5xl font-bold text-center mb-6">
+          Contact Us
+        </h1>
 
-      <p className="relative max-w-3xl text-center text-lg md:text-xl mb-14 text-gray-400">
-        Have a question or want to work with us? Fill out the form below and we
-        will get back to you as soon as possible.
-      </p>
+        <p className="max-w-3xl mx-auto text-center text-lg md:text-xl text-gray-600 mb-16 leading-relaxed">
+          Have a question or want to work with us? Fill out the form below and we
+          will get back to you as soon as possible.
+        </p>
 
-      {/* Contact Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="
-          relative w-full max-w-2xl
-          bg-white/5 backdrop-blur-xl
-          border border-white/10
-          rounded-3xl
-          p-8 md:p-10
-          flex flex-col gap-6
-        "
-      >
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Your Name"
-          required
-          className="
-            w-full p-4 rounded-xl
-            bg-black/40
-            border border-white/10
-            text-white placeholder-gray-400
-            focus:outline-none
-            focus:border-pink-400
-            focus:ring-2 focus:ring-pink-400/40
-            transition
-          "
-        />
-
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Your Email"
-          required
-          className="
-            w-full p-4 rounded-xl
-            bg-black/40
-            border border-white/10
-            text-white placeholder-gray-400
-            focus:outline-none
-            focus:border-pink-400
-            focus:ring-2 focus:ring-pink-400/40
-            transition
-          "
-        />
-
-        <textarea
-          name="message"
-          value={formData.message}
-          onChange={handleChange}
-          placeholder="Your Message"
-          rows="6"
-          required
-          className="
-            w-full p-4 rounded-xl
-            bg-black/40
-            border border-white/10
-            text-white placeholder-gray-400
-            focus:outline-none
-            focus:border-pink-400
-            focus:ring-2 focus:ring-pink-400/40
-            transition resize-none
-          "
-        ></textarea>
-
-        <button
-          type="submit"
-          className="
-            mt-2 w-full py-3 rounded-xl
-            bg-pink-400 text-[#141428]
-            font-semibold
-            hover:bg-pink-300
-            hover:shadow-[0_0_25px_rgba(236,72,153,0.6)]
-            transition
-          "
+        {/* Contact Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="mx-auto w-full max-w-2xl bg-white border border-gray-200 rounded-2xl p-8 md:p-10 shadow-sm flex flex-col gap-6"
         >
-          Send Message
-        </button>
-      </form>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Your Name"
+            required
+            className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition"
+          />
 
-      {/* Contact Info */}
-      <div className="relative mt-14 text-center space-y-4 text-gray-400">
-        <p>
-          Email:{" "}
-          <span className="text-white font-medium">
-            info@yourcompany.com
-          </span>
-        </p>
-        <p>
-          Phone:{" "}
-          <span className="text-white font-medium">
-            +91 123 456 7890
-          </span>
-        </p>
-        <p>
-          Address:{" "}
-          <span className="text-white font-medium">
-            123 Main Street, Your City, India
-          </span>
-        </p>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Your Email"
+            required
+            className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition"
+          />
+
+          <textarea
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            placeholder="Your Message"
+            rows="6"
+            required
+            className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition resize-none"
+          />
+
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-indigo-600 py-3 text-white font-semibold transition hover:bg-indigo-700"
+          >
+            Send Message
+          </button>
+        </form>
+
+        {/* Contact Info */}
+        <div className="mt-16 text-center space-y-3 text-gray-600">
+          <p>
+            Email:{" "}
+            <span className="text-gray-900 font-medium">
+              info@yourcompany.com
+            </span>
+          </p>
+          <p>
+            Phone:{" "}
+            <span className="text-gray-900 font-medium">
+              +91 123 456 7890
+            </span>
+          </p>
+          <p>
+            Address:{" "}
+            <span className="text-gray-900 font-medium">
+              123 Main Street, Your City, India
+            </span>
+          </p>
+        </div>
+
       </div>
-    </div>
+    </section>
   );
 };
 

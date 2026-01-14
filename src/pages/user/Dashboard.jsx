@@ -39,7 +39,6 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  /* ================= USER FILTER ================= */
   useEffect(() => {
     let result = users;
 
@@ -58,39 +57,29 @@ const Dashboard = () => {
 
   if (loading)
     return (
-      <p className="text-center mt-10 text-gray-400">
-        Loading...
-      </p>
+      <p className="text-center mt-10 text-gray-500 font-medium">Loading...</p>
     );
 
   if (error)
     return (
-      <p className="text-center mt-10 text-red-400">
-        {error}
-      </p>
+      <p className="text-center mt-10 text-red-500 font-medium">{error}</p>
     );
 
   const { summary, charts } = dashboard;
 
   return (
-    <div
-      className="
-        relative min-h-screen p-6 space-y-10
-        bg-gradient-to-br from-[#0b0b1a] via-[#141428] to-[#05050f]
-        text-gray-200 overflow-hidden
-      "
-    >
-      {/* Glow blobs */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500/10 blur-[140px]" />
-      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-600/10 blur-[160px]" />
+    <div className="relative min-h-screen p-6 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 text-gray-800 overflow-hidden">
+      {/* Optional subtle ambient blobs */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-gray-200/10 rounded-full blur-[120px]" />
+      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-gray-200/10 rounded-full blur-[140px]" />
 
       {/* HEADER */}
-      <h1 className="relative text-3xl font-bold tracking-wide text-white">
+      <h1 className="relative text-3xl font-bold tracking-wide mb-8">
         Admin Dashboard
       </h1>
 
       {/* ================= SUMMARY ================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
         <Card title="Total Users" value={summary.totalUsers} />
         <Card title="Total Products" value={summary.totalProducts} />
         <Card title="Total Shops" value={summary.totalShops} />
@@ -118,11 +107,7 @@ const Dashboard = () => {
 
         <Table
           headers={["Name", "Email", "Role"]}
-          data={filteredUsers.map((u) => [
-            u.name,
-            u.email,
-            u.role,
-          ])}
+          data={filteredUsers.map((u) => [u.name, u.email, u.role])}
         />
       </Section>
 
@@ -133,26 +118,22 @@ const Dashboard = () => {
             <div
               key={item._id}
               className="
-                bg-white/5 backdrop-blur-xl
-                border border-white/10
+                bg-white/50 backdrop-blur-sm
+                border border-gray-200
                 rounded-2xl p-6 text-center
-                hover:bg-pink-500/5
-                hover:shadow-[0_0_25px_rgba(236,72,153,0.3)]
+                hover:bg-gray-100/50
+                hover:shadow-md
                 transition
               "
             >
-              <p className="text-gray-400 text-sm">
-                Category
-              </p>
-              <h3 className="text-xl font-semibold text-white mt-1">
+              <p className="text-gray-500 text-sm">Category</p>
+              <h3 className="text-xl font-semibold text-gray-800 mt-1">
                 {item._id}
               </h3>
-              <p className="text-3xl font-bold text-pink-400 mt-3">
+              <p className="text-3xl font-bold text-gray-900 mt-3">
                 {item.count}
               </p>
-              <p className="text-gray-500 text-sm mt-1">
-                Products
-              </p>
+              <p className="text-gray-400 text-sm mt-1">Products</p>
             </div>
           ))}
         </div>
@@ -164,33 +145,15 @@ const Dashboard = () => {
 /* ================= REUSABLE COMPONENTS ================= */
 
 const Card = ({ title, value }) => (
-  <div
-    className="
-      bg-white/5 backdrop-blur-xl
-      border border-white/10
-      rounded-2xl p-6 text-center
-      shadow-lg
-    "
-  >
-    <p className="text-gray-400">{title}</p>
-    <h2 className="text-3xl font-bold text-pink-400 mt-2">
-      {value}
-    </h2>
+  <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-2xl p-6 text-center shadow-md hover:shadow-lg transition">
+    <p className="text-gray-500">{title}</p>
+    <h2 className="text-3xl font-bold text-gray-900 mt-2">{value}</h2>
   </div>
 );
 
 const Section = ({ title, children }) => (
-  <div
-    className="
-      bg-white/5 backdrop-blur-xl
-      border border-white/10
-      rounded-2xl p-6
-      shadow-lg
-    "
-  >
-    <h2 className="text-lg font-semibold mb-4 text-white">
-      {title}
-    </h2>
+  <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-2xl p-6 shadow-md mb-10">
+    <h2 className="text-lg font-semibold mb-4 text-gray-800">{title}</h2>
     {children}
   </div>
 );
@@ -199,13 +162,13 @@ const Input = (props) => (
   <input
     {...props}
     className="
-      bg-black/40
-      border border-white/10
+      bg-white
+      border border-gray-300
       rounded-lg px-4 py-2
-      text-gray-200 placeholder-gray-500
+      text-gray-800 placeholder-gray-500
       focus:outline-none
-      focus:border-pink-400
-      focus:ring-2 focus:ring-pink-400/40
+      focus:border-gray-800
+      focus:ring-2 focus:ring-gray-300
       transition
     "
   />
@@ -215,34 +178,27 @@ const Select = (props) => (
   <select
     {...props}
     className="
-      bg-black/40
-      border border-white/10
+      bg-white
+      border border-gray-300
       rounded-lg px-4 py-2
-      text-gray-200
+      text-gray-800
       focus:outline-none
-      focus:border-cyan-400
-      focus:ring-2 focus:ring-cyan-400/40
+      focus:border-gray-800
+      focus:ring-2 focus:ring-gray-300
       transition
     "
   />
 );
 
 const Table = ({ headers, data }) => (
-  <div
-    className="
-      overflow-x-auto
-      bg-white/5 backdrop-blur-xl
-      border border-white/10
-      rounded-xl
-    "
-  >
+  <div className="overflow-x-auto bg-white/50 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm">
     <table className="w-full text-sm">
-      <thead className="bg-black/40">
+      <thead className="bg-gray-100">
         <tr>
           {headers.map((h) => (
             <th
               key={h}
-              className="px-4 py-2 text-left text-gray-400 font-medium"
+              className="px-4 py-2 text-left text-gray-500 font-medium"
             >
               {h}
             </th>
@@ -252,10 +208,7 @@ const Table = ({ headers, data }) => (
       <tbody>
         {data.length === 0 ? (
           <tr>
-            <td
-              colSpan={headers.length}
-              className="text-center py-4 text-gray-500"
-            >
+            <td colSpan={headers.length} className="text-center py-4 text-gray-400">
               No users found
             </td>
           </tr>
@@ -263,17 +216,10 @@ const Table = ({ headers, data }) => (
           data.map((row, i) => (
             <tr
               key={i}
-              className="
-                border-t border-white/5
-                hover:bg-pink-500/5
-                transition
-              "
+              className="border-t border-gray-200 hover:bg-gray-100/50 transition"
             >
               {row.map((cell, j) => (
-                <td
-                  key={j}
-                  className="px-4 py-2 text-gray-300"
-                >
+                <td key={j} className="px-4 py-2 text-gray-800">
                   {cell}
                 </td>
               ))}

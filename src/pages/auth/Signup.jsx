@@ -96,198 +96,188 @@ export default function Signup() {
   };
 
   return (
-    <div
-      className="
-        relative min-h-screen flex items-center justify-center p-4
-        bg-gradient-to-br from-[#141428] via-[#1b1b33] to-[#0f0f23]
-        overflow-hidden
-      "
-    >
+    <div className="relative min-h-screen flex items-center justify-center p-4 bg-gray-50 overflow-hidden">
       <Toaster position="top-right" />
 
-      {/* Glow blobs */}
-      <div className="absolute -top-40 -right-40 w-[30rem] h-[30rem] bg-pink-500/20 blur-[160px]" />
-      <div className="absolute -bottom-40 -left-40 w-[30rem] h-[30rem] bg-purple-600/20 blur-[180px]" />
+      {/* Soft background blobs */}
+      <div className="absolute -top-40 -right-40 w-[30rem] h-[30rem] bg-gray-200/20 rounded-full blur-[120px]" />
+      <div className="absolute -bottom-40 -left-40 w-[30rem] h-[30rem] bg-gray-200/20 rounded-full blur-[140px]" />
 
-      <div
-        className="
-          relative z-10 w-[420px]
-          bg-white/5 backdrop-blur-xl
-          border border-white/10
-          p-8 rounded-3xl
-          shadow-[0_0_50px_rgba(236,72,153,0.15)]
-        "
-      >
+      <div className="relative z-10 w-full max-w-md">
         {/* Branding */}
         <div className="text-center mb-6">
           <img
             src={import.meta.env.VITE_API_LOGO}
             alt="logo"
-            className="w-14 mx-auto mb-2 drop-shadow-[0_0_15px_rgba(236,72,153,0.6)]"
+            className="w-14 mx-auto mb-2 drop-shadow-sm"
           />
-          <h2 className="text-2xl font-bold tracking-wide text-white">
+          <h2 className="text-2xl font-bold tracking-wide text-gray-800">
             {import.meta.env.VITE_API_COMPANY_NAME}
           </h2>
-          <p className="text-gray-400 text-sm">
-            Create your account
-          </p>
+          <p className="text-gray-500 text-sm">Create your account</p>
         </div>
 
-        {/* Signup Form */}
-        <div className="space-y-4">
-          <input
-            name="name"
-            placeholder="Full Name"
-            onChange={handleChange}
-            className="
-              w-full px-4 py-3
-              bg-black/40
-              border border-white/10
-              rounded-xl
-              text-gray-200 placeholder-gray-500
-              focus:outline-none
-              focus:border-pink-400
-              focus:ring-2 focus:ring-pink-400/40
-              transition
-            "
-          />
+        {/* Signup Card */}
+        <div className="bg-white border border-gray-300 rounded-3xl p-8 shadow-md">
+          {/* Form Heading */}
+          <h2 className="text-3xl font-extrabold mb-2 text-center text-gray-800">
+            Sign Up
+          </h2>
 
-          <input
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-            className="
-              w-full px-4 py-3
-              bg-black/40
-              border border-white/10
-              rounded-xl
-              text-gray-200 placeholder-gray-500
-              focus:outline-none
-              focus:border-pink-400
-              focus:ring-2 focus:ring-pink-400/40
-              transition
-            "
-          />
-
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-            className="
-              w-full px-4 py-3
-              bg-black/40
-              border border-white/10
-              rounded-xl
-              text-gray-200 placeholder-gray-500
-              focus:outline-none
-              focus:border-pink-400
-              focus:ring-2 focus:ring-pink-400/40
-              transition
-            "
-          />
-
-          <input
-            name="mobile"
-            placeholder="Mobile (optional)"
-            onChange={handleChange}
-            className="
-              w-full px-4 py-3
-              bg-black/40
-              border border-white/10
-              rounded-xl
-              text-gray-200 placeholder-gray-500
-              focus:outline-none
-              focus:border-pink-400
-              focus:ring-2 focus:ring-pink-400/40
-              transition
-            "
-          />
-
-          <button
-            onClick={signup}
-            disabled={loadingSignup}
-            className="
-              w-full py-3 rounded-xl
-              bg-gradient-to-r from-pink-400 to-purple-500
-              hover:from-pink-300 hover:to-purple-400
-              text-[#141428]
-              font-semibold
-              disabled:opacity-50
-              hover:shadow-[0_0_25px_rgba(236,72,153,0.6)]
-              transition
-            "
-          >
-            {loadingSignup ? "Sending OTP..." : "Signup"}
-          </button>
-        </div>
-
-        {/* OTP Section */}
-        {otpSent && (
-          <div className="mt-6 border-t border-white/10 pt-4 space-y-4">
+          {/* Signup Form */}
+          <div className="space-y-4 mt-4">
             <input
-              maxLength="6"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              name="name"
+              placeholder="Full Name"
+              onChange={handleChange}
               className="
                 w-full px-4 py-3
-                bg-black/40
-                border border-white/10
+                bg-white
+                border border-gray-300
                 rounded-xl
-                text-center tracking-widest
-                text-gray-200 placeholder-gray-500
+                text-gray-800 placeholder-gray-400
                 focus:outline-none
-                focus:border-pink-400
-                focus:ring-2 focus:ring-pink-400/40
+                focus:border-gray-500
+                focus:ring-2 focus:ring-gray-100
+                transition
+              "
+            />
+
+            <input
+              name="email"
+              placeholder="Email"
+              onChange={handleChange}
+              className="
+                w-full px-4 py-3
+                bg-white
+                border border-gray-300
+                rounded-xl
+                text-gray-800 placeholder-gray-400
+                focus:outline-none
+                focus:border-gray-500
+                focus:ring-2 focus:ring-gray-100
+                transition
+              "
+            />
+
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              onChange={handleChange}
+              className="
+                w-full px-4 py-3
+                bg-white
+                border border-gray-300
+                rounded-xl
+                text-gray-800 placeholder-gray-400
+                focus:outline-none
+                focus:border-gray-500
+                focus:ring-2 focus:ring-gray-100
+                transition
+              "
+            />
+
+            <input
+              name="mobile"
+              placeholder="Mobile (optional)"
+              onChange={handleChange}
+              className="
+                w-full px-4 py-3
+                bg-white
+                border border-gray-300
+                rounded-xl
+                text-gray-800 placeholder-gray-400
+                focus:outline-none
+                focus:border-gray-500
+                focus:ring-2 focus:ring-gray-100
                 transition
               "
             />
 
             <button
-              onClick={verifyOtp}
-              disabled={loadingOtp}
+              onClick={signup}
+              disabled={loadingSignup}
               className="
                 w-full py-3 rounded-xl
-                bg-gradient-to-r from-pink-400 to-purple-500
-                hover:from-pink-300 hover:to-purple-400
-                text-[#141428]
+                bg-black
+                text-white
                 font-semibold
                 disabled:opacity-50
-                hover:shadow-[0_0_25px_rgba(236,72,153,0.6)]
+                shadow-sm hover:shadow-md
                 transition
               "
             >
-              {loadingOtp ? "Verifying..." : "Verify OTP"}
+              {loadingSignup ? "Sending OTP..." : "Signup"}
             </button>
-
-            <div className="text-center text-sm">
-              {timer > 0 ? (
-                <span className="text-gray-500">
-                  Resend OTP in {timer}s
-                </span>
-              ) : (
-                <button
-                  onClick={resendOtp}
-                  className="text-pink-400 font-semibold hover:underline"
-                >
-                  Resend OTP
-                </button>
-              )}
-            </div>
           </div>
-        )}
 
-        {/* Login link */}
-        <p className="text-center text-sm mt-6 text-gray-400">
-          Already have an account?{" "}
-          <span
-            onClick={() => navigate("/login", { state: { from } })}
-            className="text-pink-400 font-semibold cursor-pointer hover:underline"
-          >
-            Login
-          </span>
-        </p>
+          {/* OTP Section */}
+          {otpSent && (
+            <div className="mt-6 border-t border-gray-200 pt-4 space-y-4">
+              <input
+                maxLength="6"
+                placeholder="Enter OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="
+                  w-full px-4 py-3
+                  bg-white
+                  border border-gray-300
+                  rounded-xl
+                  text-center tracking-widest
+                  text-gray-800 placeholder-gray-400
+                  focus:outline-none
+                  focus:border-gray-500
+                  focus:ring-2 focus:ring-gray-100
+                  transition
+                "
+              />
+
+              <button
+                onClick={verifyOtp}
+                disabled={loadingOtp}
+                className="
+                  w-full py-3 rounded-xl
+                  bg-black
+                  text-white
+                  font-semibold
+                  disabled:opacity-50
+                  shadow-sm hover:shadow-md
+                  transition
+                "
+              >
+                {loadingOtp ? "Verifying..." : "Verify OTP"}
+              </button>
+
+              <div className="text-center text-sm">
+                {timer > 0 ? (
+                  <span className="text-gray-500">
+                    Resend OTP in {timer}s
+                  </span>
+                ) : (
+                  <button
+                    onClick={resendOtp}
+                    className="bg-black text-white px-3 py-1 rounded-lg font-semibold hover:bg-gray-800 transition"
+                  >
+                    Resend OTP
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Login link */}
+          <p className="text-center text-sm mt-6 text-gray-500">
+            Already have an account?{" "}
+            <span
+              onClick={() => navigate("/login", { state: { from } })}
+              className="text-gray-800 font-semibold cursor-pointer hover:underline"
+            >
+              Login
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );
