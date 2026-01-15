@@ -65,8 +65,8 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      setLaptops(await getProducts("Laptop", 3));
-      setMobiles(await getProducts("Mobile", 3));
+      setLaptops(await getProducts("Laptop", 4));
+      setMobiles(await getProducts("Mobile", 4));
       setLoading(false);
     };
     fetchData();
@@ -82,7 +82,7 @@ export default function Home() {
       {loading ? (
         <p className="text-gray-500">Loading...</p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-8">
           {items.map((item) => (
             <div
               key={item.id}

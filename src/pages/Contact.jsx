@@ -19,15 +19,15 @@ const Contact = () => {
   };
 
   return (
-    <section className="bg-gray-50 text-gray-900">
-      <div className="max-w-7xl mx-auto px-6 py-24">
+    <section className="bg-gray-50 text-gray-900 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-16 sm:pt-16 sm:pb-24">
 
         {/* Header */}
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-6">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-4 sm:mb-6">
           Contact Us
         </h1>
 
-        <p className="max-w-3xl mx-auto text-center text-lg md:text-xl text-gray-600 mb-16 leading-relaxed">
+        <p className="max-w-3xl mx-auto text-center text-base sm:text-lg md:text-xl text-gray-600 mb-10 sm:mb-16 leading-relaxed">
           Have a question or want to work with us? Fill out the form below and we
           will get back to you as soon as possible.
         </p>
@@ -35,7 +35,14 @@ const Contact = () => {
         {/* Contact Form */}
         <form
           onSubmit={handleSubmit}
-          className="mx-auto w-full max-w-2xl bg-white border border-gray-200 rounded-2xl p-8 md:p-10 shadow-sm flex flex-col gap-6"
+          className="
+            mx-auto w-full max-w-2xl
+            bg-white border border-gray-200
+            rounded-xl sm:rounded-2xl
+            p-6 sm:p-8 md:p-10
+            shadow-sm
+            flex flex-col gap-5 sm:gap-6
+          "
         >
           <input
             type="text"
@@ -44,7 +51,15 @@ const Contact = () => {
             onChange={handleChange}
             placeholder="Your Name"
             required
-            className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition"
+            className="
+              w-full rounded-lg sm:rounded-xl
+              border border-gray-300
+              bg-gray-50
+              px-4 py-3
+              text-gray-900 placeholder-gray-500
+              focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500
+              transition
+            "
           />
 
           <input
@@ -54,7 +69,15 @@ const Contact = () => {
             onChange={handleChange}
             placeholder="Your Email"
             required
-            className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition"
+            className="
+              w-full rounded-lg sm:rounded-xl
+              border border-gray-300
+              bg-gray-50
+              px-4 py-3
+              text-gray-900 placeholder-gray-500
+              focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500
+              transition
+            "
           />
 
           <textarea
@@ -62,21 +85,35 @@ const Contact = () => {
             value={formData.message}
             onChange={handleChange}
             placeholder="Your Message"
-            rows="6"
+            rows="5"
             required
-            className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition resize-none"
+            className="
+              w-full rounded-lg sm:rounded-xl
+              border border-gray-300
+              bg-gray-50
+              px-4 py-3
+              text-gray-900 placeholder-gray-500
+              focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500
+              transition resize-none
+            "
           />
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-indigo-600 py-3 text-white font-semibold transition hover:bg-indigo-700"
+            className="
+              w-full rounded-lg sm:rounded-xl
+              bg-indigo-600
+              py-3
+              text-white font-semibold
+              transition hover:bg-indigo-700
+            "
           >
             Send Message
           </button>
         </form>
 
         {/* Contact Info */}
-        <div className="mt-16 text-center space-y-3 text-gray-600">
+        <div className="mt-12 sm:mt-16 text-center space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-600">
           <p>
             Email:{" "}
             <span className="text-gray-900 font-medium">
