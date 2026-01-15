@@ -53,15 +53,15 @@ export default function UserProducts() {
 
   return (
     <section className="bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
 
         {/* Heading */}
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6 sm:mb-8">
           Available Products
         </h1>
 
         {/* Search */}
-        <div className="relative max-w-sm mb-12">
+        <div className="relative max-w-sm mb-8 sm:mb-12">
           <Search
             size={18}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -87,14 +87,14 @@ export default function UserProducts() {
         )}
 
         {/* Grid */}
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 lg:gap-8">
           {filtered.map((product) => (
             <div
               key={product._id}
               className="
                 bg-white
                 border border-gray-200
-                rounded-2xl
+                rounded-lg sm:rounded-2xl
                 overflow-hidden
                 shadow-sm
                 transition-all duration-300
@@ -102,48 +102,42 @@ export default function UserProducts() {
               "
             >
               {/* Image */}
-              <div className="aspect-[16/10] overflow-hidden">
+              <div className="aspect-[4/3] sm:aspect-[16/10] overflow-hidden">
                 <img
-                  src={product.images?.[0]?.url || "/placeholder.png"}
+                  src={product.images?.[0]?.url || '/placeholder.png'}
                   alt={product.title}
                   className="w-full h-full object-cover"
                 />
               </div>
 
               {/* Content */}
-              <div className="p-5 space-y-4">
+              <div className="p-2.5 sm:p-5 space-y-2 sm:space-y-4">
 
                 {/* Title */}
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900 line-clamp-1">
-                    {product.title}
-                  </h2>
-                  <p className="text-sm text-gray-500">
-                    {product.brand} • {product.model}
-                  </p>
-                </div>
+                <h2 className="text-sm sm:text-lg font-semibold text-gray-900 line-clamp-1">
+                  {product.title}
+                </h2>
+
+                {/* Brand / Model (desktop only) */}
+                <p className="hidden sm:block text-sm text-gray-500">
+                  {product.brand} • {product.model}
+                </p>
 
                 {/* Badges */}
-                <div className="flex flex-wrap gap-2 text-xs">
-                  <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+                <div className="flex flex-wrap gap-1 sm:gap-2 text-[10px] sm:text-xs">
+                  <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">
                     {product.condition}
                   </span>
 
                   {product.isRefurbished && (
-                    <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-600">
+                    <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
                       Refurbished
-                    </span>
-                  )}
-
-                  {product.negotiable && (
-                    <span className="px-3 py-1 rounded-full bg-yellow-50 text-yellow-700">
-                      Negotiable
                     </span>
                   )}
                 </div>
 
-                {/* Specs */}
-                <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
+                {/* Specs (desktop only to keep mobile compact) */}
+                <div className="hidden sm:grid grid-cols-2 gap-2 text-sm text-gray-600">
                   {product.processor?.model && (
                     <Spec
                       icon={<Cpu size={14} className="text-gray-500" />}
@@ -173,49 +167,36 @@ export default function UserProducts() {
                   )}
                 </div>
 
-                {/* Display */}
-                {product.display && (
-                  <p className="text-sm text-gray-500">
-                    Display: {product.display.size}" {product.display.resolution} •{" "}
-                    {product.display.refreshRate}Hz
-                  </p>
-                )}
-
                 {/* Price */}
-                <div className="flex items-center justify-between pt-2">
-                  <p className="text-xl font-bold text-emerald-600 flex items-center gap-1">
-                    <IndianRupee size={18} />
+                <div className="flex items-center justify-between pt-1">
+                  <p className="text-base sm:text-xl font-bold text-emerald-600 flex items-center gap-1">
+                    <IndianRupee size={14} />
                     {product.sellingPrice}
                   </p>
 
                   {product.warrantyAvailable && (
-                    <span className="text-sm text-emerald-600 flex items-center gap-1">
+                    <span className="hidden sm:flex text-sm text-emerald-600 items-center gap-1">
                       <BadgeCheck size={14} />
                       {product.warrantyPeriod}
                     </span>
                   )}
                 </div>
 
-                {product.status !== "AVAILABLE" && (
-                  <p className="text-sm text-red-500">
-                    {product.status.replace("_", " ")}
-                  </p>
-                )}
-
                 {/* CTA */}
                 <Link
                   to={`/products/${product._id}`}
                   className="
                     block w-full text-center
-                    bg-indigo-600
-                    hover:bg-indigo-700
+                    bg-indigo-600 hover:bg-indigo-700
                     text-white
-                    py-2.5 rounded-xl
-                    text-sm font-semibold
+                    py-1.5 sm:py-2.5
+                    rounded-md sm:rounded-xl
+                    text-xs sm:text-sm
+                    font-semibold
                     transition
                   "
                 >
-                  View Full Details
+                  View
                 </Link>
               </div>
             </div>
