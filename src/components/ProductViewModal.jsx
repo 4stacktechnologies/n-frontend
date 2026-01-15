@@ -20,47 +20,57 @@ export default function ProductViewModal({ productId, onClose }) {
   }, [productId]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-center items-center">
-      <div className="bg-slate-900 w-full max-w-5xl h-[90vh] rounded-xl border border-slate-800 overflow-y-auto relative">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-5xl h-[90vh] rounded-3xl shadow-xl overflow-y-auto relative transition-all">
 
         {/* CLOSE */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition"
         >
-          <X size={24} />
+          <X size={22} />
         </button>
 
         {!product ? (
-          <div className="p-6 text-center text-slate-400">Loading...</div>
+          <div className="p-10 text-center text-gray-500">
+            Loading...
+          </div>
         ) : (
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
 
             {/* ================= IMAGE ================= */}
-            <div className="bg-slate-800 rounded-lg border border-slate-700 h-72 flex items-center justify-center">
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl h-72 flex items-center justify-center">
               {product.images?.length > 0 ? (
                 <img
                   src={product.images[0].url}
                   alt={product.title}
-                  className="h-full w-full object-contain"
+                  className="h-full w-full object-contain rounded-xl"
                 />
               ) : (
-                <span className="text-slate-400">No Image Available</span>
+                <span className="text-gray-400">
+                  No Image Available
+                </span>
               )}
             </div>
 
             {/* ================= DETAILS ================= */}
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white">
-                {product.title}
-              </h2>
+            <div className="space-y-8">
+
+              {/* TITLE */}
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                  {product.title}
+                </h2>
+                <p className="text-gray-600 text-lg font-semibold">
+                  ₹{product.sellingPrice}
+                </p>
+              </div>
 
               {/* BASIC INFO */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-2 gap-5 text-sm">
                 <Info label="Brand" value={product.brand} />
                 <Info label="Model" value={product.model} />
                 <Info label="Category" value={product.category} />
-                <Info label="Price" value={`₹${product.sellingPrice}`} />
                 <Info label="Condition" value={product.condition} />
                 <Info label="Status" value={product.status} />
                 <Info
@@ -75,11 +85,11 @@ export default function ProductViewModal({ productId, onClose }) {
 
               {/* SPECIFICATIONS */}
               <div>
-                <h3 className="text-white font-semibold mb-2">
+                <h3 className="text-gray-900 font-semibold mb-3">
                   Specifications
                 </h3>
 
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-5 text-sm">
                   <Info
                     label="RAM"
                     value={
@@ -132,10 +142,10 @@ export default function ProductViewModal({ productId, onClose }) {
               {/* DESCRIPTION */}
               {product.description && (
                 <div>
-                  <h3 className="text-white font-semibold mb-2">
+                  <h3 className="text-gray-900 font-semibold mb-2">
                     Description
                   </h3>
-                  <p className="text-slate-400">
+                  <p className="text-gray-600 leading-relaxed">
                     {product.description}
                   </p>
                 </div>
@@ -152,8 +162,12 @@ export default function ProductViewModal({ productId, onClose }) {
 function Info({ label, value }) {
   return (
     <div>
-      <p className="text-slate-400">{label}</p>
-      <p className="text-white font-medium">{value || "-"}</p>
+      <p className="text-gray-500 text-xs uppercase tracking-wide">
+        {label}
+      </p>
+      <p className="text-gray-900 font-medium">
+        {value || "-"}
+      </p>
     </div>
   );
 }
