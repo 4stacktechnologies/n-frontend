@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, CheckCircle, Monitor, Code, Loader2 } from 'lucide-react';
+import { Package, Tag, Cpu, DollarSign, Shield, Image, Sparkles, AlertCircle, CheckCircle, Monitor, Code, Upload, ChevronRight, Save, X, Loader2, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import toast from "react-hot-toast";
 import { useParams, useNavigate } from 'react-router-dom';
@@ -42,16 +41,64 @@ export default function EditProduct() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
-    title: '', description: '', category: '', brand: '', model: '',
-    condition: 'NEW', usageDuration: '', physicalCondition: '', isRefurbished: false,
-    ram: '', rom: '', processor: { company: '', model: '', generation: '' },
-    graphics: '', display: { size: '', resolution: '', panel: '', refreshRate: '' },
-    operatingSystem: '', preInstalledSoftware: [], color: '',
-    keyboard: { backlit: false, layout: '' }, originalPrice: '', sellingPrice: '',
-    negotiable: false, warrantyAvailable: false, warrantyPeriod: '',
-    status: "AVAILABLE", images: []
+    title: "",
+    description: "",
+    category: "",
+    brand: "",
+    model: "",
+    condition: "NEW",
+    usageDuration: "",
+    physicalCondition: "",
+    isRefurbished: false,
+    ram: { size: "", type: "" },
+    storage: { size: "", type: "" },
+    processor: {
+      company: "",
+      model: "",
+      generation: "",
+      baseClock: "",
+      turboClock: "",
+      cache: "",
+    },
+    graphics: "",
+    display: {
+      size: "",
+      resolution: "",
+      panel: "",
+      refreshRate: "",
+      brightness: "",
+      aspectRatio: "",
+    },
+    operatingSystem: "",
+    preInstalledSoftware: [],
+    color: "",
+    keyboard: { backlit: false, layout: "" },
+    ports: {
+      usbTypeC: 0,
+      usbTypeA: 0,
+      hdmi: 0,
+      microSD: false,
+      rj45: false,
+      headphoneJack: true,
+    },
+    wifi: "",
+    bluetooth: "",
+    battery: { capacity: "" },
+    charger: { power: "", type: "" },
+    camera: { resolution: "" },
+    audio: "",
+    fingerprintReader: false,
+    opticalDrive: false,
+    originalPrice: "",
+    sellingPrice: "",
+    negotiable: false,
+    warrantyAvailable: false,
+    warrantyPeriod: "",
+    status: "AVAILABLE",
+    images: [],
   });
 
   const [errors, setErrors] = useState({});
@@ -59,7 +106,6 @@ export default function EditProduct() {
 
   useEffect(() => {
     fetchProduct();
-    // console.log("Fetching product with ID:", id, formData);
   }, [id]);
 
   const fetchProduct = async () => {
@@ -67,34 +113,119 @@ export default function EditProduct() {
       const res = await axios.get(`${import.meta.env.VITE_API_PRODUCT}/${id}`, { withCredentials: true });
       const p = res.data.data;
       
-      setFormData({
-        title: p.title || '', description: p.description || '',
-        category: p.category || '', brand: p.brand || '', model: p.model || '',
-        condition: p.condition || 'NEW', usageDuration: p.usageDuration || '',
-        physicalCondition: p.physicalCondition || '', isRefurbished: p.isRefurbished || false,
-        ram: p.ram || '', rom: p.rom || '',
-        processor: { company: p.processor?.company || '', model: p.processor?.model || '', generation: p.processor?.generation || '' },
-        graphics: p.graphics || '',
-        display: { size: p.display?.size || '', resolution: p.display?.resolution || '', panel: p.display?.panel || '', refreshRate: p.display?.refreshRate || '' },
-        operatingSystem: p.operatingSystem || '', preInstalledSoftware: p.preInstalledSoftware || [],
-        color: p.color || '', keyboard: { backlit: p.keyboard?.backlit || false, layout: p.keyboard?.layout || '' },
-        originalPrice: p.originalPrice || '', sellingPrice: p.sellingPrice || '',
-        negotiable: p.negotiable || false, warrantyAvailable: p.warrantyAvailable || false,
-        warrantyPeriod: p.warrantyPeriod || '', status: p.status || "AVAILABLE", images: p.images || []
-      });
+      console.log('Fetched product data:', p);
+      
+      // Transform the data to match CreateProduct structure
+      setFormData(prev => ({
+        ...prev,
+        title: p.title || "",
+        description: p.description || "",
+        category: p.category || "",
+        brand: p.brand || "",
+        model: p.model || "",
+        condition: p.condition || "NEW",
+        usageDuration: p.usageDuration || "",
+        physicalCondition: p.physicalCondition || "",
+        isRefurbished: p.isRefurbished || false,
+        
+        // Handle RAM - convert from string to object
+        ram: {
+          size: p.ram || (p.ram?.size || ""),
+          type: p.ram?.type || ""
+        },
+        
+        // Handle Storage - convert from string to object
+        storage: {
+          size: p.storage?.size || p.rom || "",
+          type: p.storage?.type || ""
+        },
+        
+        processor: {
+          company: p.processor?.company || "",
+          model: p.processor?.model || "",
+          generation: p.processor?.generation || "",
+          baseClock: p.processor?.baseClock || "",
+          turboClock: p.processor?.turboClock || "",
+          cache: p.processor?.cache || "",
+        },
+        
+        graphics: p.graphics || "",
+        
+        display: {
+          size: p.display?.size || "",
+          resolution: p.display?.resolution || "",
+          panel: p.display?.panel || "",
+          refreshRate: p.display?.refreshRate || "",
+          brightness: p.display?.brightness || "",
+          aspectRatio: p.display?.aspectRatio || "",
+        },
+        
+        operatingSystem: p.operatingSystem || "",
+        preInstalledSoftware: p.preInstalledSoftware || [],
+        color: p.color || "",
+        
+        keyboard: {
+          backlit: p.keyboard?.backlit || false,
+          layout: p.keyboard?.layout || "",
+        },
+        
+        ports: {
+          usbTypeC: p.ports?.usbTypeC || 0,
+          usbTypeA: p.ports?.usbTypeA || 0,
+          hdmi: p.ports?.hdmi || 0,
+          microSD: p.ports?.microSD || false,
+          rj45: p.ports?.rj45 || false,
+          headphoneJack: p.ports?.headphoneJack !== undefined ? p.ports.headphoneJack : true,
+        },
+        
+        wifi: p.wifi || "",
+        bluetooth: p.bluetooth || "",
+        
+        battery: {
+          capacity: p.battery?.capacity || "",
+        },
+        
+        charger: {
+          power: p.charger?.power || "",
+          type: p.charger?.type || "",
+        },
+        
+        camera: {
+          resolution: p.camera?.resolution || "",
+        },
+        
+        audio: p.audio || "",
+        fingerprintReader: p.fingerprintReader || false,
+        opticalDrive: p.opticalDrive || false,
+        originalPrice: p.originalPrice || "",
+        sellingPrice: p.sellingPrice || "",
+        negotiable: p.negotiable || false,
+        warrantyAvailable: p.warrantyAvailable || false,
+        warrantyPeriod: p.warrantyPeriod || "",
+        status: p.status || "AVAILABLE",
+        images: p.images || []
+      }));
+      
       setLoading(false);
     } catch (error) {
+      console.error('Error fetching product:', error);
       toast.error("Failed to load product");
       setLoading(false);
     }
   };
 
   const handleChange = (field, value) => {
-    if (field.includes('.')) {
-      const [parent, child] = field.split('.');
-      setFormData(prev => ({ ...prev, [parent]: { ...prev[parent], [child]: value } }));
+    if (field.includes(".")) {
+      const [parent, child] = field.split(".");
+      setFormData((prev) => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value,
+        },
+      }));
     } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
+      setFormData((prev) => ({ ...prev, [field]: value }));
     }
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
@@ -106,22 +237,88 @@ export default function EditProduct() {
 
   const validateField = (field) => {
     let error = '';
-    const value = field.includes('.') ? formData[field.split('.')[0]][field.split('.')[1]] : formData[field];
+    const value = field.includes('.')
+      ? formData[field.split('.')[0]][field.split('.')[1]]
+      : formData[field];
 
-    if (field === 'title' && (!value || value.trim() === '')) error = 'Title is required';
-    else if (field === 'title' && value.length < 3) error = 'Title must be at least 3 characters';
-    else if (field === 'category' && (!value || value === '')) error = 'Category is required';
-    else if (field === 'brand' && (!value || value === '')) error = 'Brand is required';
-    else if (field === 'model' && (!value || value.trim() === '')) error = 'Model is required';
-    else if (field === 'sellingPrice' && (!value || value === '')) error = 'Selling price is required';
-    else if (field === 'sellingPrice' && (isNaN(value) || parseFloat(value) <= 0)) error = 'Selling price must be greater than 0';
-    else if (field === 'sellingPrice' && formData.originalPrice && parseFloat(value) > parseFloat(formData.originalPrice)) error = 'Selling price must be ≤ original price';
-    else if (field === 'originalPrice' && value && (isNaN(value) || parseFloat(value) <= 0)) error = 'Original price must be greater than 0';
-    else if (field === 'ram' && value && !/^\d+\s?(GB|MB|gb|mb)$/i.test(value.trim())) error = 'RAM format should be like "8GB"';
-    else if (field === 'rom' && value && !/^\d+\s?(GB|TB|gb|tb)$/i.test(value.trim())) error = 'Storage format should be like "128GB"';
-    else if (field === 'usageDuration' && formData.condition === 'USED' && (!value || value.trim() === '')) error = 'Usage duration is required for used products';
-    else if (field === 'physicalCondition' && formData.condition === 'USED' && (!value || value === '')) error = 'Physical condition is required for used products';
-    else if (field === 'warrantyPeriod' && formData.warrantyAvailable && (!value || value.trim() === '')) error = 'Warranty period is required when warranty is available';
+    switch (field) {
+      case 'title':
+        if (!value || value.trim() === '') {
+          error = 'Title is required';
+        } else if (value.length < 3) {
+          error = 'Title must be at least 3 characters';
+        }
+        break;
+
+      case 'category':
+        if (!value || value === '') {
+          error = 'Category is required';
+        }
+        break;
+
+      case 'brand':
+        if (!value || value === '') {
+          error = 'Brand is required';
+        }
+        break;
+
+      case 'model':
+        if (!value || value.trim() === '') {
+          error = 'Model is required';
+        }
+        break;
+
+      case 'sellingPrice':
+        if (!value || value === '') {
+          error = 'Selling price is required';
+        } else if (isNaN(value) || parseFloat(value) <= 0) {
+          error = 'Selling price must be greater than 0';
+        } else if (formData.originalPrice && parseFloat(value) > parseFloat(formData.originalPrice)) {
+          error = 'Selling price must be less than or equal to original price';
+        }
+        break;
+
+      case 'originalPrice':
+        if (value && (isNaN(value) || parseFloat(value) <= 0)) {
+          error = 'Original price must be greater than 0';
+        }
+        if (value && formData.sellingPrice && parseFloat(formData.sellingPrice) > parseFloat(value)) {
+          setErrors(prev => ({ ...prev, sellingPrice: 'Selling price must be less than or equal to original price' }));
+        } else if (value && formData.sellingPrice && parseFloat(formData.sellingPrice) <= parseFloat(value)) {
+          setErrors(prev => ({ ...prev, sellingPrice: '' }));
+        }
+        break;
+
+      case 'ram.size':
+        if (value && !/^\d+\s?(GB|MB)$/i.test(value)) {
+          error = 'RAM size must be like 16GB';
+        }
+        break;
+
+      case 'storage.size':
+        if (value && !/^\d+\s?(GB|TB)$/i.test(value)) {
+          error = 'Storage must be like 512GB';
+        }
+        break;
+
+      case 'usageDuration':
+        if (formData.condition === 'USED' && (!value || value.trim() === '')) {
+          error = 'Usage duration is required for used products';
+        }
+        break;
+
+      case 'physicalCondition':
+        if (formData.condition === 'USED' && (!value || value === '')) {
+          error = 'Physical condition is required for used products';
+        }
+        break;
+
+      case 'warrantyPeriod':
+        if (formData.warrantyAvailable && (!value || value.trim() === '')) {
+          error = 'Warranty period is required when warranty is available';
+        }
+        break;
+    }
 
     setErrors(prev => ({ ...prev, [field]: error }));
     return error;
@@ -129,21 +326,34 @@ export default function EditProduct() {
 
   const validateAllFields = () => {
     const newErrors = {};
-    ['title', 'category', 'brand', 'model', 'sellingPrice'].forEach(field => {
+
+    const requiredFields = ['title', 'category', 'brand', 'model', 'sellingPrice'];
+
+    requiredFields.forEach(field => {
       const error = validateField(field);
       if (error) newErrors[field] = error;
     });
 
     if (formData.condition === 'USED') {
-      ['usageDuration', 'physicalCondition'].forEach(field => {
-        const error = validateField(field);
-        if (error) newErrors[field] = error;
-      });
+      const usageDurationError = validateField('usageDuration');
+      if (usageDurationError) newErrors.usageDuration = usageDurationError;
+
+      const physicalConditionError = validateField('physicalCondition');
+      if (physicalConditionError) newErrors.physicalCondition = physicalConditionError;
     }
 
     if (formData.warrantyAvailable) {
-      const error = validateField('warrantyPeriod');
-      if (error) newErrors.warrantyPeriod = error;
+      const warrantyError = validateField('warrantyPeriod');
+      if (warrantyError) newErrors.warrantyPeriod = warrantyError;
+    }
+
+    if (formData.ram.size) {
+      const ramError = validateField('ram.size');
+      if (ramError) newErrors['ram.size'] = ramError;
+    }
+
+    if (formData.storage.size) {
+      validateField("storage.size");
     }
 
     setErrors(newErrors);
@@ -151,80 +361,196 @@ export default function EditProduct() {
   };
 
   const calculateProgress = () => {
-    const fields = ['title', 'description', 'category', 'brand', 'model', 'condition', 'ram', 'rom', 'color',
-      'processor.company', 'processor.model', 'processor.generation', 'graphics',
-      'display.size', 'display.resolution', 'display.panel', 'display.refreshRate',
-      'operatingSystem', 'keyboard.layout', 'originalPrice', 'sellingPrice'];
-    
-    const conditional = [];
-    if (formData.condition === 'USED') conditional.push('usageDuration', 'physicalCondition');
-    if (formData.warrantyAvailable) conditional.push('warrantyPeriod');
+    const allFields = [
+      'title', 'description', 'category', 'brand', 'model',
+      'condition', 'color',
+      'processor.company', 'processor.model', 'processor.generation',
+      'graphics', 'display.size', 'display.resolution', 'display.panel', 'display.refreshRate',
+      'operatingSystem', 'keyboard.layout',
+      'originalPrice', 'sellingPrice',
+      'ram.size',
+      'ram.type',
+      'storage.size',
+      'storage.type',
 
-    const total = [...fields, ...conditional];
-    const filled = total.filter(f => {
-      const v = f.includes('.') ? formData[f.split('.')[0]][f.split('.')[1]] : formData[f];
-      return v !== '' && v !== null && v !== undefined;
+      'processor.baseClock',
+      'processor.turboClock',
+      'processor.cache',
+
+      'display.brightness',
+      'display.aspectRatio',
+
+      'wifi',
+      'battery.capacity',
+      'charger.power',
+      'camera.resolution',
+
+    ];
+
+    const conditionalFields = [];
+    if (formData.condition === 'USED') {
+      conditionalFields.push('usageDuration', 'physicalCondition');
+    }
+    if (formData.warrantyAvailable) {
+      conditionalFields.push('warrantyPeriod');
+    }
+
+    const totalFields = [...allFields, ...conditionalFields];
+    const filledFields = totalFields.filter(field => {
+      const value = field.includes('.')
+        ? formData[field.split('.')[0]][field.split('.')[1]]
+        : formData[field];
+      return value !== '' && value !== null && value !== undefined;
     });
 
-    return { filled: filled.length, total: total.length, percentage: Math.round((filled.length / total.length) * 100) };
+    return {
+      filled: filledFields.length,
+      total: totalFields.length,
+      percentage: Math.round((filledFields.length / totalFields.length) * 100)
+    };
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Mark all fields as touched
     const allTouched = {};
-    Object.keys(formData).forEach(k => { allTouched[k] = true; });
+    Object.keys(formData).forEach((key) => {
+      allTouched[key] = true;
+    });
     setTouched(allTouched);
 
-    if (!validateAllFields()) {
-      toast.error("Please fix all validation errors");
+    const isValid = validateAllFields();
+    if (!isValid) {
+      toast.error("Please fix all validation errors before submitting");
       return;
     }
 
-    const data = {
-      title: formData.title.trim(), description: formData.description.trim(),
-      category: formData.category, brand: formData.brand, model: formData.model.trim(),
+    // Prepare data matching CreateProduct structure
+    const dataToSend = {
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      category: formData.category,
+      brand: formData.brand,
+      model: formData.model.trim(),
+
       condition: formData.condition,
-      usageDuration: formData.condition === "USED" ? formData.usageDuration.trim() : null,
-      physicalCondition: formData.condition === "USED" ? formData.physicalCondition : null,
-      isRefurbished: formData.condition === "USED" ? formData.isRefurbished : false,
-      ram: formData.ram.trim() || null, rom: formData.rom.trim() || null, color: formData.color || null,
+      usageDuration:
+        formData.condition === "USED" ? formData.usageDuration.trim() : null,
+      physicalCondition:
+        formData.condition === "USED" ? formData.physicalCondition : null,
+      isRefurbished:
+        formData.condition === "USED" ? formData.isRefurbished : false,
+
+      ram: {
+        size: formData.ram.size || null,
+        type: formData.ram.type || null,
+      },
+
+      storage: {
+        size: formData.storage.size || null,
+        type: formData.storage.type || null,
+      },
+
+      color: formData.color || null,
+
       processor: {
-        company: formData.processor.company.trim() || null,
-        model: formData.processor.model.trim() || null,
-        generation: formData.processor.generation.trim() || null
+        company: formData.processor.company || null,
+        model: formData.processor.model || null,
+        generation: formData.processor.generation || null,
+        baseClock: formData.processor.baseClock || null,
+        turboClock: formData.processor.turboClock || null,
+        cache: formData.processor.cache || null,
       },
+      ports: formData.ports,
+      wifi: formData.wifi || null,
+      bluetooth: formData.bluetooth || null,
+
+      battery: formData.battery,
+      charger: formData.charger,
+
+      camera: formData.camera,
+      audio: formData.audio || null,
+
+      fingerprintReader: formData.fingerprintReader,
+      opticalDrive: formData.opticalDrive,
+
       graphics: formData.graphics.trim() || null,
+
       display: {
-        size: formData.display.size.trim() || null,
-        resolution: formData.display.resolution.trim() || null,
-        panel: formData.display.panel.trim() || null,
-        refreshRate: formData.display.refreshRate.trim() || null
+        size: formData.display.size || null,
+        resolution: formData.display.resolution || null,
+        panel: formData.display.panel || null,
+        refreshRate: formData.display.refreshRate || null,
       },
+
       operatingSystem: formData.operatingSystem.trim() || null,
       preInstalledSoftware: formData.preInstalledSoftware,
-      keyboard: { backlit: formData.keyboard.backlit, layout: formData.keyboard.layout.trim() || null },
-      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
-      sellingPrice: parseFloat(formData.sellingPrice), negotiable: formData.negotiable,
+
+      keyboard: {
+        backlit: formData.keyboard.backlit,
+        layout: formData.keyboard.layout.trim() || null,
+      },
+
+      originalPrice: formData.originalPrice
+        ? parseFloat(formData.originalPrice)
+        : null,
+      sellingPrice: parseFloat(formData.sellingPrice),
+      negotiable: formData.negotiable,
+
       warrantyAvailable: formData.warrantyAvailable,
-      warrantyPeriod: formData.warrantyAvailable ? formData.warrantyPeriod.trim() : null,
-      images: formData.images, status: formData.status || "AVAILABLE"
+      warrantyPeriod: formData.warrantyAvailable
+        ? formData.warrantyPeriod.trim()
+        : null,
+
+      images: formData.images,
+      status: formData.status || "AVAILABLE",
     };
 
+    console.log('Data being sent to server:', dataToSend);
+    console.log('Product ID:', id);
+
     const toastId = toast.loading("Updating product...");
+    setSubmitting(true);
+
     try {
-      await axios.put(`${import.meta.env.VITE_API_PRODUCT}/${id}`, data, { withCredentials: true });
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_PRODUCT}/${id}`, 
+        dataToSend, 
+        { 
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('Update response:', response.data);
       toast.success("Product updated successfully!", { id: toastId });
+      navigate('/products');
     } catch (error) {
-      toast.error(error.response?.data?.msg || "Failed to update product", { id: toastId });
+      console.error('Update error details:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error headers:', error.response?.headers);
+      
+      const errorMessage = error.response?.data?.msg || 
+                          error.response?.data?.message || 
+                          error.response?.data?.error ||
+                          "Failed to update product";
+      
+      toast.error(errorMessage, { id: toastId });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-cyan-400 animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">Loading product...</p>
+          <Loader2 className="w-12 h-12 text-gray-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading product...</p>
         </div>
       </div>
     );
@@ -233,61 +559,130 @@ export default function EditProduct() {
   const progress = calculateProgress();
 
   return (
-    
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 md:p-8">
-      {console.log(formData)}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
+        {/* Hero Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-3xl font-bold text-white">Edit Product</h1>
+          <div className="flex items-center gap-4 mb-6">
+            <button
+              onClick={() => navigate(-1)}
+              className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-gray-200">
+              <Sparkles className="w-6 h-6 text-gray-700" />
             </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
+              <p className="text-gray-600 mt-1">Update product information</p>
+            </div>
+          </div>
 
-            <div className="bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-cyan-400" />
-                <span className="text-sm text-slate-300">
-                  <span className="font-bold text-cyan-400">{progress.filled}</span>
-                  <span className="text-slate-500"> / {progress.total}</span> fields
-                </span>
-                <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-500" style={{ width: `${progress.percentage}%` }} />
+          {/* Stats Card */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center md:text-left">
+                <div className="text-sm font-medium text-gray-500 mb-1">Form Progress</div>
+                <div className="text-2xl font-bold text-gray-900">{progress.percentage}%</div>
+              </div>
+              <div className="text-center md:text-left">
+                <div className="text-sm font-medium text-gray-500 mb-1">Fields Completed</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {progress.filled}<span className="text-gray-400 text-lg">/{progress.total}</span>
                 </div>
-                <span className="text-xs text-slate-400">{progress.percentage}%</span>
+              </div>
+              <div>
+                <div className="text-sm font-medium text-gray-500 mb-2">Progress</div>
+                <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="absolute top-0 left-0 h-full bg-gray-800 rounded-full transition-all duration-500"
+                    style={{ width: `${progress.percentage}%` }}
+                  />
+                </div>
+                <div className="text-xs text-gray-500 mt-2 text-right">
+                  {progress.filled} of {progress.total} fields complete
+                </div>
               </div>
             </div>
           </div>
-          <p className="text-slate-400">Update product information</p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Information */}
           <Section icon={Package} title="Basic Information" badge="Required">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Product Title" required placeholder="e.g., iPhone 14 Pro Max" value={formData.title} onChange={(e) => handleChange('title', e.target.value)} onBlur={() => handleBlur('title')} error={touched.title && errors.title} />
-              <Select label="Category" required value={formData.category} onChange={(e) => handleChange('category', e.target.value)} onBlur={() => handleBlur('category')} error={touched.category && errors.category}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <Input
+                label="Product Title"
+                required
+                placeholder="e.g., iPhone 14 Pro Max"
+                value={formData.title}
+                onChange={(e) => handleChange('title', e.target.value)}
+                onBlur={() => handleBlur('title')}
+                error={touched.title && errors.title}
+              />
+
+              <Select
+                label="Category"
+                required
+                value={formData.category}
+                onChange={(e) => handleChange('category', e.target.value)}
+                onBlur={() => handleBlur('category')}
+                error={touched.category && errors.category}
+              >
                 <option value="">Select category</option>
                 {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </Select>
-              <Select label="Brand" required value={formData.brand} onChange={(e) => handleChange('brand', e.target.value)} onBlur={() => handleBlur('brand')} error={touched.brand && errors.brand}>
+
+              <Select
+                label="Brand"
+                required
+                value={formData.brand}
+                onChange={(e) => handleChange('brand', e.target.value)}
+                onBlur={() => handleBlur('brand')}
+                error={touched.brand && errors.brand}
+              >
                 <option value="">Select brand</option>
                 {BRANDS.map(brand => <option key={brand} value={brand}>{brand}</option>)}
               </Select>
-              <Input label="Model" required placeholder="e.g., A2894" value={formData.model} onChange={(e) => handleChange('model', e.target.value)} onBlur={() => handleBlur('model')} error={touched.model && errors.model} />
+
+              <Input
+                label="Model"
+                required
+                placeholder="e.g., A2894"
+                value={formData.model}
+                onChange={(e) => handleChange('model', e.target.value)}
+                onBlur={() => handleBlur('model')}
+                error={touched.model && errors.model}
+              />
             </div>
-            <Textarea label="Description" placeholder="Describe the product..." value={formData.description} onChange={(e) => handleChange('description', e.target.value)} />
+
+            <Textarea
+              label="Description"
+              placeholder="Describe the product features, condition, and other details..."
+              value={formData.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+            />
           </Section>
 
+          {/* Condition */}
           <Section icon={Tag} title="Condition & Status">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="text-sm font-medium text-slate-300 mb-3 block">Condition *</label>
+                <label className="text-sm font-medium text-gray-700 mb-3 block">Condition *</label>
                 <div className="grid grid-cols-2 gap-3">
-                  {['NEW', 'USED'].map(c => (
-                    <button key={c} type="button" onClick={() => handleChange('condition', c)} className={`p-4 rounded-xl border-2 transition-all ${formData.condition === c ? 'border-cyan-400 bg-cyan-400/10 text-cyan-400' : 'border-slate-700 bg-slate-900/50 text-slate-400 hover:border-slate-600'}`}>
-                      <div className="font-semibold">{c === 'NEW' ? '🆕 New' : '♻️ Used'}</div>
+                  {['NEW', 'USED'].map(cond => (
+                    <button
+                      key={cond}
+                      type="button"
+                      onClick={() => handleChange('condition', cond)}
+                      className={`p-4 rounded-lg border-2 transition-all ${formData.condition === cond
+                          ? 'border-gray-800 bg-gray-800 text-white'
+                          : 'border-gray-300 bg-white text-gray-800 hover:border-gray-400 hover:bg-gray-50'
+                        }`}
+                    >
+                      <div className="font-semibold">{cond === 'NEW' ? '🆕 New' : '♻️ Used'}</div>
                     </button>
                   ))}
                 </div>
@@ -295,8 +690,24 @@ export default function EditProduct() {
 
               {formData.condition === 'USED' && (
                 <>
-                  <Input label="Usage Duration" placeholder="e.g., 6 months" value={formData.usageDuration} onChange={(e) => handleChange('usageDuration', e.target.value)} onBlur={() => handleBlur('usageDuration')} error={touched.usageDuration && errors.usageDuration} required />
-                  <Select label="Physical Condition" value={formData.physicalCondition} onChange={(e) => handleChange('physicalCondition', e.target.value)} onBlur={() => handleBlur('physicalCondition')} error={touched.physicalCondition && errors.physicalCondition} required>
+                  <Input
+                    label="Usage Duration"
+                    placeholder="e.g., 6 months, 1 year"
+                    value={formData.usageDuration}
+                    onChange={(e) => handleChange('usageDuration', e.target.value)}
+                    onBlur={() => handleBlur('usageDuration')}
+                    error={touched.usageDuration && errors.usageDuration}
+                    required
+                  />
+
+                  <Select
+                    label="Physical Condition"
+                    value={formData.physicalCondition}
+                    onChange={(e) => handleChange('physicalCondition', e.target.value)}
+                    onBlur={() => handleBlur('physicalCondition')}
+                    error={touched.physicalCondition && errors.physicalCondition}
+                    required
+                  >
                     <option value="">Select condition</option>
                     <option value="EXCELLENT">Excellent - Like New</option>
                     <option value="GOOD">Good - Minor wear</option>
@@ -306,124 +717,536 @@ export default function EditProduct() {
                 </>
               )}
             </div>
-            {formData.condition === 'USED' && <Checkbox label="This is a refurbished product" checked={formData.isRefurbished} onChange={(e) => handleChange('isRefurbished', e.target.checked)} />}
-          </Section>
 
-          <Section icon={Cpu} title="Hardware Specifications">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input label="RAM" placeholder="e.g., 8GB" value={formData.ram} onChange={(e) => handleChange('ram', e.target.value)} onBlur={() => handleBlur('ram')} error={touched.ram && errors.ram} />
-              <Input label="Storage (ROM)" placeholder="e.g., 128GB" value={formData.rom} onChange={(e) => handleChange('rom', e.target.value)} onBlur={() => handleBlur('rom')} error={touched.rom && errors.rom} />
-              <div>
-                <label className="text-sm font-medium text-slate-300 mb-2 block">Color</label>
-                <div className="grid grid-cols-5 gap-2">
-                  {COLORS.map(color => (
-                    <button key={color.name} type="button" title={color.name} onClick={() => handleChange('color', color.name)} className={`w-full aspect-square rounded-lg border-2 transition-all relative ${formData.color === color.name ? 'border-cyan-400 shadow-lg shadow-cyan-400/30 scale-110' : 'border-slate-700 hover:border-slate-600'}`} style={{ backgroundColor: color.hex }}>
-                      {color.hex === '#FFFFFF' && <div className="absolute inset-0 border border-slate-300 rounded-lg" />}
-                      {formData.color === color.name && <div className="absolute inset-0 flex items-center justify-center"><div className="w-4 h-4 bg-cyan-400 rounded-full border-2 border-white" /></div>}
-                    </button>
-                  ))}
-                </div>
-                {formData.color && <p className="text-xs text-slate-400 mt-2 text-center">{formData.color}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input label="Processor Company" placeholder="e.g., Intel" value={formData.processor.company} onChange={(e) => handleChange('processor.company', e.target.value)} />
-              <Input label="Processor Model" placeholder="e.g., Core i5" value={formData.processor.model} onChange={(e) => handleChange('processor.model', e.target.value)} />
-              <Input label="Processor Generation" placeholder="e.g., 12th Gen" value={formData.processor.generation} onChange={(e) => handleChange('processor.generation', e.target.value)} />
-            </div>
-            <Input label="Graphics" placeholder="e.g., Integrated" value={formData.graphics} onChange={(e) => handleChange('graphics', e.target.value)} />
-          </Section>
-
-          <Section icon={Monitor} title="Display Specifications">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Display Size" placeholder="e.g., 15.6 inch" value={formData.display.size} onChange={(e) => handleChange('display.size', e.target.value)} />
-              <Input label="Resolution" placeholder="e.g., FHD" value={formData.display.resolution} onChange={(e) => handleChange('display.resolution', e.target.value)} />
-              <Input label="Panel Type" placeholder="e.g., IPS" value={formData.display.panel} onChange={(e) => handleChange('display.panel', e.target.value)} />
-              <Input label="Refresh Rate" placeholder="e.g., 60Hz" value={formData.display.refreshRate} onChange={(e) => handleChange('display.refreshRate', e.target.value)} />
-            </div>
-          </Section>
-
-          <Section icon={Code} title="Software & Operating System">
-            <Input label="Operating System" placeholder="e.g., Windows 11" value={formData.operatingSystem} onChange={(e) => handleChange('operatingSystem', e.target.value)} />
-            <div>
-              <label className="text-sm font-medium text-slate-300 mb-2 block">Pre-installed Software</label>
-              <input type="text" placeholder="Press Enter to add" className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-cyan-400 outline-none" onKeyPress={(e) => { if (e.key === 'Enter' && e.target.value.trim()) { e.preventDefault(); handleChange('preInstalledSoftware', [...formData.preInstalledSoftware, e.target.value.trim()]); e.target.value = ''; } }} />
-              {formData.preInstalledSoftware.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {formData.preInstalledSoftware.map((s, i) => (
-                    <span key={i} className="bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 px-3 py-1 rounded-lg text-sm flex items-center gap-2">
-                      {s}
-                      <button type="button" onClick={() => handleChange('preInstalledSoftware', formData.preInstalledSoftware.filter((_, idx) => idx !== i))} className="hover:text-red-400">×</button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Section>
-
-          <Section icon={Tag} title="Build & Design">
-            <Checkbox label="Backlit Keyboard" checked={formData.keyboard.backlit} onChange={(e) => handleChange('keyboard.backlit', e.target.checked)} />
-            <Input label="Keyboard Layout" placeholder="e.g., QWERTY" value={formData.keyboard.layout} onChange={(e) => handleChange('keyboard.layout', e.target.value)} />
-          </Section>
-
-          <Section icon={DollarSign} title="Pricing" badge="Required">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Original Price (MRP)" type="number" placeholder="₹ 0" value={formData.originalPrice} onChange={(e) => handleChange('originalPrice', e.target.value)} onBlur={() => handleBlur('originalPrice')} error={touched.originalPrice && errors.originalPrice} />
-              <Input label="Selling Price" type="number" required placeholder="₹ 0" value={formData.sellingPrice} onChange={(e) => handleChange('sellingPrice', e.target.value)} onBlur={() => handleBlur('sellingPrice')} error={touched.sellingPrice && errors.sellingPrice} />
-            </div>
-            <Checkbox label="Price is negotiable" checked={formData.negotiable} onChange={(e) => handleChange('negotiable', e.target.checked)} />
-          </Section>
-
-          <Section icon={Shield} title="Warranty Information">
-            <Checkbox label="Warranty Available" checked={formData.warrantyAvailable} onChange={(e) => handleChange('warrantyAvailable', e.target.checked)} />
-            {formData.warrantyAvailable && (
-              <Input label="Warranty Period" placeholder="e.g., 1 year" required value={formData.warrantyPeriod} onChange={(e) => handleChange('warrantyPeriod', e.target.value)} onBlur={() => handleBlur('warrantyPeriod')} error={touched.warrantyPeriod && errors.warrantyPeriod} />
+            {formData.condition === 'USED' && (
+              <Checkbox
+                label="This is a refurbished product"
+                checked={formData.isRefurbished}
+                onChange={(e) => handleChange('isRefurbished', e.target.checked)}
+              />
             )}
           </Section>
 
+          {/* Hardware Details */}
+          <Section icon={Cpu} title="Hardware Specifications">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <Input
+                label="RAM Size"
+                placeholder="16GB"
+                value={formData.ram.size}
+                onChange={(e) => handleChange("ram.size", e.target.value)}
+              />
+
+              <Input
+                label="RAM Type (LPDDR4X)"
+                value={formData.ram.type}
+                onChange={(e) => handleChange("ram.type", e.target.value)}
+              />
+
+              <Input
+                label="Storage Size"
+                placeholder="512GB"
+                value={formData.storage.size}
+                onChange={(e) => handleChange("storage.size", e.target.value)}
+              />
+
+              <Input
+                label="Storage Type (SSD / HDD)"
+                value={formData.storage.type}
+                onChange={(e) => handleChange("storage.type", e.target.value)}
+              />
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Color</label>
+                <div className="grid grid-cols-5 gap-2">
+                  {COLORS.map(color => (
+                    <button
+                      key={color.name}
+                      type="button"
+                      title={color.name}
+                      onClick={() => handleChange('color', color.name)}
+                      className={`w-full aspect-square rounded-md border-2 transition-all relative ${formData.color === color.name
+                          ? 'border-gray-800 shadow-md scale-110'
+                          : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                      style={{ backgroundColor: color.hex }}
+                    >
+                      {color.hex === '#FFFFFF' && (
+                        <div className="absolute inset-0 border border-gray-300 rounded-md" />
+                      )}
+                      {formData.color === color.name && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-3 h-3 bg-white rounded-full border-2 border-gray-800" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {formData.color && (
+                  <p className="text-xs text-gray-600 mt-2 text-center">{formData.color}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
+              <Input
+                label="Processor Company"
+                placeholder="e.g., Intel, AMD, Apple"
+                value={formData.processor.company}
+                onChange={(e) => handleChange('processor.company', e.target.value)}
+              />
+              <Input
+                label="Processor Model"
+                placeholder="e.g., Core i5 120U, A16 Bionic"
+                value={formData.processor.model}
+                onChange={(e) => handleChange('processor.model', e.target.value)}
+              />
+              <Input
+                label="Processor Generation"
+                placeholder="e.g., 12th Gen, M2"
+                value={formData.processor.generation}
+                onChange={(e) => handleChange('processor.generation', e.target.value)}
+              />
+              <Input
+                label="Base Clock (GHz)"
+                value={formData.processor.baseClock}
+                onChange={(e) => handleChange("processor.baseClock", e.target.value)}
+              />
+
+              <Input
+                label="Turbo Clock (GHz)"
+                value={formData.processor.turboClock}
+                onChange={(e) => handleChange("processor.turboClock", e.target.value)}
+              />
+
+              <Input
+                label="Cache (MB)"
+                value={formData.processor.cache}
+                onChange={(e) => handleChange("processor.cache", e.target.value)}
+              />
+
+            </div>
+
+            <Input
+              label="Graphics"
+              placeholder="e.g., Integrated, RTX 3050, M1 GPU"
+              value={formData.graphics}
+              onChange={(e) => handleChange('graphics', e.target.value)}
+            />
+          </Section>
+
+          {/* Display Specifications */}
+          <Section icon={Monitor} title="Display Specifications">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <Input
+                label="Display Size"
+                placeholder="e.g., 15.6 inch, 13.3 inch"
+                value={formData.display.size}
+                onChange={(e) => handleChange('display.size', e.target.value)}
+              />
+              <Input
+                label="Resolution"
+                placeholder="e.g., FHD (1920x1080), QHD"
+                value={formData.display.resolution}
+                onChange={(e) => handleChange('display.resolution', e.target.value)}
+              />
+              <Input
+                label="Panel Type"
+                placeholder="e.g., IPS, OLED, AMOLED"
+                value={formData.display.panel}
+                onChange={(e) => handleChange('display.panel', e.target.value)}
+              />
+              <Input
+                label="Refresh Rate"
+                placeholder="e.g., 60Hz, 120Hz, 144Hz"
+                value={formData.display.refreshRate}
+                onChange={(e) => handleChange('display.refreshRate', e.target.value)}
+              />
+              <Input
+                label="Brightness (nits)"
+                value={formData.display.brightness}
+                onChange={(e) => handleChange("display.brightness", e.target.value)}
+              />
+
+              <Input
+                label="Aspect Ratio (16:9)"
+                value={formData.display.aspectRatio}
+                onChange={(e) => handleChange("display.aspectRatio", e.target.value)}
+              />
+            </div>
+          </Section>
+
+          {/* Ports & Connectivity */}
+          <Section icon={Cpu} title="Ports & Connectivity">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <Input
+                label="USB Type-C Count"
+                type="number"
+                value={formData.ports.usbTypeC}
+                onChange={(e) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    ports: { ...prev.ports, usbTypeC: Number(e.target.value) }
+                  }))
+                }
+              />
+
+              <Input
+                label="HDMI Count"
+                type="number"
+                value={formData.ports.hdmi}
+                onChange={(e) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    ports: { ...prev.ports, hdmi: Number(e.target.value) }
+                  }))
+                }
+              />
+
+              <Input
+                label="USB Type-A Count"
+                type="number"
+                value={formData.ports.usbTypeA}
+                onChange={(e) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    ports: { ...prev.ports, usbTypeA: Number(e.target.value) }
+                  }))
+                }
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+              <Checkbox
+                label="MicroSD Card Slot"
+                checked={formData.ports.microSD}
+                onChange={(e) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    ports: { ...prev.ports, microSD: e.target.checked }
+                  }))
+                }
+              />
+
+              <Checkbox
+                label="RJ45 LAN"
+                checked={formData.ports.rj45}
+                onChange={(e) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    ports: { ...prev.ports, rj45: e.target.checked }
+                  }))
+                }
+              />
+
+              <Checkbox
+                label="Headphone Jack"
+                checked={formData.ports.headphoneJack}
+                onChange={(e) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    ports: { ...prev.ports, headphoneJack: e.target.checked }
+                  }))
+                }
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+              <Input
+                label="Wi-Fi Version (Wi-Fi 6)"
+                value={formData.wifi}
+                onChange={(e) => handleChange("wifi", e.target.value)}
+              />
+
+              <Input
+                label="Bluetooth Version"
+                value={formData.bluetooth}
+                onChange={(e) => handleChange("bluetooth", e.target.value)}
+              />
+            </div>
+          </Section>
+
+          {/* Battery & Security */}
+          <Section icon={Shield} title="Battery & Security">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <Input
+                label="Battery Capacity (Wh)"
+                value={formData.battery.capacity}
+                onChange={(e) => handleChange("battery.capacity", e.target.value)}
+              />
+
+              <Input
+                label="Charger Power (W)"
+                value={formData.charger.power}
+                onChange={(e) => handleChange("charger.power", e.target.value)}
+              />
+
+              <Input
+                label="Charger Type (USB-C)"
+                value={formData.charger.type}
+                onChange={(e) => handleChange("charger.type", e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
+              <Input
+                label="Camera Resolution (720p)"
+                value={formData.camera.resolution}
+                onChange={(e) => handleChange("camera.resolution", e.target.value)}
+              />
+
+              <Input
+                label="Audio System"
+                placeholder="e.g., Dolby Atmos, Stereo"
+                value={formData.audio}
+                onChange={(e) => handleChange("audio", e.target.value)}
+              />
+
+              <div className="space-y-4">
+                <Checkbox
+                  label="Fingerprint Reader"
+                  checked={formData.fingerprintReader}
+                  onChange={(e) => handleChange('fingerprintReader', e.target.checked)}
+                />
+                <Checkbox
+                  label="Optical Drive"
+                  checked={formData.opticalDrive}
+                  onChange={(e) => handleChange('opticalDrive', e.target.checked)}
+                />
+              </div>
+            </div>
+          </Section>
+
+          {/* Software & OS */}
+          <Section icon={Code} title="Software & Operating System">
+            <Input
+              label="Operating System"
+              placeholder="e.g., Windows 11, macOS Sonoma, Android 14"
+              value={formData.operatingSystem}
+              onChange={(e) => handleChange('operatingSystem', e.target.value)}
+            />
+
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                Pre-installed Software
+              </label>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="e.g., MS Office 2024, Adobe Photoshop (Press Enter to add)"
+                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-gray-800 focus:border-transparent outline-none transition-all"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                      e.preventDefault();
+                      handleChange('preInstalledSoftware', [...formData.preInstalledSoftware, e.target.value.trim()]);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+                <p className="text-xs text-gray-500">Press Enter to add software</p>
+
+                {formData.preInstalledSoftware.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {formData.preInstalledSoftware.map((software, index) => (
+                      <span
+                        key={index}
+                        className="bg-gray-100 border border-gray-200 text-gray-800 px-3 py-1 rounded-lg text-sm flex items-center gap-2"
+                      >
+                        {software}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = formData.preInstalledSoftware.filter((_, i) => i !== index);
+                            handleChange('preInstalledSoftware', updated);
+                          }}
+                          className="hover:text-red-600 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </Section>
+
+          {/* Build & Design */}
+          <Section icon={Tag} title="Build & Design">
+            <div className="space-y-6">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-3 block">Keyboard Features</label>
+                <Checkbox
+                  label="Backlit Keyboard"
+                  checked={formData.keyboard.backlit}
+                  onChange={(e) => handleChange('keyboard.backlit', e.target.checked)}
+                />
+              </div>
+
+              <Input
+                label="Keyboard Layout"
+                placeholder="e.g., QWERTY, US International"
+                value={formData.keyboard.layout}
+                onChange={(e) => handleChange('keyboard.layout', e.target.value)}
+              />
+            </div>
+          </Section>
+
+          {/* Pricing */}
+          <Section icon={DollarSign} title="Pricing" badge="Required">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <Input
+                label="Original Price (MRP)"
+                type="number"
+                placeholder="₹ 0"
+                value={formData.originalPrice}
+                onChange={(e) => handleChange('originalPrice', e.target.value)}
+                onBlur={() => handleBlur('originalPrice')}
+                error={touched.originalPrice && errors.originalPrice}
+              />
+              <Input
+                label="Selling Price"
+                type="number"
+                required
+                placeholder="₹ 0"
+                value={formData.sellingPrice}
+                onChange={(e) => handleChange('sellingPrice', e.target.value)}
+                onBlur={() => handleBlur('sellingPrice')}
+                error={touched.sellingPrice && errors.sellingPrice}
+              />
+            </div>
+
+            <Checkbox
+              label="Price is negotiable"
+              checked={formData.negotiable}
+              onChange={(e) => handleChange('negotiable', e.target.checked)}
+            />
+          </Section>
+
+          {/* Warranty */}
+          <Section icon={Shield} title="Warranty Information">
+            <Checkbox
+              label="Warranty Available"
+              checked={formData.warrantyAvailable}
+              onChange={(e) => handleChange('warrantyAvailable', e.target.checked)}
+            />
+
+            {formData.warrantyAvailable && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+                <Input
+                  label="Warranty Period"
+                  placeholder="e.g., 6 months, 1 year"
+                  required
+                  value={formData.warrantyPeriod}
+                  onChange={(e) => handleChange('warrantyPeriod', e.target.value)}
+                  onBlur={() => handleBlur('warrantyPeriod')}
+                  error={touched.warrantyPeriod && errors.warrantyPeriod}
+                />
+              </div>
+            )}
+          </Section>
+
+          {/* Product Status */}
           <Section icon={Shield} title="Product Status">
-            <Select label="Availability Status" value={formData.status} onChange={(e) => handleChange("status", e.target.value)}>
+            <Select
+              label="Availability Status"
+              value={formData.status}
+              onChange={(e) => handleChange("status", e.target.value)}
+            >
               <option value="AVAILABLE">Available</option>
               <option value="UNAVAILABLE">Unavailable</option>
             </Select>
           </Section>
 
+          {/* Images */}
           <Section icon={Image} title="Product Images">
-            <input type="file" multiple accept="image/*" className="hidden" id="imageUpload" onChange={async (e) => {
-              const files = Array.from(e.target.files);
-              if (!files.length) return;
-              setUploading(true);
-              try {
-                const uploads = [];
-                for (const file of files) uploads.push(await uploadToCloudinary(file));
-                handleChange("images", [...formData.images, ...uploads]);
-                toast.success("Images uploaded");
-              } catch { toast.error("Upload failed"); }
-              finally { setUploading(false); }
-            }} />
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              className="hidden"
+              id="imageUpload"
+              onChange={async (e) => {
+                const files = Array.from(e.target.files);
+                if (!files.length) return;
+                setUploading(true);
+                try {
+                  const uploads = [];
+                  for (const file of files) uploads.push(await uploadToCloudinary(file));
+                  handleChange("images", [...formData.images, ...uploads]);
+                  toast.success("Images uploaded");
+                } catch { 
+                  toast.error("Upload failed"); 
+                } finally { 
+                  setUploading(false); 
+                }
+              }}
+            />
 
-            <label htmlFor="imageUpload" className="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-cyan-400/50 transition-all cursor-pointer bg-slate-900/30 block">
-              <Image className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-              <p className="text-slate-300 font-medium mb-1">{uploading ? "Uploading..." : "Click to upload images"}</p>
-              <p className="text-sm text-slate-500">PNG, JPG up to 10MB</p>
+            <label
+              htmlFor="imageUpload"
+              className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-gray-400 transition-all cursor-pointer bg-white block hover:bg-gray-50"
+            >
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                <Upload className="w-8 h-8 text-gray-600" />
+              </div>
+              <p className="text-gray-800 font-medium mb-1">
+                {uploading ? "Uploading..." : "Click to upload images"}
+              </p>
+              <p className="text-sm text-gray-600">or drag and drop</p>
+              <p className="text-xs text-gray-500 mt-2">PNG, JPG up to 10MB</p>
             </label>
 
             {formData.images.length > 0 && (
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mt-4">
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mt-6">
                 {formData.images.map((img, i) => (
                   <div key={i} className="relative group">
-                    <img src={img.url} className="rounded-lg h-24 w-full object-cover border border-slate-700" />
-                    <button type="button" onClick={() => handleChange("images", formData.images.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 transition">×</button>
+                    <img
+                      src={img.url}
+                      className="rounded-lg h-24 w-full object-cover border border-gray-300 group-hover:border-gray-400 transition-colors"
+                      alt={`Product ${i + 1}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleChange("images", formData.images.filter((_, idx) => idx !== i))}
+                      className="absolute top-2 right-2 bg-white border border-gray-300 text-gray-700 rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-gray-50 hover:border-gray-400"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
                   </div>
                 ))}
               </div>
             )}
           </Section>
 
-          <div className="sticky bottom-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800 -mx-4 md:-mx-8 px-4 md:px-8 py-4 flex gap-3 justify-end">
-            <button type="button" onClick={() => navigate(-1)} className="px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 transition-all">Cancel</button>
-            <button type="submit" className="px-8 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold transition-all shadow-lg">Update Product</button>
+          {/* Actions */}
+          <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 -mx-4 md:-mx-8 px-4 md:px-8 py-5 mt-8 flex flex-col sm:flex-row gap-3 justify-end">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+              disabled={submitting}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-8 py-3 rounded-lg bg-gray-900 hover:bg-black text-white font-medium transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={submitting}
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  Update Product
+                  <ChevronRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
           </div>
         </form>
       </div>
@@ -431,38 +1254,43 @@ export default function EditProduct() {
   );
 }
 
-// Components
+// Components with Neutral Portfolio Theme
 const Section = ({ icon: Icon, title, badge, children }) => (
-  <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm">
-    <div className="flex items-center gap-3 mb-6">
-      <div className="w-8 h-8 bg-cyan-400/10 rounded-lg flex items-center justify-center">
-        <Icon className="w-4 h-4 text-cyan-400" />
+  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
+    <div className="flex items-start gap-4 mb-6">
+      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+        <Icon className="w-5 h-5 text-gray-700" />
       </div>
-      <h3 className="text-lg font-semibold text-white">{title}</h3>
-      {badge && (
-        <span className="ml-auto text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-full">
-          {badge}
-        </span>
-      )}
+      <div className="flex-1">
+        <div className="flex items-center gap-3">
+          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+          {badge && (
+            <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-md font-medium">
+              {badge}
+            </span>
+          )}
+        </div>
+        <div className="w-10 h-0.5 bg-gray-300 rounded-full mt-2" />
+      </div>
     </div>
-    <div className="space-y-4">{children}</div>
+    <div className="space-y-5">{children}</div>
   </div>
 );
 
 const Input = ({ label, required, error, ...props }) => (
   <div>
-    <label className="text-sm font-medium text-slate-300 mb-2 block">
-      {label} {required && <span className="text-red-400">*</span>}
+    <label className="text-sm font-medium text-gray-700 mb-2 block">
+      {label} {required && <span className="text-red-600">*</span>}
     </label>
     <input
       {...props}
-      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:border-transparent outline-none transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
+      className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:border-transparent outline-none transition-all ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
         }`}
     />
     {error && (
-      <div className="flex items-center gap-1 mt-1">
-        <AlertCircle className="w-3 h-3 text-red-400" />
-        <span className="text-xs text-red-400">{error}</span>
+      <div className="flex items-center gap-2 mt-2">
+        <AlertCircle className="w-4 h-4 text-red-500" />
+        <span className="text-sm text-red-600">{error}</span>
       </div>
     )}
   </div>
@@ -470,19 +1298,19 @@ const Input = ({ label, required, error, ...props }) => (
 
 const Textarea = ({ label, required, error, ...props }) => (
   <div>
-    <label className="text-sm font-medium text-slate-300 mb-2 block">
-      {label} {required && <span className="text-red-400">*</span>}
+    <label className="text-sm font-medium text-gray-700 mb-2 block">
+      {label} {required && <span className="text-red-600">*</span>}
     </label>
     <textarea
       {...props}
       rows={4}
-      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:border-transparent outline-none resize-none transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
+      className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:border-transparent outline-none resize-none transition-all ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
         }`}
     />
     {error && (
-      <div className="flex items-center gap-1 mt-1">
-        <AlertCircle className="w-3 h-3 text-red-400" />
-        <span className="text-xs text-red-400">{error}</span>
+      <div className="flex items-center gap-2 mt-2">
+        <AlertCircle className="w-4 h-4 text-red-500" />
+        <span className="text-sm text-red-600">{error}</span>
       </div>
     )}
   </div>
@@ -490,37 +1318,35 @@ const Textarea = ({ label, required, error, ...props }) => (
 
 const Select = ({ label, required, error, children, ...props }) => (
   <div>
-    <label className="text-sm font-medium text-slate-300 mb-2 block">
-      {label} {required && <span className="text-red-400">*</span>}
+    <label className="text-sm font-medium text-gray-700 mb-2 block">
+      {label} {required && <span className="text-red-600">*</span>}
     </label>
     <select
       {...props}
-      className={`w-full bg-slate-900/50 border rounded-xl px-4 py-3 text-slate-100 focus:ring-2 focus:border-transparent outline-none transition-all ${error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-cyan-400'
+      className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:ring-2 focus:border-transparent outline-none transition-all ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
         }`}
     >
       {children}
     </select>
     {error && (
-      <div className="flex items-center gap-1 mt-1">
-        <AlertCircle className="w-3 h-3 text-red-400" />
-        <span className="text-xs text-red-400">{error}</span>
+      <div className="flex items-center gap-2 mt-2">
+        <AlertCircle className="w-4 h-4 text-red-500" />
+        <span className="text-sm text-red-600">{error}</span>
       </div>
     )}
   </div>
 );
 
 const Checkbox = ({ label, checked, onChange }) => (
-  <label className="flex items-center gap-3 text-slate-300 cursor-pointer group">
+  <label className="flex items-center gap-3 text-gray-800 cursor-pointer group">
     <div className="relative">
       <input
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className="w-5 h-5 rounded border-2 border-slate-700 bg-slate-900/50 checked:bg-cyan-400 checked:border-cyan-400 focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all cursor-pointer"
+        className="w-5 h-5 rounded border-2 border-gray-300 bg-white checked:bg-gray-800 checked:border-gray-800 focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 focus:ring-offset-white transition-all cursor-pointer"
       />
     </div>
-    <span className="group-hover:text-white transition-colors">{label}</span>
+    <span className="group-hover:text-gray-900 transition-colors">{label}</span>
   </label>
 );
-// Reusable Components (same as CreateProduct)
-
