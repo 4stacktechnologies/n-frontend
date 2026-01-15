@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Eye, Pencil, Plus, Trash2, Search } from "lucide-react";
+import { Eye, Pencil, Plus, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -7,23 +7,36 @@ import ProductViewModal from "../../components/ProductViewModal";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
-  const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
 
-  const fetchProducts = async () => {
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const limit = 10; // 10 products per page
+
+  // Fetch products from API with pagination
+  const fetchProducts = async (pageNum = 1, searchText = "") => {
     const toastId = toast.loading("Loading products...");
     try {
       setLoading(true);
       const res = await axios.get(import.meta.env.VITE_API_PRODUCT, {
         withCredentials: true,
+        params: {
+          page: pageNum,
+          limit,
+          search: searchText || undefined,
+        },
       });
 
       setProducts(res.data.data || []);
-      setFiltered(res.data.data || []);
+      setTotalProducts(res.data.total || 0);
+      setTotalPages(res.data.pages || 1);
+      setPage(res.data.page || 1);
+
       toast.success("Products loaded", { id: toastId });
     } catch (err) {
       toast.error(err.response?.data?.msg || "Failed to load products", { id: toastId });
@@ -32,6 +45,7 @@ export default function Products() {
     }
   };
 
+  // Delete product
   const deleteProduct = async (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
 
@@ -41,43 +55,42 @@ export default function Products() {
         withCredentials: true,
       });
 
-      setProducts((prev) => prev.filter((p) => p._id !== id));
-      setFiltered((prev) => prev.filter((p) => p._id !== id));
       toast.success("Product deleted successfully", { id: toastId });
+      // Refresh current page
+      fetchProducts(page, search);
     } catch (err) {
       toast.error(err.response?.data?.msg || "Delete failed", { id: toastId });
     }
   };
 
+  // Fetch products on mount
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(page, search);
   }, []);
 
-  // Local search filtering
+  // Search handling
   useEffect(() => {
-    const s = search.toLowerCase();
-    setFiltered(
-      products.filter((p) =>
-        [p.title, p.brand, p.model, p.category]
-          .filter(Boolean)
-          .some((val) => val.toLowerCase().includes(s))
-      )
-    );
-  }, [search, products]);
+    const delay = setTimeout(() => {
+      fetchProducts(1, search); // reset to page 1 when searching
+    }, 500); // debounce 500ms
+
+    return () => clearTimeout(delay);
+  }, [search]);
+
+  const goToPage = (pageNum) => {
+    if (pageNum < 1 || pageNum > totalPages) return;
+    fetchProducts(pageNum, search);
+  };
 
   return (
     <div className="relative min-h-screen p-6 text-gray-900 overflow-hidden bg-gray-50">
-
-      {/* Optional subtle pastel background blobs */}
+      {/* Background blobs */}
       <div className="absolute -top-40 -left-20 w-[400px] h-[400px] bg-gray-200/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-gray-200/10 rounded-full blur-[140px] pointer-events-none" />
 
-      {/* Header Row */}
+      {/* Header */}
       <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4 z-10">
-        <h1 className="text-3xl font-bold tracking-wide text-gray-900">
-          Products
-        </h1>
-
+        <h1 className="text-3xl font-bold tracking-wide text-gray-900">Products</h1>
         <Link
           to="/dashboard/products/create"
           className="flex items-center gap-2 bg-gradient-to-r from-gray-200/80 to-gray-300/80
@@ -85,12 +98,17 @@ export default function Products() {
             text-gray-900 font-semibold rounded-xl px-5 py-2.5
             transition shadow-sm hover:shadow-md"
         >
-          <Plus size={18} />
-          Add Product
+          <Plus size={18} /> Add Product
         </Link>
       </div>
 
-      {/* SEARCH BAR */}
+      {/* Total count */}
+      <div className="mb-4 p-4 rounded-xl bg-white shadow flex items-center justify-between max-w-sm">
+        <span className="font-semibold text-gray-700">Total Products</span>
+        <span className="text-xl font-bold text-gray-900">{totalProducts}</span>
+      </div>
+
+      {/* Search */}
       <div className="relative mb-4 max-w-sm">
         <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
@@ -103,9 +121,8 @@ export default function Products() {
         />
       </div>
 
-      {/* TABLE */}
+      {/* Table */}
       <div className="relative overflow-x-auto bg-white border border-gray-200 rounded-2xl shadow-sm">
-
         <table className="w-full text-sm whitespace-nowrap">
           <thead className="bg-gray-100 text-gray-600 uppercase text-xs tracking-wider">
             <tr>
@@ -122,7 +139,6 @@ export default function Products() {
               <Th className="text-center">Actions</Th>
             </tr>
           </thead>
-
           <tbody>
             {loading && (
               <tr>
@@ -132,7 +148,7 @@ export default function Products() {
               </tr>
             )}
 
-            {!loading && filtered.length === 0 && (
+            {!loading && products.length === 0 && (
               <tr>
                 <td colSpan="11" className="p-6 text-center text-gray-500">
                   No products found
@@ -140,30 +156,33 @@ export default function Products() {
               </tr>
             )}
 
-            {filtered.map((product) => (
+            {products.map((product) => (
               <tr key={product._id} className="border-t border-gray-200 hover:bg-gray-50 transition">
                 <Td className="font-semibold text-gray-900">{product.title}</Td>
                 <Td>{product.brand || "-"}</Td>
                 <Td>{product.model || "-"}</Td>
                 <Td>{product.category}</Td>
-                <Td className="text-gray-900 font-semibold">₹{product.sellingPrice}</Td>
-                <Td>{product.condition}</Td>
+                <Td className="text-gray-900 font-semibold">{product.sellingPrice ? `₹${product.sellingPrice}` : "-"}</Td>
+                <Td>{product.condition || "-"}</Td>
                 <Td>{product.warrantyAvailable ? product.warrantyPeriod || "Yes" : "No"}</Td>
-
                 <Td>
-                  <Badge type={
-                    product.status === "AVAILABLE"
-                      ? "green"
-                      : product.status === "SOLD"
-                      ? "red"
-                      : "yellow"
-                  } text={product.status} />
+                  <Badge
+                    type={
+                      product.status === "AVAILABLE"
+                        ? "green"
+                        : product.status === "SOLD"
+                        ? "red"
+                        : "yellow"
+                    }
+                    text={product.status}
+                  />
                 </Td>
-
                 <Td>
-                  <Badge type={product.isApproved ? "cyan" : "gray"} text={product.isApproved ? "Approved" : "Pending"} />
+                  <Badge
+                    type={product.isApproved ? "cyan" : "gray"}
+                    text={product.isApproved ? "Approved" : "Pending"}
+                  />
                 </Td>
-
                 <Td>{new Date(product.createdAt).toLocaleDateString()}</Td>
 
                 <td className="p-3 flex gap-4 justify-center">
@@ -173,7 +192,6 @@ export default function Products() {
                   >
                     <Pencil size={18} />
                   </Link>
-
                   <button
                     onClick={() => {
                       setSelectedProductId(product._id);
@@ -183,7 +201,6 @@ export default function Products() {
                   >
                     <Eye size={18} />
                   </button>
-
                   <button
                     onClick={() => deleteProduct(product._id)}
                     className="text-red-600 hover:text-red-500 hover:scale-110 transition"
@@ -197,6 +214,38 @@ export default function Products() {
         </table>
       </div>
 
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-3 mt-4">
+          <button
+            onClick={() => goToPage(page - 1)}
+            disabled={page === 1}
+            className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => goToPage(i + 1)}
+              className={`px-3 py-1 rounded-md ${
+                page === i + 1 ? "bg-gray-700 text-white" : "bg-gray-200 hover:bg-gray-300"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => goToPage(page + 1)}
+            disabled={page === totalPages}
+            className="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
+
+      {/* Product View Modal */}
       {isViewOpen && (
         <ProductViewModal
           productId={selectedProductId}
@@ -207,6 +256,7 @@ export default function Products() {
   );
 }
 
+// Table helpers
 const Th = ({ children, className }) => (
   <th className={`p-3 text-left font-semibold ${className || ""}`}>{children}</th>
 );
@@ -215,6 +265,7 @@ const Td = ({ children, className }) => (
   <td className={`p-3 text-gray-700 ${className || ""}`}>{children}</td>
 );
 
+// Status Badge
 function Badge({ type, text }) {
   const colors = {
     green: "bg-green-100 text-green-700 shadow-sm",

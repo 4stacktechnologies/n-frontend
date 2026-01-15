@@ -11,10 +11,10 @@ import {
 
 const MENU = {
   OWNER: [
-    ["/dashboard", "Dashboard", LayoutDashboard],
-    ["/dashboard/users", "Users", UsersIcon],
-    ["/dashboard/products", "Products", Package],
-    ["/dashboard/products/create", "Create Product", CreativeCommons],
+    { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard, end: true },
+    { to: "/dashboard/users", label: "Users", Icon: UsersIcon, end: true },
+    { to: "/dashboard/products", label: "Products", Icon: Package, end: true },
+    { to: "/dashboard/products/create", label: "Create Product", Icon: CreativeCommons, end: true },
   ],
 };
 
@@ -53,12 +53,7 @@ export default function Sidebar({ open, onClose }) {
         <div className="md:hidden flex justify-end p-4">
           <button
             onClick={onClose}
-            className="
-              p-2 rounded-full
-              bg-gray-100 text-gray-600
-              hover:bg-gray-200
-              transition
-            "
+            className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
           >
             <X />
           </button>
@@ -70,26 +65,22 @@ export default function Sidebar({ open, onClose }) {
             Navigation
           </h2>
 
-          {MENU[user.role]?.map(([to, label, Icon]) => (
+          {MENU[user.role]?.map(({ to, label, Icon, end }) => (
             <NavLink
               key={to}
               to={to}
+              end={end}
               onClick={onClose}
               className={({ isActive }) =>
                 `
-                  group relative flex items-center gap-3
-                  px-4 py-3 rounded-lg
-                  transition-all duration-300
-                  ${
-                    isActive
-                      ? "bg-gray-200 text-gray-900 font-medium"
-                      : "hover:bg-gray-100 hover:text-gray-800"
-                  }
+                  relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300
+                  ${isActive ? "bg-gray-200 text-gray-900 font-medium" : "hover:bg-gray-100 hover:text-gray-800"}
                 `
               }
             >
               {({ isActive }) => (
                 <>
+                  {/* Active indicator */}
                   {isActive && (
                     <div
                       className="
@@ -100,7 +91,7 @@ export default function Sidebar({ open, onClose }) {
                       "
                     />
                   )}
-                  <Icon className="w-5 h-5 text-gray-600 transition-colors" />
+                  <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-gray-900" : "text-gray-600"}`} />
                   <span className="font-medium">{label}</span>
                 </>
               )}
@@ -113,9 +104,7 @@ export default function Sidebar({ open, onClose }) {
           <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
             <p className="text-sm text-gray-600">
               Welcome,{" "}
-              <span className="text-gray-900 font-medium">
-                {user?.name || "Admin"}
-              </span>
+              <span className="text-gray-900 font-medium">{user?.name || "Admin"}</span>
             </p>
             <p className="text-xs text-gray-500 mt-1">{user?.role}</p>
           </div>
