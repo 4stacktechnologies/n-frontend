@@ -6,18 +6,20 @@ export default function ExtractDetailsBox({
   onExtract,
 }) {
   return (
-    <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm mb-8">
+    <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm mb-8">
+
       {/* Header */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-cyan-500 rounded-xl flex items-center justify-center">
-          <Sparkles className="w-5 h-5 text-white" />
+      <div className="flex items-start gap-4 mb-5">
+        <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-gray-700" />
         </div>
+
         <div>
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-gray-900">
             Auto-Fill Product Details
           </h2>
-          <p className="text-sm text-slate-400">
-            Paste product specs or description — fields will be filled automatically
+          <p className="text-sm text-gray-500 mt-0.5">
+            Paste product specs or descriptions to automatically fill fields
           </p>
         </div>
       </div>
@@ -28,27 +30,53 @@ export default function ExtractDetailsBox({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={`Example:
-iPhone 14 Pro Max
-256GB Storage
-8GB RAM
-A16 Bionic
-6.7-inch OLED
-Color: Space Black
-Condition: Used (6 months)`}
-        className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-cyan-400 focus:border-transparent outline-none resize-none transition-all"
+MacBook Pro 14-inch
+16GB RAM
+512GB SSD
+M2 Pro
+Liquid Retina XDR
+Condition: Like New`}
+        className="
+          w-full
+          bg-gray-50
+          border border-gray-300
+          rounded-2xl
+          px-4 py-3
+          text-gray-800
+          placeholder-gray-400
+          resize-none
+          outline-none
+          transition
+          focus:border-gray-900
+          focus:ring-2
+          focus:ring-gray-900/10
+        "
       />
 
-      {/* Action */}
-      <div className="flex justify-between items-center mt-4">
-        <div className="flex items-center gap-2 text-slate-400 text-sm">
+      {/* Footer */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-5">
+
+        {/* Helper Text */}
+        <div className="flex items-center gap-2 text-sm text-gray-500">
           <FileText className="w-4 h-4" />
           <span>Supports specs, ads, invoices, or plain text</span>
         </div>
 
+        {/* Action Button */}
         <button
           type="button"
           onClick={onExtract}
-          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-cyan-500/20"
+          className="
+            inline-flex items-center gap-2
+            px-6 py-2.5
+            rounded-xl
+            bg-gray-900
+            text-white
+            font-medium
+            transition
+            hover:bg-gray-800
+            active:scale-[0.98]
+          "
         >
           Extract Details
           <ArrowRight className="w-4 h-4" />
