@@ -1,3 +1,4 @@
+// components/Profile.jsx
 import { uploadToCloudinary } from "./user/CreateProduct";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -5,37 +6,23 @@ import { Camera, Edit2, Save, X, Loader2 } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
 
 /* =========================
-   SKELETON
+   SKELETON LOADING
 ========================= */
-const ProfileSkeleton = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
-      <div className="w-full max-w-3xl rounded-2xl bg-white border border-gray-200 p-8 shadow-sm animate-pulse">
-        <div className="h-6 w-40 bg-gray-200 rounded mb-8" />
-        <div className="flex gap-6 items-center mb-8">
-          <div className="w-28 h-28 rounded-full bg-gray-200" />
-          <div className="space-y-3">
-            <div className="h-4 w-48 bg-gray-200 rounded" />
-            <div className="h-3 w-24 bg-gray-200 rounded" />
-          </div>
-        </div>
-        <div className="space-y-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-10 bg-gray-200 rounded" />
-          ))}
-          <div className="h-24 bg-gray-200 rounded" />
-        </div>
-      </div>
+const ProfileSkeleton = () => (
+  <div className="flex justify-center px-4 py-10 bg-gray-50">
+    <div className="w-full max-w-md bg-white rounded-2xl border p-6 animate-pulse">
+      <div className="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4" />
+      <div className="h-4 w-40 bg-gray-200 rounded mx-auto mb-2" />
+      <div className="h-3 w-48 bg-gray-200 rounded mx-auto" />
     </div>
-  );
-};
+  </div>
+);
 
 /* =========================
-   MAIN PROFILE
+   MAIN PROFILE COMPONENT
 ========================= */
 const Profile = () => {
-  const { user, setUser } = useAuth();
-
+  const { user, login } = useAuth(); // login updates AuthContext globally
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -49,19 +36,14 @@ const Profile = () => {
 
   const [preview, setPreview] = useState("");
 
-  const getInitials = (name) => {
-    if (!name) return "U";
-    const parts = name.trim().split(" ");
-    return parts.length === 1
-      ? parts[0].slice(0, 2).toUpperCase()
-      : (parts[0][0] + parts[1][0]).toUpperCase();
-  };
-
+  /* =========================
+     Initialize form from user
+  ========================= */
   useEffect(() => {
     if (user) {
       setForm({
         name: user.name || "",
-        mobile: user.mobile || "",
+        mobile: user.mobile || user.profile?.mobile || "", // handle nested mobile
         bio: user.bio || "",
         avatarUrl: user.avatar?.url || "",
         avatarPublicId: user.avatar?.publicId || "",
@@ -72,6 +54,9 @@ const Profile = () => {
 
   if (!user) return <ProfileSkeleton />;
 
+  /* =========================
+     HANDLERS
+  ========================= */
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -80,145 +65,141 @@ const Profile = () => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Preview image
     setPreview(URL.createObjectURL(file));
 
+    // Upload to Cloudinary
     const uploaded = await uploadToCloudinary(file);
-    setForm((p) => ({
-      ...p,
+
+    setForm((prev) => ({
+      ...prev,
       avatarUrl: uploaded.url,
       avatarPublicId: uploaded.id,
     }));
   };
 
   const handleSave = async () => {
-    setSaving(true);
-    const res = await axios.put(
-      `${import.meta.env.VITE_API_AUTH_URL}/edit-profile`,
-      form,
-      { withCredentials: true }
-    );
-    setUser(res.data.user);
-    setEditMode(false);
-    setSaving(false);
+    try {
+      setSaving(true);
+
+      // Save profile to backend
+      await axios.put(
+        `${import.meta.env.VITE_API_AUTH_URL}/edit-profile`,
+        form,
+        { withCredentials: true }
+      );
+
+      // Refetch user from backend
+      const res = await axios.get(`${import.meta.env.VITE_API_AUTH_URL}/me`, {
+        withCredentials: true,
+      });
+
+      login(res.data); // update context globally with latest user
+
+      setEditMode(false);
+    } catch (err) {
+      console.error("Failed to save profile:", err);
+      alert("Failed to save profile. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
     setEditMode(false);
     setPreview(user.avatar?.url || "");
+    setForm((prev) => ({
+      ...prev,
+      name: user.name || "",
+      mobile: user.mobile || user.profile?.mobile || "",
+      bio: user.bio || "",
+      avatarUrl: user.avatar?.url || "",
+      avatarPublicId: user.avatar?.publicId || "",
+    }));
   };
 
   return (
-    <section className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
-      <div className="w-full max-w-4xl bg-white border border-gray-200 rounded-2xl shadow-sm p-10">
-
+    <section className="bg-gray-50 px-4 py-10 flex justify-center">
+      <div className="w-full max-w-md bg-white border rounded-2xl p-6 shadow-sm">
         {/* Header */}
-        <div className="flex justify-between items-center mb-10">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Profile
-          </h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-lg font-semibold">Profile</h1>
 
           {!editMode ? (
             <button
               onClick={() => setEditMode(true)}
-              className="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-500 transition"
+              className="flex items-center gap-1 text-sm text-indigo-600"
             >
-              <Edit2 size={16} />
-              Edit
+              <Edit2 size={16} /> Edit
             </button>
           ) : (
-            <div className="flex gap-4">
-              <button
-                onClick={handleCancel}
-                className="text-sm text-gray-500 hover:text-gray-700 transition"
-              >
-                <X size={18} />
+            <div className="flex gap-3">
+              <button onClick={handleCancel}>
+                <X size={18} className="text-gray-500" />
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500 transition"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm"
               >
-                {saving ? (
-                  <Loader2 className="animate-spin" size={16} />
-                ) : (
-                  <Save size={16} />
-                )}
+                {saving ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                 Save
               </button>
             </div>
           )}
         </div>
 
-        {/* Avatar */}
-        <div className="flex items-center gap-8 mb-10">
-          <div className="relative">
+        {/* Avatar + Name + Email + Mobile */}
+        <div className="flex flex-col items-center text-center">
+          <div className="relative mb-4">
             {preview ? (
               <img
                 src={preview}
-                className="w-28 h-28 rounded-full object-cover border border-gray-300"
+                className="w-24 h-24 rounded-full object-cover border"
               />
             ) : (
-              <div className="w-28 h-28 rounded-full flex items-center justify-center bg-indigo-600 text-white text-xl font-semibold">
-                {getInitials(form.name)}
+              <div className="w-24 h-24 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xl font-semibold">
+                {form.name?.[0] || "U"}
               </div>
             )}
 
             {editMode && (
-              <label className="absolute bottom-1 right-1 bg-white border border-gray-300 p-2 rounded-full cursor-pointer hover:bg-gray-100 transition">
-                <Camera size={16} />
-                <input type="file" className="hidden" onChange={handleImageChange} />
+              <label className="absolute bottom-0 right-0 bg-white p-2 rounded-full border cursor-pointer">
+                <Camera size={14} />
+                <input type="file" hidden onChange={handleImageChange} />
               </label>
             )}
           </div>
 
-          <div>
-            <h2 className="text-lg font-medium text-gray-900">
-              {user.email}
-            </h2>
-            <span className="inline-block mt-2 px-3 py-1 rounded-full text-xs bg-gray-100 text-gray-600">
-              {user.role}
-            </span>
-          </div>
+          {/* Name */}
+          <h2 className="text-base font-medium text-gray-900">{form.name || "-"}</h2>
+
+          {/* Email */}
+          <p className="text-sm text-gray-600 mt-1">{user.email}</p>
+
+          {/* Mobile */}
+          <p className="text-sm text-gray-600 mt-2">📞 {form.mobile || "-"}</p>
         </div>
 
-        {/* Form */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <Field label="Full Name" name="name" value={form.name} onChange={handleChange} disabled={!editMode} />
-          <Field label="Mobile" name="mobile" value={form.mobile} onChange={handleChange} disabled={!editMode} />
-          <Field label="Email" value={user.email} disabled />
-          <Field label="Role" value={user.role} disabled />
-
-          <div className="md:col-span-2">
-            <label className="text-sm font-medium text-gray-700">
-              Bio
-            </label>
-            <textarea
-              name="bio"
-              value={form.bio}
-              onChange={handleChange}
-              disabled={!editMode}
-              rows={4}
-              className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-            />
+        {/* EDIT MODE FIELDS */}
+        {editMode && (
+          <div className="mt-6 space-y-4">
+            <ProfileInput label="Full Name" name="name" value={form.name} onChange={handleChange} />
+            <ProfileInput label="Mobile" name="mobile" value={form.mobile} onChange={handleChange} />
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
 };
 
 /* =========================
-   FIELD
+   INPUT COMPONENT
 ========================= */
-const Field = ({ label, ...props }) => (
+const ProfileInput = ({ label, ...props }) => (
   <div>
-    <label className="text-sm font-medium text-gray-700">
-      {label}
-    </label>
-    <input
-      {...props}
-      className="mt-1 w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition disabled:bg-gray-100"
-    />
+    <label className="text-sm font-medium text-gray-600">{label}</label>
+    <input {...props} className="mt-1 w-full rounded-lg border p-3" />
   </div>
 );
 
