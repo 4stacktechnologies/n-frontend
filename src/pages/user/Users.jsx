@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Search, Users as UsersIcon } from "lucide-react";
 
+const USERS_PER_PAGE = 10;
+
 const Users = () => {
   const [users, setUsers] = useState([]);
-  const [totalUsers, setTotalUsers] = useState(0);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,9 +17,7 @@ const Users = () => {
           `${import.meta.env.VITE_API_ADMIN_URL}/users/all`,
           { withCredentials: true }
         );
-
         setUsers(res.data.users);
-        setTotalUsers(res.data.totalUsers);
       } catch (error) {
         console.error("Error fetching users", error);
       } finally {
@@ -28,6 +28,7 @@ const Users = () => {
     fetchUsers();
   }, []);
 
+  /* ================= FILTER ================= */
   const filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -35,110 +36,99 @@ const Users = () => {
       user.role.toLowerCase().includes(search.toLowerCase())
   );
 
+  /* ================= PAGINATION ================= */
+  const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
+  const paginatedUsers = filteredUsers.slice(
+    (page - 1) * USERS_PER_PAGE,
+    page * USERS_PER_PAGE
+  );
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500 font-medium">
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
         Loading users...
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen px-6 py-10 bg-gray-50 text-gray-800 overflow-hidden">
-      {/* Optional subtle pastel blobs */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-gray-200/10 rounded-full blur-[120px]" />
-      <div className="absolute top-1/3 -right-40 w-96 h-96 bg-gray-200/10 rounded-full blur-[140px]" />
-
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
       {/* HEADER */}
-      <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <h1 className="text-3xl font-bold flex items-center gap-3">
-          <UsersIcon className="text-gray-700" />
-          Users Management
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <UsersIcon size={22} />
+          Users
         </h1>
 
-        {/* Search Input */}
-        <div className="relative max-w-sm w-full">
+        {/* SEARCH */}
+        <div className="relative w-full sm:max-w-sm">
           <Search
+            size={16}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
           />
           <input
             type="text"
             placeholder="Search users..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="
-              w-full pl-10 pr-4 py-2
-              rounded-xl
-              bg-white
-              border border-gray-300
-              text-gray-800 placeholder-gray-400
-              focus:outline-none
-              focus:border-gray-800
-              focus:ring-2 focus:ring-gray-300
-              transition
-            "
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="w-full pl-9 pr-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
           />
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="relative mb-6">
-        <div className="inline-block bg-white border border-gray-200 rounded-2xl px-6 py-4 shadow-sm">
-          <p className="text-sm text-gray-500">Total Users</p>
-          <p className="text-2xl font-bold text-gray-900">{totalUsers}</p>
-        </div>
+      {/* STATS */}
+      <div className="bg-white border rounded-xl p-3 mb-4 w-fit">
+        <p className="text-xs text-gray-500">Total Users</p>
+        <p className="text-lg font-bold">{users.length}</p>
       </div>
 
-      {/* Users Table */}
-      <div className="relative overflow-x-auto bg-white border border-gray-200 rounded-2xl shadow-sm">
-        <table className="min-w-full text-left text-sm">
+      {/* TABLE */}
+      <div className="overflow-x-auto bg-white border rounded-xl">
+        <table className="w-full text-sm">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-6 py-4 text-gray-500 font-medium">Name</th>
-              <th className="px-6 py-4 text-gray-500 font-medium">Email</th>
-              <th className="px-6 py-4 text-gray-500 font-medium">Role</th>
-              <th className="px-6 py-4 text-gray-500 font-medium">Verified</th>
-              <th className="px-6 py-4 text-gray-500 font-medium">Created</th>
+              <th className="px-3 py-2 text-left">Name</th>
+              <th className="px-3 py-2 text-left">Email</th>
+              <th className="px-3 py-2 text-left">Role</th>
+              <th className="px-3 py-2 text-left">Verified</th>
+              <th className="px-3 py-2 text-left">Created</th>
             </tr>
           </thead>
-
           <tbody>
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map((user) => (
-                <tr
-                  key={user._id}
-                  className="border-t border-gray-200 hover:bg-gray-100 transition"
-                >
-                  <td className="px-6 py-4 font-semibold text-gray-900">
+            {paginatedUsers.length > 0 ? (
+              paginatedUsers.map((user) => (
+                <tr key={user._id} className="border-t">
+                  <td className="px-3 py-2 font-medium">
                     {user.name}
                   </td>
-                  <td className="px-6 py-4 text-gray-700">{user.email}</td>
-                  <td className="px-6 py-4 capitalize text-gray-700">
+                  <td className="px-3 py-2 text-gray-600">
+                    {user.email}
+                  </td>
+                  <td className="px-3 py-2 capitalize">
                     {user.role}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-3 py-2">
                     {user.isVerified ? (
-                      <span className="text-green-600 font-medium">
+                      <span className="text-green-600 text-xs font-medium">
                         Verified
                       </span>
                     ) : (
-                      <span className="text-red-600 font-medium">
+                      <span className="text-red-600 text-xs font-medium">
                         Not Verified
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-gray-500">
+                  <td className="px-3 py-2 text-gray-500">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="5"
-                  className="text-center py-6 text-gray-400"
-                >
+                <td colSpan="5" className="text-center py-6 text-gray-400">
                   No users found
                 </td>
               </tr>
@@ -146,6 +136,31 @@ const Users = () => {
           </tbody>
         </table>
       </div>
+
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-3 mt-4">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+            className="px-3 py-1 border rounded disabled:opacity-40"
+          >
+            Prev
+          </button>
+
+          <span className="text-sm">
+            {page} / {totalPages}
+          </span>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+            className="px-3 py-1 border rounded disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };
