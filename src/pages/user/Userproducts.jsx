@@ -124,12 +124,12 @@ export default function UserProducts() {
 
         {/* Filter Panel */}
         {openFilter && (
-          <div className="bg-white border rounded-xl p-4 mb-6 relative">
+          <div className="bg-white border rounded-xl p-8 mb-6 relative">
             <button
               onClick={() => setOpenFilter(false)}
               className="absolute top-3 right-3"
             >
-              <X size={18} />
+              <X size={20} />
             </button>
 
             <select
