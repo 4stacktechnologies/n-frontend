@@ -14,11 +14,7 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
   const navLinkClass = ({ isActive }) =>
     `
       block w-full px-4 py-3 rounded-lg text-sm font-medium transition
-      ${
-        isActive
-          ? "bg-gray-900 text-white"
-          : "text-gray-700 hover:bg-gray-100"
-      }
+      ${isActive ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-100"}
     `;
 
   const getInitials = (name) => {
@@ -54,7 +50,7 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
           </div>
 
           {/* ================= DESKTOP NAV ================= */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-4">
             <NavLink to="/" className={navLinkClass}>Home</NavLink>
             <NavLink to="/about" className={navLinkClass}>About</NavLink>
             <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
@@ -76,17 +72,21 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-4 ml-4">
+              <div className="flex items-center gap-3 ml-4">
+                {/* PROFILE – NORMAL USER */}
                 {!isAdmin && (
-                  <button onClick={() => navigate("/profile")}>
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="w-9 h-9 rounded-full border flex items-center justify-center overflow-hidden"
+                  >
                     {user.avatar?.url ? (
                       <img
                         src={user.avatar.url}
                         alt="profile"
-                        className="w-9 h-9 rounded-full border"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-gray-900 text-white text-xs flex items-center justify-center">
+                      <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white text-xs font-semibold">
                         {getInitials(user.name)}
                       </div>
                     )}
@@ -105,7 +105,7 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
 
                 <button
                   onClick={logout}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full border text-sm"
+                  className="px-4 py-2 rounded-full border text-sm flex items-center gap-2"
                 >
                   <LogOut size={16} />
                   Logout
@@ -168,13 +168,12 @@ export default function Navbar({ isDashboard = false, onMenuClick }) {
                 {!isAdmin && (
                   <button
                     onClick={() => { setOpen(false); navigate("/profile"); }}
-                    className="w-full py-3 rounded-lg border text-sm"
+                    className="w-full py-3 rounded-lg border text-sm flex items-center justify-center"
                   >
                     Profile
                   </button>
                 )}
 
-                {/* DASHBOARD – SAME COLOR LOGIC */}
                 {isAdmin && (
                   <NavLink
                     to="/dashboard"
