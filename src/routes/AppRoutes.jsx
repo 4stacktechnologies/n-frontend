@@ -33,7 +33,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="profile" element={<Profile/>}/>
+        <Route path="profile" element={ <ProtectedRoute><RoleGuard allowedRoles={["USER"]}><Profile /></RoleGuard></ProtectedRoute>}/>
 
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
