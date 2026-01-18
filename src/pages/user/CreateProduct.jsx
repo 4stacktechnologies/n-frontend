@@ -510,64 +510,63 @@ export default function CreateProduct() {
   const progress = calculateProgress();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-3 md:p-4 lg:p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Hero Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-gray-200">
-              <Sparkles className="w-6 h-6 text-gray-700" />
+        {/* Compact Header */}
+        <div className="mb-4 md:mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm border border-gray-200 flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-gray-700" />
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Create Product</h1>
-              <p className="text-gray-600 mt-1">Add new or second-hand product to your inventory</p>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
+                Create Product
+              </h1>
+              <p className="text-gray-600 text-xs md:text-sm mt-0.5">
+                Add new or second-hand product to your inventory
+              </p>
             </div>
           </div>
 
-          {/* Stats Card */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center md:text-left">
-                <div className="text-sm font-medium text-gray-500 mb-1">Form Progress</div>
-                <div className="text-2xl font-bold text-gray-900">{progress.percentage}%</div>
+          {/* Compact Progress Bar */}
+          <div className="bg-white rounded-lg p-3 shadow-sm border border-gray-200 mb-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-3 h-3 text-gray-600" />
+                <span className="text-xs text-gray-700">
+                  <span className="font-bold">{progress.filled}</span>
+                  <span className="text-gray-500">/{progress.total}</span> fields
+                </span>
               </div>
-              <div className="text-center md:text-left">
-                <div className="text-sm font-medium text-gray-500 mb-1">Fields Completed</div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {progress.filled}<span className="text-gray-400 text-lg">/{progress.total}</span>
-                </div>
+              <div className="text-right">
+                <div className="text-sm font-bold text-gray-900">{progress.percentage}%</div>
               </div>
-              <div>
-                <div className="text-sm font-medium text-gray-500 mb-2">Progress</div>
-                <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className="absolute top-0 left-0 h-full bg-gray-800 rounded-full transition-all duration-500"
-                    style={{ width: `${progress.percentage}%` }}
-                  />
-                </div>
-                <div className="text-xs text-gray-500 mt-2 text-right">
-                  {progress.filled} of {progress.total} fields complete
-                </div>
-              </div>
+            </div>
+            <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden">
+              <div
+                className="absolute top-0 left-0 h-full bg-gray-800 rounded-full transition-all duration-300"
+                style={{ width: `${progress.percentage}%` }}
+              />
             </div>
           </div>
         </div>
 
-        {/* AI Extraction Box */}
-        <div className="mb-8">
+        {/* Compact AI Extraction Box */}
+        <div className="mb-4">
           <ExtractDetailsBox
             value={rawText}
             onChange={setRawText}
             onExtract={handleExtract}
             loading={extractLoading}
+            compact={true}
           />
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Basic Information */}
           <Section icon={Package} title="Basic Information" badge="Required">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
                 label="Product Title"
                 required
@@ -623,21 +622,21 @@ export default function CreateProduct() {
 
           {/* Condition */}
           <Section icon={Tag} title="Condition & Status">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-3 block">Condition *</label>
-                <div className="grid grid-cols-2 gap-3">
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Condition *</label>
+                <div className="grid grid-cols-2 gap-2">
                   {['NEW', 'USED'].map(cond => (
                     <button
                       key={cond}
                       type="button"
                       onClick={() => handleChange('condition', cond)}
-                      className={`p-4 rounded-lg border-2 transition-all ${formData.condition === cond
+                      className={`p-2.5 rounded border transition-all ${formData.condition === cond
                           ? 'border-gray-800 bg-gray-800 text-white'
                           : 'border-gray-300 bg-white text-gray-800 hover:border-gray-400 hover:bg-gray-50'
                         }`}
                     >
-                      <div className="font-semibold">{cond === 'NEW' ? '🆕 New' : '♻️ Used'}</div>
+                      <div className="font-medium text-sm">{cond === 'NEW' ? '🆕 New' : '♻️ Used'}</div>
                     </button>
                   ))}
                 </div>
@@ -684,7 +683,7 @@ export default function CreateProduct() {
 
           {/* Hardware Details */}
           <Section icon={Cpu} title="Hardware Specifications">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <Input
                 label="RAM Size"
                 placeholder="16GB"
@@ -711,39 +710,39 @@ export default function CreateProduct() {
                 onChange={(e) => handleChange("storage.type", e.target.value)}
               />
 
-              <div>
+              <div className="md:col-span-2 lg:col-span-1">
                 <label className="text-sm font-medium text-gray-700 mb-2 block">Color</label>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-5 gap-1.5">
                   {COLORS.map(color => (
                     <button
                       key={color.name}
                       type="button"
                       title={color.name}
                       onClick={() => handleChange('color', color.name)}
-                      className={`w-full aspect-square rounded-md border-2 transition-all relative ${formData.color === color.name
-                          ? 'border-gray-800 shadow-md scale-110'
+                      className={`w-full aspect-square rounded border transition-all relative ${formData.color === color.name
+                          ? 'border-gray-800 shadow-sm scale-105'
                           : 'border-gray-300 hover:border-gray-400'
                         }`}
                       style={{ backgroundColor: color.hex }}
                     >
                       {color.hex === '#FFFFFF' && (
-                        <div className="absolute inset-0 border border-gray-300 rounded-md" />
+                        <div className="absolute inset-0 border border-gray-300 rounded" />
                       )}
                       {formData.color === color.name && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-3 h-3 bg-white rounded-full border-2 border-gray-800" />
+                          <div className="w-2 h-2 bg-white rounded-full border-2 border-gray-800" />
                         </div>
                       )}
                     </button>
                   ))}
                 </div>
                 {formData.color && (
-                  <p className="text-xs text-gray-600 mt-2 text-center">{formData.color}</p>
+                  <p className="text-xs text-gray-600 mt-1 text-center">{formData.color}</p>
                 )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
               <Input
                 label="Processor Company"
                 placeholder="e.g., Intel, AMD, Apple"
@@ -791,7 +790,7 @@ export default function CreateProduct() {
 
           {/* Display Specifications */}
           <Section icon={Monitor} title="Display Specifications">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
                 label="Display Size"
                 placeholder="e.g., 15.6 inch, 13.3 inch"
@@ -832,7 +831,7 @@ export default function CreateProduct() {
 
           {/* Ports & Connectivity */}
           <Section icon={Cpu} title="Ports & Connectivity">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <Input
                 label="USB Type-C Count"
                 type="number"
@@ -870,7 +869,7 @@ export default function CreateProduct() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
               <Checkbox
                 label="MicroSD Card Slot"
                 checked={formData.ports.microSD}
@@ -905,7 +904,7 @@ export default function CreateProduct() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
               <Input
                 label="Wi-Fi Version (Wi-Fi 6)"
                 value={formData.wifi}
@@ -922,7 +921,7 @@ export default function CreateProduct() {
 
           {/* Battery & Security */}
           <Section icon={Shield} title="Battery & Security">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <Input
                 label="Battery Capacity (Wh)"
                 value={formData.battery.capacity}
@@ -942,7 +941,7 @@ export default function CreateProduct() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
               <Input
                 label="Camera Resolution (720p)"
                 value={formData.camera.resolution}
@@ -956,7 +955,7 @@ export default function CreateProduct() {
                 onChange={(e) => handleChange("audio", e.target.value)}
               />
 
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <Checkbox
                   label="Fingerprint Reader"
                   checked={formData.fingerprintReader}
@@ -984,52 +983,48 @@ export default function CreateProduct() {
               <label className="text-sm font-medium text-gray-700 mb-2 block">
                 Pre-installed Software
               </label>
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  placeholder="e.g., MS Office 2024, Adobe Photoshop (Press Enter to add)"
-                  className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-gray-800 focus:border-transparent outline-none transition-all"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && e.target.value.trim()) {
-                      e.preventDefault();
-                      handleChange('preInstalledSoftware', [...formData.preInstalledSoftware, e.target.value.trim()]);
-                      e.target.value = '';
-                    }
-                  }}
-                />
-                <p className="text-xs text-gray-500">Press Enter to add software</p>
-
-                {formData.preInstalledSoftware.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {formData.preInstalledSoftware.map((software, index) => (
-                      <span
-                        key={index}
-                        className="bg-gray-100 border border-gray-200 text-gray-800 px-3 py-1 rounded-lg text-sm flex items-center gap-2"
+              <input
+                type="text"
+                placeholder="Press Enter to add"
+                className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-gray-800 focus:border-transparent outline-none transition-all text-sm"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && e.target.value.trim()) {
+                    e.preventDefault();
+                    handleChange('preInstalledSoftware', [...formData.preInstalledSoftware, e.target.value.trim()]);
+                    e.target.value = '';
+                  }
+                }}
+              />
+              {formData.preInstalledSoftware.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {formData.preInstalledSoftware.map((software, index) => (
+                    <span
+                      key={index}
+                      className="bg-gray-100 border border-gray-200 text-gray-800 px-2 py-1 rounded text-xs flex items-center gap-1"
+                    >
+                      {software}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = formData.preInstalledSoftware.filter((_, i) => i !== index);
+                          handleChange('preInstalledSoftware', updated);
+                        }}
+                        className="hover:text-red-600 transition-colors"
                       >
-                        {software}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updated = formData.preInstalledSoftware.filter((_, i) => i !== index);
-                            handleChange('preInstalledSoftware', updated);
-                          }}
-                          className="hover:text-red-600 transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </Section>
 
           {/* Build & Design */}
           <Section icon={Tag} title="Build & Design">
-            <div className="space-y-6">
+            <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-3 block">Keyboard Features</label>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Keyboard Features</label>
                 <Checkbox
                   label="Backlit Keyboard"
                   checked={formData.keyboard.backlit}
@@ -1048,7 +1043,7 @@ export default function CreateProduct() {
 
           {/* Pricing */}
           <Section icon={DollarSign} title="Pricing" badge="Required">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Input
                 label="Original Price (MRP)"
                 type="number"
@@ -1086,7 +1081,7 @@ export default function CreateProduct() {
             />
 
             {formData.warrantyAvailable && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                 <Input
                   label="Warranty Period"
                   placeholder="e.g., 6 months, 1 year"
@@ -1144,25 +1139,25 @@ export default function CreateProduct() {
 
             <label
               htmlFor="imageUpload"
-              className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-gray-400 transition-all cursor-pointer bg-white block hover:bg-gray-50"
+              className="border-2 border-dashed border-gray-300 rounded p-4 text-center hover:border-gray-400 transition-all cursor-pointer bg-white block hover:bg-gray-50"
             >
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                <Upload className="w-8 h-8 text-gray-600" />
+              <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-gray-100 flex items-center justify-center">
+                <Upload className="w-5 h-5 text-gray-600" />
               </div>
-              <p className="text-gray-800 font-medium mb-1">
+              <p className="text-gray-800 font-medium text-sm mb-0.5">
                 {uploading ? "Uploading..." : "Click to upload images"}
               </p>
-              <p className="text-sm text-gray-600">or drag and drop</p>
-              <p className="text-xs text-gray-500 mt-2">PNG, JPG up to 10MB</p>
+              <p className="text-xs text-gray-600">or drag and drop</p>
+              <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
             </label>
 
             {formData.images.length > 0 && (
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-4 mt-6">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 mt-3">
                 {formData.images.map((img, idx) => (
                   <div key={img.id} className="relative group">
                     <img
                       src={img.url}
-                      className="rounded-lg h-24 w-full object-cover border border-gray-300 group-hover:border-gray-400 transition-colors"
+                      className="rounded h-16 md:h-20 w-full object-cover border border-gray-300 group-hover:border-gray-400 transition-colors"
                       alt={`Product ${idx + 1}`}
                     />
                     <button
@@ -1173,7 +1168,7 @@ export default function CreateProduct() {
                           formData.images.filter((_, i) => i !== idx)
                         )
                       }
-                      className="absolute top-2 right-2 bg-white border border-gray-300 text-gray-700 rounded-full w-6 h-6 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-gray-50 hover:border-gray-400"
+                      className="absolute top-1 right-1 bg-white border border-gray-300 text-gray-700 rounded-full w-5 h-5 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-gray-50 hover:border-gray-400"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -1183,23 +1178,23 @@ export default function CreateProduct() {
             )}
           </Section>
 
-          {/* Actions */}
-          <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 -mx-4 md:-mx-8 px-4 md:px-8 py-5 mt-8 flex flex-col sm:flex-row gap-3 justify-end">
+          {/* Compact Actions */}
+          <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 -mx-3 md:-mx-4 lg:-mx-6 px-3 md:px-4 lg:px-6 py-3 mt-4 flex flex-col sm:flex-row gap-2 justify-end">
             <button
               type="button"
               onClick={(e) => e.preventDefault()}
-              className="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+              className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-1.5 text-sm"
             >
-              <Save className="w-4 h-4" />
+              <Save className="w-3 h-3" />
               Save as Draft
             </button>
             <button
               type="submit"
-              className="px-8 py-3 rounded-lg bg-gray-900 hover:bg-black text-white font-medium transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow"
+              className="px-5 py-2 rounded bg-gray-900 hover:bg-black text-white font-medium transition-all flex items-center justify-center gap-1.5 shadow-sm hover:shadow text-sm"
               onClick={handleSubmit}
             >
               Create Product
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-3 h-3" />
             </button>
           </div>
         </form>
@@ -1208,43 +1203,43 @@ export default function CreateProduct() {
   );
 }
 
-// Components with Neutral Portfolio Theme
+// Compact Components
 const Section = ({ icon: Icon, title, badge, children }) => (
-  <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
-    <div className="flex items-start gap-4 mb-6">
-      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
-        <Icon className="w-5 h-5 text-gray-700" />
+  <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow transition-shadow duration-300">
+    <div className="flex items-center gap-2.5 mb-3">
+      <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
+        <Icon className="w-4 h-4 text-gray-700" />
       </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-3">
-          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h3 className="text-base font-semibold text-gray-900">{title}</h3>
           {badge && (
-            <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-md font-medium">
+            <span className="text-xs bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded font-medium">
               {badge}
             </span>
           )}
         </div>
-        <div className="w-10 h-0.5 bg-gray-300 rounded-full mt-2" />
+        <div className="w-8 h-0.5 bg-gray-300 rounded-full mt-1" />
       </div>
     </div>
-    <div className="space-y-5">{children}</div>
+    <div className="space-y-3">{children}</div>
   </div>
 );
 
 const Input = ({ label, required, error, ...props }) => (
   <div>
-    <label className="text-sm font-medium text-gray-700 mb-2 block">
+    <label className="text-sm font-medium text-gray-700 mb-1.5 block">
       {label} {required && <span className="text-red-600">*</span>}
     </label>
     <input
       {...props}
-      className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:border-transparent outline-none transition-all ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
+      className={`w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:border-transparent outline-none transition-all text-sm ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
         }`}
     />
     {error && (
-      <div className="flex items-center gap-2 mt-2">
-        <AlertCircle className="w-4 h-4 text-red-500" />
-        <span className="text-sm text-red-600">{error}</span>
+      <div className="flex items-center gap-1.5 mt-1">
+        <AlertCircle className="w-3 h-3 text-red-500" />
+        <span className="text-xs text-red-600">{error}</span>
       </div>
     )}
   </div>
@@ -1252,19 +1247,19 @@ const Input = ({ label, required, error, ...props }) => (
 
 const Textarea = ({ label, required, error, ...props }) => (
   <div>
-    <label className="text-sm font-medium text-gray-700 mb-2 block">
+    <label className="text-sm font-medium text-gray-700 mb-1.5 block">
       {label} {required && <span className="text-red-600">*</span>}
     </label>
     <textarea
       {...props}
-      rows={4}
-      className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 placeholder-gray-500 focus:ring-2 focus:border-transparent outline-none resize-none transition-all ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
+      rows={3}
+      className={`w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 placeholder-gray-500 focus:ring-2 focus:border-transparent outline-none resize-none transition-all text-sm ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
         }`}
     />
     {error && (
-      <div className="flex items-center gap-2 mt-2">
-        <AlertCircle className="w-4 h-4 text-red-500" />
-        <span className="text-sm text-red-600">{error}</span>
+      <div className="flex items-center gap-1.5 mt-1">
+        <AlertCircle className="w-3 h-3 text-red-500" />
+        <span className="text-xs text-red-600">{error}</span>
       </div>
     )}
   </div>
@@ -1272,33 +1267,33 @@ const Textarea = ({ label, required, error, ...props }) => (
 
 const Select = ({ label, required, error, children, ...props }) => (
   <div>
-    <label className="text-sm font-medium text-gray-700 mb-2 block">
+    <label className="text-sm font-medium text-gray-700 mb-1.5 block">
       {label} {required && <span className="text-red-600">*</span>}
     </label>
     <select
       {...props}
-      className={`w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:ring-2 focus:border-transparent outline-none transition-all ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
+      className={`w-full bg-white border border-gray-300 rounded px-3 py-2 text-gray-800 focus:ring-2 focus:border-transparent outline-none transition-all text-sm ${error ? 'border-red-400 focus:ring-red-500' : 'focus:ring-gray-800'
         }`}
     >
       {children}
     </select>
     {error && (
-      <div className="flex items-center gap-2 mt-2">
-        <AlertCircle className="w-4 h-4 text-red-500" />
-        <span className="text-sm text-red-600">{error}</span>
+      <div className="flex items-center gap-1.5 mt-1">
+        <AlertCircle className="w-3 h-3 text-red-500" />
+        <span className="text-xs text-red-600">{error}</span>
       </div>
     )}
   </div>
 );
 
 const Checkbox = ({ label, checked, onChange }) => (
-  <label className="flex items-center gap-3 text-gray-800 cursor-pointer group">
+  <label className="flex items-center gap-2 text-gray-800 cursor-pointer group text-sm">
     <div className="relative">
       <input
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className="w-5 h-5 rounded border-2 border-gray-300 bg-white checked:bg-gray-800 checked:border-gray-800 focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 focus:ring-offset-white transition-all cursor-pointer"
+        className="w-4 h-4 rounded border-2 border-gray-300 bg-white checked:bg-gray-800 checked:border-gray-800 focus:ring-2 focus:ring-gray-800 focus:ring-offset-1 focus:ring-offset-white transition-all cursor-pointer"
       />
     </div>
     <span className="group-hover:text-gray-900 transition-colors">{label}</span>
